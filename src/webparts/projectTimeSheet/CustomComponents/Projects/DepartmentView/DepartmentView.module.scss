@@ -1,0 +1,21 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.Box {
+  height: "240px";
+  margin-top: "-15px";
+  overflow-y: "auto";
+}
+
+.tableHeadcss {
+  background-color: "#f3f2f1";
+  font-weight: "600";
+  height: "40px";
+  font-family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+}
+
+.tableCellcss {
+  font-weight: "600";
+  background-color: "#f3f2f1";
+  height: "20px";
+  font-family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+}

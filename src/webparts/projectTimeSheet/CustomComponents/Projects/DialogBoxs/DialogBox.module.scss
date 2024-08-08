@@ -1,0 +1,25 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.dialogTitle {
+  margin-top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttonIcon {
+  color: grey;
+}
+
+.dialogContentText {
+  color: rgb(50, 49, 48);
+}
+
+.deleteButton {
+  background-color: #ff6666;
+  color: white;
+
+  &:hover {
+    background-color: #dc3545;
+  }
+}
