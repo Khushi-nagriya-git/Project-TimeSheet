@@ -1,6 +1,5 @@
 import { React,useState,useEffect,FormComponent,initialState,CustomFormData,JobsData,ProjectStyle,jobsInitialState,DeleteDialogBoxProps,IProjectProps,addProjects,getProjectListData,deleteProject,updateUserRecords,getJobListData,ProjectsData,projectsInitialState,styled,TopNavigation,Button,Grid,ProjectHeader,ProjectTable,Alert,DepartmentView,MyTeam} from "../../../../index"
-import { LoggedInUserDetails } from "./IProjectStats";
-import { getDepartments, getLoggedInUserData } from "./Services";
+import { getDepartments,  } from "./Services";
 const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [myDataActiveLink, setMyDataActiveLink] = useState<string>("Employee");
@@ -29,40 +28,15 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [topNavigationMode, setTopNavigationMode] = useState<string>("Employee");
   const [isJobAvailable, setIsJobAvailable] = useState<boolean>(false);
   const [departmentNames , setDepartmentNames] = useState();
-  const [isUserReportingManager , setIsUserReportingManager] = useState<Boolean>(false);
-  const [isUserProjectManager , setIsUserProjectManager] = useState<Boolean>(false);
-  const [isUserAdmin , setUserAdmin] = useState<Boolean>(false);
-  const [isUserProjectTeam , setIsUserProjectTeam] = useState<Boolean>(false);
-  const [loggedInUserDetails ,setLoggedInUserDetails] = useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       await getDepartments(props.absoluteURL, props.spHttpClient, setDepartmentNames);
-      let userData: LoggedInUserDetails = await getLoggedInUserData(props.spHttpClient, props.absoluteURL);
-      setLoggedInUserDetails(userData || {});
-      userData.Groups?.forEach((group: { Title: string }) => {
-        switch (group.Title.trim()) {
-          case "PTReportingManager":
-            setIsUserReportingManager(true);
-            break;
-          case "PTProjectManager":
-            setIsUserProjectManager(true);
-            break;
-          case "PTUsers":
-            setIsUserProjectTeam(true);
-            break;
-            case " ProjectTimeSheetAdmin ":
-              setUserAdmin(true);
-            break;
-          default:
-            break;
-        }
-      });
       getProjectListData(
         props.absoluteURL,
         props.spHttpClient,
         setProjectsData,
-        userData
+        props.loggedInUserDetails
       );
       getJobListData(props.absoluteURL, props.spHttpClient, setJobsData );
     };
@@ -87,15 +61,14 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const handleSubmit = async (data: CustomFormData) => {
     if (mode === "add") {
       await addProjects(data, props.absoluteURL, props.spHttpClient);
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData ,loggedInUserDetails);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData ,props.loggedInUserDetails);
       setAddFormOpen(false);
       setAlert(true);
       setAddSuccessFullyAlert(true);
-      
-      await  getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,loggedInUserDetails);
+      await  getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
     } else if (mode === "edit") {
       updateUserRecords(props.spHttpClient,props.absoluteURL,editProjectId,data,setProjectsData,setCurrentData)
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, loggedInUserDetails);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails);
       setAddFormOpen(false);
       setAlert(true);
       setEditSuccessFullyAlert(true);
@@ -167,7 +140,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                   >
                     Project Members
                   </ProjectStyle.NavLink>
-                  {isUserAdmin && (
+                  {props.isUserAdmin && (
                         <ProjectStyle.NavLink
                         className={myDataActiveLink === "Department" ? "active" : ""}
                         onClick={() => handleTabChange("Department")}
@@ -178,7 +151,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
               
 
                     <Grid item sx={{ marginLeft: "auto", marginBottom: "10px" }}>
-                    {isUserReportingManager && (
+                    {props.isUserReportingManager && (
                     <Button
                     variant="contained"
                     onClick={handleAddProject}
@@ -221,16 +194,16 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                       filteredProjects = {filteredProjects}
                       topNavigationMode = {topNavigationMode}
                       setIsJobAvailable = {setIsJobAvailable}
-                      isUserReportingManager = {isUserReportingManager}
-                      isUserProjectManager = {isUserProjectManager}
-                      isUserAdmin = {isUserAdmin}
-                      isUserProjectTeam ={isUserProjectTeam}
-                      loggedInUserDetails = {loggedInUserDetails}
+                      isUserReportingManager = {props.isUserReportingManager}
+                      isUserProjectManager = {props.isUserProjectManager}
+                      isUserAdmin = {props.isUserAdmin}
+                      isUserProjectTeam ={props.isUserProjectTeam}
+                      loggedInUserDetails = {props.loggedInUserDetails}
                       ></ProjectTable>
                   </>
                 )}
                 {myDataActiveLink === "ProjectMembers" && (
-                  <MyTeam  absoluteURL = { props.absoluteURL} spHttpClient = { props.spHttpClient} projectProps={props} isUserAdmin = {isUserAdmin} isUserProjectManager={isUserProjectManager} isUserProjectTeam={isUserProjectTeam} isUserReportingManager={isUserReportingManager} loggedInUserDetails={loggedInUserDetails}/>
+                  <MyTeam  absoluteURL = { props.absoluteURL} spHttpClient = { props.spHttpClient} projectProps={props} isUserAdmin = {props.isUserAdmin} isUserProjectManager={props.isUserProjectManager} isUserProjectTeam={props.isUserProjectTeam} isUserReportingManager={props.isUserReportingManager} loggedInUserDetails={props.loggedInUserDetails}/>
                 )}
                 {myDataActiveLink === "Department" && (
                   <>

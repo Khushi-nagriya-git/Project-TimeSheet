@@ -66,8 +66,8 @@ export const getProjectListData = async (
   try {
 
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus&$filter=${filterQuery}`,
-      SPHttpClient.configurations.v1
+      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker&$filter=${filterQuery}`,
+       SPHttpClient.configurations.v1
     );
       if (response.ok) {
         const data = await response.json();

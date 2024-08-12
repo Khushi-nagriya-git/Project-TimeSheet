@@ -166,29 +166,64 @@ const ProjectTable = (props: {
     projectName: string,
     projectManager: string,
     projectManagerEmail: string,
-    status: string
+    status: string,
+    ReportingManagerPeoplePicker: { EMail: string; Title: string },
+    ProjectManagerPeoplePicker: { EMail: string; Title: string }
   ) {
-    const matchingJobs = [];
-    for (let i = 0; i < props.jobsData.length; i++) {
-      if (props.jobsData[i].ProjectId === projectId) {
-        // Declare JobDatafilter with a proper type
-        let JobDatafilter: { email: string; id: number }[] = [];
-    
-        // Parse the AssignedTo field safely
-        try {
-          JobDatafilter = JSON.parse(props.jobsData[i].AssignedTo);
-        } catch (error) {
-          console.error("Error parsing AssignedTo:", error);
-          continue; // Skip to the next iteration if parsing fails
+    let relevantJobs = [];
+    const seenJobIds = new Set<number>(); // To track unique JobIds
+
+    if (props.isUserAdmin) {
+      for (const job of props.jobsData) {
+        if (job.ProjectId === projectId && !seenJobIds.has(job.JobId)) {
+          seenJobIds.add(job.JobId);
+          relevantJobs.push(job);
         }
+      }
+    } else {
+      if (props.isUserProjectManager) {
+        if (ProjectManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
+          for (const job of props.jobsData) {
+            if (job.ProjectId === projectId && !seenJobIds.has(job.JobId)) {
+              seenJobIds.add(job.JobId);
+              relevantJobs.push(job);
+            }
+          }
+        }
+      }
     
-        // Iterate over JobDatafilter
-        for (let j = 0; j < JobDatafilter.length; j++) {
-          if (
-            props.loggedInUserDetails.Email === JobDatafilter[j].email &&
-            JobDatafilter[j].id === props.loggedInUserDetails.Id
-          ) {
-            matchingJobs.push(props.jobsData[i]);
+      if (props.isUserReportingManager) {
+        if (ReportingManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
+          for (const job of props.jobsData) {
+            if (job.ProjectId === projectId && !seenJobIds.has(job.JobId)) {
+              seenJobIds.add(job.JobId);
+              relevantJobs.push(job);
+            }
+          }
+        }
+      }
+    
+      if (props.isUserProjectTeam) {
+        for (const job of props.jobsData) {
+          if (job.ProjectId !== projectId) continue;
+    
+          let jobDataFilter: { email: string; id: number }[] = [];
+          try {
+            jobDataFilter = JSON.parse(job.AssignedTo);
+          } catch (error) {
+            console.error("Error parsing AssignedTo:", error);
+            continue;
+          }
+    
+          const isAssignedToUser = jobDataFilter.some(
+            (assigned) =>
+              assigned.email === props.loggedInUserDetails.Email &&
+              assigned.id === props.loggedInUserDetails.Id
+          );
+    
+          if (isAssignedToUser && !seenJobIds.has(job.JobId)) {
+            seenJobIds.add(job.JobId);
+            relevantJobs.push(job);
           }
         }
       }
@@ -200,7 +235,8 @@ const ProjectTable = (props: {
       projectManager,
       projectManagerEmail,
       status,
-      history: matchingJobs,
+      ReportingManagerPeoplePicker,
+      history: relevantJobs,
     };
   }
 
@@ -356,7 +392,9 @@ const ProjectTable = (props: {
                       row.ProjectName,
                       projectManagerName,
                       projectManagerEmail,
-                      row.ProjectStatus
+                      row.ProjectStatus,
+                      row.ReportingManagerPeoplePicker,
+                      row.ProjectManagerPeoplePicker
                     );
 
                     return (
@@ -371,6 +409,7 @@ const ProjectTable = (props: {
                         isUserReportingManager={props.isUserReportingManager}
                         isUserAdmin={props.isUserAdmin}
                         isUserProjectTeam={props.isUserProjectTeam}
+                        loggedInUserDetails={props.loggedInUserDetails}
                       />
                     );
                   })

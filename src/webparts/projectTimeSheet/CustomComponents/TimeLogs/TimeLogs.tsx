@@ -133,11 +133,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   const [currentWeek, setCurrentWeek] = useState<Date[]>([]); // State to store the current week's dates
   const [startDate, setStartDate] = useState<Date>(new Date()); // State to manage the start date
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
-  const [isUserReportingManager , setIsUserReportingManager] = useState<Boolean>(false);
-  const [isUserProjectManager , setIsUserProjectManager] = useState<Boolean>(false);
-  const [isUserProjectTeam , setIsUserProjectTeam] = useState<Boolean>(false);
-  const [loggedInUserDetails ,setLoggedInUserDetails] = useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
-
+ 
   useEffect(() => {
     setCurrentWeek(getCurrentWeek(startDate));
   }, [startDate]);
@@ -187,7 +183,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
 
   useEffect(() => {
     getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
-    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,loggedInUserDetails);
+    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
     getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
   }, []);
 
@@ -540,10 +536,10 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       selectedProjectName={selectedProjectName}
                       setSelectedBillableStatus={setSelectedBillableStatus}
                       selectedBillableStatus={selectedBillableStatus}
-                      loggedInUserDetails={loggedInUserDetails}
-                      isUserReportingManager={isUserReportingManager} 
-                      isUserProjectTeam={isUserProjectTeam} 
-                      isUserProjectManager={isUserProjectManager}
+                      loggedInUserDetails={props.loggedInUserDetails}
+                      isUserReportingManager={props.isUserReportingManager} 
+                      isUserProjectTeam={props.isUserProjectTeam} 
+                      isUserProjectManager={props.isUserProjectManager}
                     ></AddTimeLog>
                     <TimeLogTable
                       absoluteURL={absoluteURL}
@@ -585,10 +581,10 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                     jobsData={jobsData}
                     initialFormData={initialFormData}
                     setInitialFormData={setInitialFormData}
-                    loggedInUserDetails={loggedInUserDetails}
-                    isUserReportingManager={isUserReportingManager} 
-                    isUserProjectTeam={isUserProjectTeam} 
-                    isUserProjectManager={isUserProjectManager}
+                    loggedInUserDetails={props.loggedInUserDetails}
+                    isUserReportingManager={props.isUserReportingManager} 
+                    isUserProjectTeam={props.isUserProjectTeam} 
+                    isUserProjectManager={props.isUserProjectManager}
                   />
                 )}
 

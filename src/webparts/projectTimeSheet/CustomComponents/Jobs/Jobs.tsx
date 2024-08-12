@@ -89,14 +89,9 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [addSuccessFullyAlert, setAddSuccessFullyAlert] = useState(false);
   const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<JobsData[]>([]);
-  const [isUserReportingManager , setIsUserReportingManager] = useState<Boolean>(false);
-  const [isUserProjectManager , setIsUserProjectManager] = useState<Boolean>(false);
-  const [isUserProjectTeam , setIsUserProjectTeam] = useState<Boolean>(false);
-  const [loggedInUserDetails ,setLoggedInUserDetails] = useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
-  const [isUserAdmin , setUserAdmin] = useState<Boolean>(false);
 
   useEffect(() => {
-    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, loggedInUserDetails);
+    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails);
     getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
     getTimeLogsListData(props.absoluteURL,props.spHttpClient,setTimeLogsData)
   }, []);
@@ -143,7 +138,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
       setAddFormOpen(false);
       setAddSuccessFullyAlert(true);
       await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,loggedInUserDetails);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
     } else if (mode === "edit") {
       updateJobRecords(props.spHttpClient,props.absoluteURL,editJobId,data,"formEdit",setJobsData,setCurrentData)
       setAddFormOpen(false);
@@ -247,7 +242,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
 
             {topNavigationState === "team" && (
               <Content>
-               <MyTeam  absoluteURL = { props.absoluteURL} spHttpClient = { props.spHttpClient} projectProps={props} loggedInUserDetails={loggedInUserDetails} isUserReportingManager={isUserReportingManager}isUserAdmin={isUserAdmin} isUserProjectTeam={isUserProjectTeam} isUserProjectManager={isUserProjectManager}/>
+               <MyTeam  absoluteURL = { props.absoluteURL} spHttpClient = { props.spHttpClient} projectProps={props} loggedInUserDetails={props.loggedInUserDetails} isUserReportingManager={props.isUserReportingManager}isUserAdmin={props.isUserAdmin} isUserProjectTeam={props.isUserProjectTeam} isUserProjectManager={props.isUserProjectManager}/>
               </Content>
             )}
           </MainContainer>

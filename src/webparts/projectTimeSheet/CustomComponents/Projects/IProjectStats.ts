@@ -24,6 +24,8 @@ export interface ProjectsData {
     Description:string;
     Attachment:any;
     ProjectStatus:string;
+    ReportingManagerPeoplePicker:{EMail:string , Title :string};
+    ProjectManagerPeoplePicker:{EMail:string ,Title :string}
 }
 
 export const initialLoggedInUserDetails: LoggedInUserDetails = {
@@ -45,7 +47,9 @@ const initialProjectsData: ProjectsData = {
     ProjectType: "",
     Description:"",
     Attachment:undefined,
-    ProjectStatus:""
+    ProjectStatus:"",
+    ReportingManagerPeoplePicker:{EMail:"" , Title :""},
+    ProjectManagerPeoplePicker:{EMail:"" , Title :""}
 };
 
 export const projectsInitialState = {

@@ -29,60 +29,106 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
   props: IProjectTimeSheetProps
 ) => {
   const [moduleTab, setModuleTab] = useState("Projects");
- 
+  const [isUserReportingManager , setIsUserReportingManager] = useState<Boolean>(false);
+  const [isUserProjectManager , setIsUserProjectManager] = useState<Boolean>(false);
+  const [isUserAdmin , setUserAdmin] = useState<Boolean>(false);
+  const [isUserProjectTeam , setIsUserProjectTeam] = useState<Boolean>(false);
+  const [loggedInUserDetails ,setLoggedInUserDetails] = useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
+  const [isDataAvaiable , setIsDataAvaiable] = useState<Boolean>(false);
    useEffect(() => {
-   
+    const fetchData = async () => {
+    let userData: LoggedInUserDetails = await getLoggedInUserData(props.spHttpClient, props.absoluteURL);
+      setLoggedInUserDetails(userData || {});
+      userData.Groups?.forEach((group: { Title: string }) => {
+        setIsDataAvaiable(true);
+        switch (group.Title.trim()) {
+          case "PTReportingManager":
+            setIsUserReportingManager(true);
+            break;
+          case "PTProjectManager":
+            setIsUserProjectManager(true);
+            break;
+          case "PTUsers":
+            setIsUserProjectTeam(true);
+            break;
+            case "ProjectTimeSheetAdmin":
+              setUserAdmin(true);
+            break;
+          default:
+            break;
+        }
+      });
+    }
+    fetchData();
   }, []);
 
   return (
-    <div>
-      <style>
-        {`
-          #spSiteHeader,
-          #spCommandBar,
-          #sp-appBar {
-            display: none;
-          }
-        `}
-      </style>
-      <AppHeader
-        userEmail={props.context.pageContext.user.email}
-        userName={props.context.pageContext.user.displayName}
-        siteURL={props.context.pageContext.web.absoluteUrl}
-      />
-      <MainContainer>
-        <ContentContainer>
-          {moduleTab === "Projects" && (
-            <Project
-              spHttpClient={props.spHttpClient}
-              absoluteURL={props.absoluteURL}
-              context={props.context}
-              setModuleTab={setModuleTab}
-           
-            />
-          )}
-          {moduleTab === "Jobs" && (
-            <Jobs
-              spHttpClient={props.spHttpClient}
-              absoluteURL={props.absoluteURL}
-              context={props.context}
-              setModuleTab={setModuleTab}
-            
-            />
-          )}
-          {moduleTab === "TimeLogs" && (
-            <TimeLogs
-              spHttpClient={props.spHttpClient}
-              absoluteURL={props.absoluteURL}
-              context={props.context}
-              setModuleTab={setModuleTab}
-             
-            />
-          )}
-        </ContentContainer>
-      </MainContainer>
-    </div>
+    <>
+      {isDataAvaiable && (
+        <div>
+          <style>
+            {`
+              #spSiteHeader,
+              #spCommandBar,
+              #sp-appBar {
+                display: none;
+              }
+            `}
+          </style>
+          <AppHeader
+            userEmail={props.context.pageContext.user.email}
+            userName={props.context.pageContext.user.displayName}
+            siteURL={props.context.pageContext.web.absoluteUrl}
+          />
+          <MainContainer>
+            <ContentContainer>
+              {moduleTab === "Projects" && (
+                <Project
+                  spHttpClient={props.spHttpClient}
+                  absoluteURL={props.absoluteURL}
+                  context={props.context}
+                  setModuleTab={setModuleTab}
+                  loggedInUserDetails={loggedInUserDetails}
+                  isUserProjectTeam={isUserProjectTeam}
+                  isUserAdmin={isUserAdmin}
+                  isUserProjectManager={isUserProjectManager}
+                  isUserReportingManager={isUserReportingManager}
+                />
+              )}
+              {moduleTab === "Jobs" && (
+                <Jobs
+                  spHttpClient={props.spHttpClient}
+                  absoluteURL={props.absoluteURL}
+                  context={props.context}
+                  setModuleTab={setModuleTab}
+                  loggedInUserDetails={loggedInUserDetails}
+                  isUserProjectTeam={isUserProjectTeam}
+                  isUserAdmin={isUserAdmin}
+                  isUserProjectManager={isUserProjectManager}
+                  isUserReportingManager={isUserReportingManager}
+                />
+              )}
+              {moduleTab === "TimeLogs" && (
+                <TimeLogs
+                  spHttpClient={props.spHttpClient}
+                  absoluteURL={props.absoluteURL}
+                  context={props.context}
+                  setModuleTab={setModuleTab}
+                  loggedInUserDetails={loggedInUserDetails}
+                  isUserProjectTeam={isUserProjectTeam}
+                  isUserAdmin={isUserAdmin}
+                  isUserProjectManager={isUserProjectManager}
+                  isUserReportingManager={isUserReportingManager}
+                />
+              )}
+            </ContentContainer>
+          </MainContainer>
+        </div>
+      )}
+    </>
   );
+  
+  
 };
 
 export default ProjectTimeSheet;
