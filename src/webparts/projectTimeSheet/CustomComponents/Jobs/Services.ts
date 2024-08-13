@@ -10,28 +10,39 @@ export const getJobListData = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient,
   setJobsData: React.Dispatch<React.SetStateAction<any>>,
-  
+  loggedInUserDetails: any,
+  projectsData: any,
+  isUserAdmin:any,
 ) => {
-
   try {
-    const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,loggedHours`,
-      SPHttpClient.configurations.v1
-    );
+    let response:any ;
+    if(isUserAdmin){
+      response = await spHttpClient.get(
+        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,Author/EMail,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,loggedHours&$expand=AssignedToPeoplePicker,Author`,
+        SPHttpClient.configurations.v1
+      );
+    }else{
+      const projectIds = projectsData.map((project: any) => project.ProjectId);
+      const projectFilterQuery = projectIds.map((id: string) => `ProjectId eq '${id}'`).join(' or ');
+      response = await spHttpClient.get(
+        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,Author/EMail,loggedHours&$expand=AssignedToPeoplePicker,Author&$filter=${projectFilterQuery}`,
+        SPHttpClient.configurations.v1
+      );
+    }
+   
     if (response.ok) {
       const data = await response.json();
       if (data.value.length > 0) {
         setJobsData(data.value);
       }
     } else {
-      console.log(
-        "Please enter the correct name of the list in the property pane."
-      );
+      console.log("Please enter the correct name of the list in the property pane.");
     }
   } catch (error) {
     console.log("Error fetching data:", error);
   }
 };
+
 
 export const getLastJobId = async (
   absoluteURL: string,
@@ -94,7 +105,11 @@ export const addJobs = async (
       : data.jobStatus === "OnHold"
       ? "On Hold"
       : data.jobStatus;
-  const listItemData = {
+      const assignedToPeoplePickerIds = data.AssignedToPeoplePicker.map(
+        (person: { id: number }) => person.id
+      );
+    
+  const listItemData = { '__metadata': { 'type': "SP.Data.TasksListItem" },
     JobName: data.jobName,
     JobId: newJobId,
     ProjectName: data.projectName,
@@ -102,6 +117,7 @@ export const addJobs = async (
     StartDate: data.startDate,
     EndDate: data.endDate,
     AssignedTo: JSON.stringify(data.JobAssigness),
+    AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
     Description: data.description,
     BillableStatus: data.billableStatus,
     JobStatus: status,
@@ -116,8 +132,8 @@ export const addJobs = async (
     SPHttpClient.configurations.v1,
     {
       headers: {
-        Accept: "application/json;odata=nometadata",
-        "Content-type": "application/json;odata=nometadata",
+        Accept: "application/json;odata=verbose",
+        "Content-type": "application/json;odata=verbose",
         "odata-version": "",
       },
       body: JSON.stringify(listItemData),
@@ -198,7 +214,7 @@ export const deleteJobs = async (
       );
 
       if (deleteResponse.ok) {
-        getJobListData(absoluteURL, spHttpClient, setJobsData);
+        //getJobListData(absoluteURL, spHttpClient, setJobsData);
       } else {
         console.error("Failed to delete job. Status:", deleteResponse.status);
       }
@@ -228,6 +244,10 @@ export async function updateJobRecords(
     ? "On Hold"
     : updateformData.jobStatus;
     let listItemData;
+    const assignedToPeoplePickerIds = updateformData.AssignedToPeoplePicker.map(
+      (person: { id: number }) => person.id
+    );
+  
   try {
       const response = await spHttpClient.get(
           `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items?$filter=JobId eq ${jobId}`,
@@ -252,25 +272,25 @@ export async function updateJobRecords(
                   loggedHours : updateformData.loggedHours
                 }
               }else{
-                 listItemData = {
+                 listItemData = {'__metadata': { 'type': "SP.Data.TasksListItem" },
                   JobName: updateformData.jobName,
                   ProjectName: updateformData.projectName,
                   StartDate: updateformData.startDate,
                   EndDate: updateformData.endDate,
                   AssignedTo: JSON.stringify(updateformData.JobAssigness),
+                  AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
                   Description: updateformData.description,
                   BillableStatus: updateformData.billableStatus,
                   JobStatus: status,
                   EstimatedHours:final,
                 };
               }
-            
               const itemId = itemToUpdate.ID;
               const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items(${itemId})`;
               const updateResponse = await spHttpClient.post(updateEndpoint, SPHttpClient.configurations.v1, {
                   headers: {
-                      Accept: "application/json;odata=nometadata",
-                      "Content-type": "application/json;odata=nometadata",
+                      Accept: "application/json;odata=verbose",
+                      "Content-type": "application/json;odata=verbose",
                       "odata-version": "",
                       "IF-MATCH": "*",
                       "X-HTTP-Method": "MERGE",
@@ -278,7 +298,7 @@ export async function updateJobRecords(
                   body: JSON.stringify(listItemData),
               });
               if (updateResponse.ok) {
-                await  getJobListData(absoluteURL, spHttpClient, setJobsData);
+                //await  getJobListData(absoluteURL, spHttpClient, setJobsData);
                 setCurrentData(initialState.jobFormData);
               } else {
                   console.log("Error updating item:", updateResponse.statusText);

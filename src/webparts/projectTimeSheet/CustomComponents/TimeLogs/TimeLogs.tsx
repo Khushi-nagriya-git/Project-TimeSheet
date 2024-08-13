@@ -182,10 +182,18 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   );
 
   useEffect(() => {
-    getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
-    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
-    getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
+    const fetchData = async () => {
+      try {
+        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
+        await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
+        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, []);
+  
 
   useEffect(() => {
     let timer: number | undefined;
@@ -540,6 +548,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       isUserReportingManager={props.isUserReportingManager} 
                       isUserProjectTeam={props.isUserProjectTeam} 
                       isUserProjectManager={props.isUserProjectManager}
+                      isUserAdmin={props.isUserAdmin}
                     ></AddTimeLog>
                     <TimeLogTable
                       absoluteURL={absoluteURL}

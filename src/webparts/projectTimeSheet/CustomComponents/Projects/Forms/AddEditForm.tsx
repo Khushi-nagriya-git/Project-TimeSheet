@@ -60,7 +60,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     { key: "onHold", text: "On Hold" },
   ];
 
-  const departments: IDropdownOption[] = props.departmentNames.map(
+  const departments: IDropdownOption[] = props.departmentNames?.map(
     (department: any) => ({ key: department.DepartmentName, text: department.DepartmentName })
   );
 
@@ -195,11 +195,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         reportingManager: items[0],
+        ReportingManagerPeoplePicker: items
       });
     } else {
       setFormData({
         ...formData,
         reportingManager: [],
+        ReportingManagerPeoplePicker:[]
       });
     }
   };
@@ -215,11 +217,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         projectManager: updatedProjectManagers,
+        ProjectManagerPeoplePicker: items
       });
     } else {
       setFormData({
         ...formData,
         projectManager: [],
+        ProjectManagerPeoplePicker: []
       });
       setShowCostFields(false);
     }
@@ -236,11 +240,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         projectTeam: updatedProjectTeam,
+        ProjectTeamPeoplePicker: items
       });
     } else {
       setFormData({
         ...formData,
         projectTeam: [],
+        ProjectTeamPeoplePicker: []
       });
       setShowCostFieldsForProjectTeam(false);
     }

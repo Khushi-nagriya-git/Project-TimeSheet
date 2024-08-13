@@ -91,10 +91,30 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [filteredJobs, setFilteredJobs] = useState<JobsData[]>([]);
 
   useEffect(() => {
-    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails);
-    getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
-    getTimeLogsListData(props.absoluteURL,props.spHttpClient,setTimeLogsData)
-  }, []);
+    const fetchData = async () => {
+      try {
+        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
+        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+  }, []); 
+  
+  useEffect(() => {
+    if (projectsData.length > 0) {
+      const fetchJobData = async () => {
+        try {
+          await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData, props.isUserAdmin);
+        } catch (error) {
+          console.log("Error fetching job data:", error);
+        }
+      };
+      fetchJobData();
+    }
+  }, [projectsData]); 
 
   useEffect(() => {
     let timer: number | undefined;
@@ -137,10 +157,11 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
       await addJobs(data, props.absoluteURL, props.spHttpClient);
       setAddFormOpen(false);
       setAddSuccessFullyAlert(true);
-      await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
+      await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails,props.isUserAdmin);
     } else if (mode === "edit") {
       updateJobRecords(props.spHttpClient,props.absoluteURL,editJobId,data,"formEdit",setJobsData,setCurrentData)
+      await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
       setAddFormOpen(false);
       setAlert(true);
       setEditSuccessFullyAlert(true);
@@ -156,6 +177,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
       deletedJobId,
       setJobsData,
     );
+    await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
     setIsOpen(false);
     setAlert(true);
     setDeleteSuccessfullyAlert(true);
@@ -174,7 +196,6 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
               setTopNavigationMode={setTopNavigationMode}
               setModuleTab = {props.setModuleTab}
             />
-
             {topNavigationState === "myData" && (
               <Content>
                 <NavigationLinks>
@@ -185,7 +206,9 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                     {" "}
                     Jobs
                   </NavLink>
+
                   <Grid item sx={{ marginLeft: "auto", marginBottom: "10px" }}>
+                    
                     <Button
                       variant="contained"
                       onClick={handleAddProject}
@@ -199,7 +222,9 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                     >
                       Add Jobs
                     </Button>
+
                   </Grid>
+
                 </NavigationLinks>
                   <>
                     <JobsFiltersandSearch
@@ -212,6 +237,10 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                       setFilteredJobs={setFilteredJobs}
                       filteredJobs={filteredJobs}
                       jobsData={jobsData}
+                      isUserProjectManager={props.isUserProjectManager}
+                      isUserReportingManager={props.isUserReportingManager}
+                      isUserProjectTeam={props.isUserProjectTeam}
+                      isUserAdmin={props.isUserAdmin}
                     ></JobsFiltersandSearch>
                     <JobsTable
                       projectsData={projectsData}
@@ -235,6 +264,11 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                       selectedProjectName={selectedProjectName}
                       searchQuery={searchQuery}
                       filteredJobs={filteredJobs}
+                      isUserProjectManager={props.isUserProjectManager}
+                      isUserReportingManager={props.isUserReportingManager}
+                      isUserProjectTeam={props.isUserProjectTeam}
+                      isUserAdmin={props.isUserAdmin}
+                      loggedInUserDetails = {props.loggedInUserDetails }
                     ></JobsTable>
                   </>
               </Content>

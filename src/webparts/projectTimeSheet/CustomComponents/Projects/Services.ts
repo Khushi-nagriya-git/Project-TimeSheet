@@ -58,13 +58,16 @@ export const getProjectListData = async (
   spHttpClient: SPHttpClient,
   setProjectsData: React.Dispatch<React.SetStateAction<any>>,
   loggedInUserDetails:any,
+  isUserAdmin:any
 ) => {
 
   let filterQuery = "";
+  if(isUserAdmin){
+    filterQuery = "";
+  }else{
   filterQuery = `ProjectManagerPeoplePicker/EMail eq '${loggedInUserDetails.Email}' or ProjectTeamPeoplePicker/EMail eq '${loggedInUserDetails.Email}'  or ReportingManagerPeoplePicker/EMail eq '${loggedInUserDetails.Email}'`;
-
+  }
   try {
-
     const response = await spHttpClient.get(
       `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker&$filter=${filterQuery}`,
        SPHttpClient.configurations.v1
@@ -110,7 +113,17 @@ export const addProjects = async (
   spHttpClient: SPHttpClient
 ) => {
   const newProjectId = await getLastItemId(absoluteURL, spHttpClient);
-  const listItemData = {
+
+  const ProjectTeamPeoplePickerIds = 
+  Array.isArray(data.ProjectTeamPeoplePicker) && data.ProjectTeamPeoplePicker.length > 0
+    ? data.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
+    : [];
+
+
+  const ProjectManagerPeoplePickerId = data.ProjectManagerPeoplePicker?.[0]?.id;
+  const ReportingManagerPeoplePickerId = data.ReportingManagerPeoplePicker?.[0]?.id;
+
+  const listItemData = { '__metadata': { 'type': "SP.Data.ProjectsListItem" },
     ProjectName: data.projectName,
     ProjectId: newProjectId,
     ClientName: data.clientName,
@@ -118,6 +131,9 @@ export const addProjects = async (
     ReportingManager: JSON.stringify(data.reportingManager),
     ProjectManager: JSON.stringify(data.projectManager),
     ProjectTeam: JSON.stringify(data.projectTeam),
+    ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 
+    ProjectManagerPeoplePickerId: ProjectManagerPeoplePickerId, 
+   // ReportingManagerPeoplePickerId: {results: ReportingManagerPeoplePickerId},
     DepartmentsORTeam: data.department,
     Description: data.description,
     ProjectType: data.projectType,
@@ -127,8 +143,8 @@ export const addProjects = async (
   const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items`;
   const response = await spHttpClient.post(requestURL, SPHttpClient.configurations.v1, {
     headers: {
-      Accept: "application/json;odata=nometadata",
-      "Content-type": "application/json;odata=nometadata",
+      Accept: "application/json;odata=verbose",
+      "Content-type": "application/json;odata=verbose",
       "odata-version": "",
     },
     body: JSON.stringify(listItemData),
@@ -241,13 +257,21 @@ export async function updateUserRecords(
               if(updateformData.projectTeam.length === 0){
                 updateformData.projectTeam = JSON.parse(data.value[0].ProjectTeam);
               }
-              let listItemData = {
+              const ProjectManagerPeoplePickerId = updateformData.ProjectManagerPeoplePicker?.[0]?.id;
+
+              const ProjectTeamPeoplePickerIds = 
+              Array.isArray(updateformData.ProjectTeamPeoplePicker) && updateformData.ProjectTeamPeoplePicker.length > 0
+                ? updateformData.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
+                : [];
+              let listItemData = {'__metadata': { 'type': "SP.Data.ProjectsListItem" },
                 ProjectName: updateformData.projectName,
                 ClientName: updateformData.clientName,
                 ProjectCost: updateformData.projectCost,
                 ReportingManager: JSON.stringify(updateformData.reportingManager),
                 ProjectManager: JSON.stringify(updateformData.projectManager),
                 ProjectTeam: JSON.stringify(updateformData.projectTeam),
+                ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 
+                ProjectManagerPeoplePickerId: ProjectManagerPeoplePickerId,
                 DepartmentsORTeam: updateformData.department,
                 Description: updateformData.description,
                 ProjectType: updateformData.projectType,
@@ -257,8 +281,8 @@ export async function updateUserRecords(
               const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})`;
               const updateResponse = await spHttpClient.post(updateEndpoint, SPHttpClient.configurations.v1, {
                   headers: {
-                      Accept: "application/json;odata=nometadata",
-                      "Content-type": "application/json;odata=nometadata",
+                      Accept: "application/json;odata=verbose",
+                      "Content-type": "application/json;odata=verbose",
                       "odata-version": "",
                       "IF-MATCH": "*",
                       "X-HTTP-Method": "MERGE",

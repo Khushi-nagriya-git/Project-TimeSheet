@@ -20,6 +20,7 @@ export interface JobFormData {
     estimatedHours:number;
     loggedHours:number;
     attachment:any;
+    AssignedToPeoplePicker:any;
 }
 
 const initialJobFormData: JobFormData = {
@@ -35,7 +36,8 @@ const initialJobFormData: JobFormData = {
     jobStatus: "",
     estimatedHours:0,
     loggedHours:0,
-    attachment:undefined
+    attachment:undefined,
+    AssignedToPeoplePicker:''
 };
 
 export const initialState = {

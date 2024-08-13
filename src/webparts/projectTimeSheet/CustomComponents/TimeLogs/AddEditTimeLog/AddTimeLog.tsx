@@ -32,6 +32,7 @@ const AddTimeLog = (props: {
   loggedInUserDetails:any;
   isUserProjectTeam:any;
   isUserReportingManager:any;
+  isUserAdmin:any;
   setSelectedProjectName:React.Dispatch<React.SetStateAction<any>>;
   selectedProjectName:any;
   setSelectedJobName: React.Dispatch<React.SetStateAction<any>>;
@@ -113,9 +114,17 @@ const AddTimeLog = (props: {
   }, [props.elapsedTime, props.isRunning]);
 
   useEffect(() => {
-    getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData ,props.loggedInUserDetails);
-    getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
-  }, [props.absoluteURL, props.spHttpClient]);
+    const fetchData = async () => {
+      try {
+        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
+        await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  
 
   useEffect(() => {
     if (props.selectedProject) {

@@ -132,7 +132,7 @@ const Row = (props: {
 
         {props.topNavigationMode === "Employee" && 
           (props.isUserAdmin ||
-            (props.isUserReportingManager &&
+            (
               props.loggedInUserDetails.Email ===
                 row.ReportingManagerPeoplePicker?.EMail)) && (
             <TableCell align="left" sx={{ height: "10px" }}>

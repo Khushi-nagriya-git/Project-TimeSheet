@@ -27,9 +27,10 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
           setSelectedProjectName(firstProjectName); 
         }
       },
-      props.loggedInUserDetails
+      props.loggedInUserDetails,
+      props.isUserAdmin
     );
-    getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
+    getJobListData(props.absoluteURL, props.spHttpClient, setJobsData , props.loggedInUserDetails,projectsData,props.isUserAdmin);
   }, []);
 
   useEffect(() => {

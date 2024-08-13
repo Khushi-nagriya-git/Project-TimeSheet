@@ -83,6 +83,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
       setFormData((prevData) => ({
         ...prevData,
         JobAssigness: updateJobAssignees,
+        AssignedToPeoplePicker: items
       }));
     } else {
       setSelectedPeoplePicker([]);
@@ -90,6 +91,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
       setFormData((prevData) => ({
         ...prevData,
         JobAssigness: [],
+        AssignedToPeoplePicker: [],
       }));
     }
   };
@@ -343,7 +345,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               />
             </div>
           </Box>
-
+          
           <div
             style={{
               padding: "5px",

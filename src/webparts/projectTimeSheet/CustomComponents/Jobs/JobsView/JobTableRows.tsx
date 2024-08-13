@@ -17,7 +17,7 @@ import {
   Avatar,
 } from "../../../../../index";
 
-const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleEditIconClick:any;handleDeleteIconClick:any;}) => {
+const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleEditIconClick:any;loggedInUserDetails:any;handleDeleteIconClick:any;}) => {
   const { row, projectProps ,handleEditIconClick,handleDeleteIconClick  } = props;
   const [open, setOpen] = useState(false);
   const getStatusColor = (status: string) => {
@@ -49,7 +49,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
         >
           <Box display="flex" alignItems="center">
-          {row.projectName}
+          {row.jobName}
           </Box>
         </TableCell>
         <TableCell
@@ -58,7 +58,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
         >
           <Box display="flex" alignItems="center">
-            {row.jobName}
+             {row.projectName}
           </Box>
         </TableCell>
         <TableCell
@@ -124,8 +124,8 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
             />
           </IconButton>
         </TableCell>
-
-        <TableCell align="left" sx={{ height: "10px" }}>
+      {props.loggedInUserDetails.Email === row.Author?.EMail && (
+          <TableCell align="left" sx={{ height: "10px" }}>
           <Box display="flex" alignItems="left" justifyContent="left">
             <IconButton
               aria-label="edit"
@@ -162,6 +162,9 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
             </IconButton>
           </Box>
         </TableCell>
+      )}      
+      
+
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>

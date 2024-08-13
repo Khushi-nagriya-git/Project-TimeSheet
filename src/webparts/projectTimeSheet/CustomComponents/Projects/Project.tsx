@@ -31,19 +31,28 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
  
   useEffect(() => {
     const fetchData = async () => {
-      await getDepartments(props.absoluteURL, props.spHttpClient, setDepartmentNames);
-      getProjectListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setProjectsData,
-        props.loggedInUserDetails
-      );
-      getJobListData(props.absoluteURL, props.spHttpClient, setJobsData );
+      try {
+        await getDepartments(props.absoluteURL, props.spHttpClient, setDepartmentNames);
+        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      }
     };
-  
     fetchData();
-  }, []);
+  }, []); 
   
+  useEffect(() => {
+    if (projectsData.length > 0) {
+      const fetchJobData = async () => {
+        try {
+          await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
+        } catch (error) {
+          console.log("Error fetching job data:", error);
+        }
+      };
+      fetchJobData();
+    }
+  }, [projectsData]); 
 
   useEffect(() => {
     let timer: number | undefined;
@@ -61,14 +70,14 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const handleSubmit = async (data: CustomFormData) => {
     if (mode === "add") {
       await addProjects(data, props.absoluteURL, props.spHttpClient);
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData ,props.loggedInUserDetails);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData ,props.loggedInUserDetails,props.isUserAdmin);
       setAddFormOpen(false);
       setAlert(true);
       setAddSuccessFullyAlert(true);
-      await  getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails);
+      await  getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails,props.isUserAdmin);
     } else if (mode === "edit") {
       updateUserRecords(props.spHttpClient,props.absoluteURL,editProjectId,data,setProjectsData,setCurrentData)
-      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
       setAddFormOpen(false);
       setAlert(true);
       setEditSuccessFullyAlert(true);
@@ -90,6 +99,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
       deletedProjectId,
       setProjectsData,
     );
+    await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
     setIsOpen(false);
     setAlert(true);
     setDeleteSuccessfullyAlert(true);
@@ -151,7 +161,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
               
 
                     <Grid item sx={{ marginLeft: "auto", marginBottom: "10px" }}>
-                    {props.isUserReportingManager && (
+                    {(props.isUserReportingManager || props.isUserAdmin) && (
                     <Button
                     variant="contained"
                     onClick={handleAddProject}
