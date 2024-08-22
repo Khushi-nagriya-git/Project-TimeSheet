@@ -16,7 +16,7 @@ export interface ProjectsData {
     ProjectId: number;
     ClientName: string;
     ProjectCost: number;
-    ReportingManager: {};
+    ReportingManager: [];
     ProjectManager:ProjectManager[];
     ProjectTeam: ProjectManager[];
     Department: string;
@@ -40,7 +40,7 @@ const initialProjectsData: ProjectsData = {
     ProjectId: 0,
     ClientName: "",
     ProjectCost: 0,
-    ReportingManager: {},
+    ReportingManager: [],
     ProjectManager: [],
     ProjectTeam: [],
     Department: "",

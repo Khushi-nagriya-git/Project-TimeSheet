@@ -194,13 +194,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     if (items && items.length > 0) {
       setFormData({
         ...formData,
-        reportingManager: items[0],
+        ReportingManager: items[0],
         ReportingManagerPeoplePicker: items
       });
     } else {
       setFormData({
         ...formData,
-        reportingManager: [],
+        ReportingManager: [],
         ReportingManagerPeoplePicker:[]
       });
     }

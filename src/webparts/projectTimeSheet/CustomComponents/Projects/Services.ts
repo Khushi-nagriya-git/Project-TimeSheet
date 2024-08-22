@@ -69,7 +69,7 @@ export const getProjectListData = async (
   }
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker&$filter=${filterQuery}`,
+      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/Id,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker&$filter=${filterQuery}`,
        SPHttpClient.configurations.v1
     );
       if (response.ok) {
@@ -128,12 +128,12 @@ export const addProjects = async (
     ProjectId: newProjectId,
     ClientName: data.clientName,
     ProjectCost: data.projectCost,
-    ReportingManager: JSON.stringify(data.reportingManager),
+    ReportingManager: JSON.stringify([data.ReportingManager]),
     ProjectManager: JSON.stringify(data.projectManager),
     ProjectTeam: JSON.stringify(data.projectTeam),
     ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 
     ProjectManagerPeoplePickerId: ProjectManagerPeoplePickerId, 
-   // ReportingManagerPeoplePickerId: {results: ReportingManagerPeoplePickerId},
+    ReportingManagerPeoplePickerId:  ReportingManagerPeoplePickerId,
     DepartmentsORTeam: data.department,
     Description: data.description,
     ProjectType: data.projectType,
@@ -258,6 +258,7 @@ export async function updateUserRecords(
                 updateformData.projectTeam = JSON.parse(data.value[0].ProjectTeam);
               }
               const ProjectManagerPeoplePickerId = updateformData.ProjectManagerPeoplePicker?.[0]?.id;
+              const ReportingManagerPeoplePickerId = updateformData.ReportingManagerPeoplePicker?.[0]?.id;
 
               const ProjectTeamPeoplePickerIds = 
               Array.isArray(updateformData.ProjectTeamPeoplePicker) && updateformData.ProjectTeamPeoplePicker.length > 0
@@ -267,11 +268,13 @@ export async function updateUserRecords(
                 ProjectName: updateformData.projectName,
                 ClientName: updateformData.clientName,
                 ProjectCost: updateformData.projectCost,
-                ReportingManager: JSON.stringify(updateformData.reportingManager),
+                ReportingManager: JSON.stringify([updateformData.ReportingManager]),
                 ProjectManager: JSON.stringify(updateformData.projectManager),
                 ProjectTeam: JSON.stringify(updateformData.projectTeam),
                 ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 
                 ProjectManagerPeoplePickerId: ProjectManagerPeoplePickerId,
+                ReportingManagerPeoplePickerId:  ReportingManagerPeoplePickerId,
+
                 DepartmentsORTeam: updateformData.department,
                 Description: updateformData.description,
                 ProjectType: updateformData.projectType,

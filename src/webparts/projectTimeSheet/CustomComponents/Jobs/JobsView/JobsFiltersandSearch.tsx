@@ -89,6 +89,7 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
       onJobStatusChange(selectedValues);
     }
   };
+  
   const handleAssigneesChange = (
     event: React.FormEvent<HTMLDivElement>,
     option?: IDropdownOption

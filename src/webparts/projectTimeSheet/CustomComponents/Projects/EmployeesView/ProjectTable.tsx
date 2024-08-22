@@ -139,10 +139,10 @@ const ProjectTable = (props: {
       : [];
     let emails = projectTeam.map((member: { email: string }) => member.email);
     props.setPeoplePickerDefaultManager(
-      projectManager.length > 0 ? projectManager[0].email : ""
+      projectManager.length > 0 ? projectManager[0]?.email : ""
     );
     props.setPeoplePickerDefaultReportingManager(
-      reportingManager ? reportingManager.secondaryText : ""
+      reportingManager.length > 0 ? reportingManager[0]?.secondaryText : ""
     );
     props.setPeoplePickerDefaultTeam(emails.length > 0 ? emails : []);
 
@@ -152,6 +152,7 @@ const ProjectTable = (props: {
       projectType: project.ProjectType,
       department: project.DepartmentsORTeam,
       projectTeam: projectTeam,
+      ReportingManager: reportingManager,
       projectManager: projectManager,
       projectStatus: project.ProjectStatus,
       projectCost: project.ProjectCost,

@@ -41,10 +41,22 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
   const [estimatedHours, setEstimatedHours] = useState<{
     [key: string]: number;
   }>({});
+
   const Projects: IDropdownOption[] = props.projectsData.map(
     (project: any) => ({ key: project.ProjectId, text: project.ProjectName })
   );
-  const [showEstimatedHour , setShowEstimatedHour ] = useState(false);
+
+  const projectTeamOptions: IDropdownOption[] =
+    props.projectsData
+      ?.filter((project: any) => project.ProjectId === formData.projectId)
+      ?.flatMap((project: any) =>
+        JSON.parse(project.ProjectTeam).map((member: any) => ({
+          key: member.id,
+          text: member.name,
+        }))
+      ) || [];
+
+  const [showEstimatedHour, setShowEstimatedHour] = useState(false);
 
   const billableStatusOptions: IDropdownOption[] = [
     { key: "billable", text: "Billable" },
@@ -61,40 +73,97 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
     if (props.mode === "edit" && props.initialData) {
       setFormData(props.initialData);
       formData.JobAssigness = props.initialData.JobAssigness;
-      if(formData.JobAssigness){
+      if (formData.JobAssigness) {
         setShowEstimatedHour(true);
       }
-      
     }
   }, [props.mode, props.initialData]);
 
-  const handlePeoplePickerChange = (items: any[]) => {
-    if (items && items.length > 0) {
-      const updateJobAssignees: JobAssginees[] = items.map((item) => ({
-        name: item.text,
-        email: item.loginName.split("|")[2],
-        id: item.id,
-        estimatedHours: estimatedHours[item.id] || 0,
-        loggedHours: 0,
-      }));
+  // const handlePeoplePickerChange = (items: any[]) => {
+  //   if (items && items.length > 0) {
+  //     const updateJobAssignees: JobAssginees[] = items.map((item) => ({
+  //       name: item.text,
+  //       email: item.loginName.split("|")[2],
+  //       id: item.id,
+  //       estimatedHours: estimatedHours[item.id] || 0,
+  //       loggedHours: 0,
+  //     }));
 
-      setSelectedPeoplePicker(items);
-      setShowEstimatedHour(true);
-      setFormData((prevData) => ({
-        ...prevData,
-        JobAssigness: updateJobAssignees,
-        AssignedToPeoplePicker: items
-      }));
+  //     setSelectedPeoplePicker(items);
+  //     setShowEstimatedHour(true);
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       JobAssigness: updateJobAssignees,
+  //       AssignedToPeoplePicker: items
+  //     }));
+  //   } else {
+  //     setSelectedPeoplePicker([]);
+  //     setShowEstimatedHour(false);
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       JobAssigness: [],
+  //       AssignedToPeoplePicker: [],
+  //     }));
+  //   }
+  // };
+
+  const [selectedMembers , setSelectedMembers] = useState([{}]);
+  const handleAssigneeChange = (
+    event: React.FormEvent<HTMLDivElement>,
+    option?: IDropdownOption
+  ): void => {
+    if (option) {
+      const selectedId = option.key as string;
+      const selectedProject = props.projectsData.find(
+        (project: any) => project.ProjectId === formData.projectId
+      );
+  
+      if (selectedProject) {
+        const projectTeam = JSON.parse(selectedProject.ProjectTeam) as any[];
+        setSelectedMembers(prevItems =>{
+          if( prevItems != null &&prevItems.length >0)
+          {
+              return  [...prevItems,projectTeam.filter(
+                (member: any) => member.id === selectedId
+              )]
+          }
+          else
+          {
+            return projectTeam.filter(
+              (member: any) => member.id === selectedId   )
+          }
+        }) 
+       
+        const updatedJobAssignees = option.selected
+          ? [
+              ...(formData.JobAssigness || []),
+              ...selectedMembers.map((member: any) => ({
+                name: member.name,
+                email: member.email,
+                id: member.id,
+                estimatedHours: estimatedHours[member.id] || 0,
+                loggedHours: 0,
+              })),
+            ]
+          : (formData.JobAssigness || []).filter(
+              (assignee: any) => assignee.id !== selectedId
+            );
+  
+        setShowEstimatedHour(true);
+        setFormData((prevData) => ({
+          ...prevData,
+          JobAssigness: updatedJobAssignees,
+        }));
+      }
     } else {
-      setSelectedPeoplePicker([]);
       setShowEstimatedHour(false);
       setFormData((prevData) => ({
         ...prevData,
         JobAssigness: [],
-        AssignedToPeoplePicker: [],
       }));
     }
   };
+  
 
   const handleChangeEstimatedHours = (userId: string, hours: number) => {
     setEstimatedHours((prevState) => ({
@@ -278,53 +347,49 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
           </Box>
 
           <Box style={{ display: "flex", gap: "10px" }}>
-            <Box>
-              <Box className={styles.peoplePickerWrapper}>
-                <Label className={styles.label}>Job Assignees</Label>
-                <PeoplePicker
-                  context={props.context as any}
-                  personSelectionLimit={100}
-                  required={true}
-                  disabled={false}
-                  showtooltip={true}
-                  ensureUser={true}
-                  onChange={handlePeoplePickerChange}
-                  resolveDelay={300}
-                  principalTypes={[PrincipalType.User]}
-                  defaultSelectedUsers={
-                    props.mode === "edit" ? props.peoplePickerDefaultTeam : ""
-                  }
-                  groupName=""
-                />
-              </Box>
-              {showEstimatedHour && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                width: "320px",
+              }}
+            >
+              <Dropdown
+                label="Job Assignees"
+                selectedKey={formData.JobAssigness?.[0]?.id}
+                onChange={handleAssigneeChange}
+                options={projectTeamOptions}
+                style={{ width: "100%" }}
+                multiSelect
+              />
+
+              {showEstimatedHour && formData?.JobAssigness  && (
                 <Box
-                  style={{
+                  sx={{
                     display: "flex",
                     flexDirection: "column",
                     gap: "10px",
-                    width: "318px",
+                    width: "100%", 
                   }}
                 >
-                  <Label>
-                    .25 = 15Min , .5 = 30Min , .75 = 45Min , 1 = 1Hour
-                  </Label>
-                  {formData?.JobAssigness?.map((user,index) => (
+                  <Label>.25 = 15Min, .5 = 30Min, .75 = 45Min, 1 = 1Hour</Label>
+                  {formData?.JobAssigness?.map((user, index) => (
                     <Box
                       key={user.id}
-                      style={{
+                      sx={{
                         display: "flex",
                         alignItems: "center",
                         gap: "10px",
-                        width: "318px",
+                        width: "100%", 
                       }}
                     >
                       <TextField
                         key={index}
                         type="number"
-                        value={(user.estimatedHours).toString()}
+                        value={user.estimatedHours.toString()}
                         onChange={handleChangeEstimatedHoursInput(user.id)}
-                        styles={{ root: { width: 268 } }}
+                        styles={{ root: { width: "100%" } }} 
                         label={`Estimated Hours for ${user.name}`}
                       />
                     </Box>
@@ -332,7 +397,15 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
                 </Box>
               )}
             </Box>
-            <div>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+                width: "auto", 
+              }}
+            >
               <Label style={{ fontWeight: "600", marginTop: "5px" }}>
                 Attachment
               </Label>
@@ -343,9 +416,9 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
                 onChange={handleChangeAttachment}
                 style={{ display: "block" }}
               />
-            </div>
+            </Box>
           </Box>
-          
+
           <div
             style={{
               padding: "5px",
