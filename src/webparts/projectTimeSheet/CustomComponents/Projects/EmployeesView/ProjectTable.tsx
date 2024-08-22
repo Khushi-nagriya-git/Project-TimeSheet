@@ -142,7 +142,7 @@ const ProjectTable = (props: {
       projectManager.length > 0 ? projectManager[0]?.email : ""
     );
     props.setPeoplePickerDefaultReportingManager(
-      reportingManager.length > 0 ? reportingManager[0]?.secondaryText : ""
+      reportingManager.length > 0 ? reportingManager[0][0]?.secondaryText : ""
     );
     props.setPeoplePickerDefaultTeam(emails.length > 0 ? emails : []);
 

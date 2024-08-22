@@ -94,7 +94,6 @@ const AddTimeLog = (props: {
     }
 }, []);
 
-
   useEffect(() => {
     let interval: number | undefined;
     if (props.isRunning && props.startTime !== null) {
@@ -117,25 +116,39 @@ const AddTimeLog = (props: {
     const fetchData = async () => {
       try {
         await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
-        await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
       } catch (error) {
         console.log("Error fetching data:", error);
       }
     };
     fetchData();
+    console.log(jobsData)
   }, []);
   
 
   useEffect(() => {
-    if (props.selectedProject) {
-      const filtered = jobsData.filter(
-        (job) => job.ProjectId === props.selectedProject
+    const fetchData = async () => {
+      await getJobListData(
+        props.absoluteURL,
+        props.spHttpClient,
+        setJobsData,
+        props.loggedInUserDetails,
+        projectsData,
+        props.isUserAdmin
       );
-      setFilteredJobs(filtered);
-    } else {
-      setFilteredJobs(jobsData);
-    }
+  
+      if (props.selectedProject) {
+        const filtered = jobsData.filter(
+          (job) => job.ProjectId === props.selectedProject
+        );
+        setFilteredJobs(filtered);
+      } else {
+        setFilteredJobs(jobsData);
+      }
+    };
+  
+    fetchData();
   }, [props.selectedProject, jobsData]);
+  
 
   const handleProjectChange = (
     event: React.FormEvent<HTMLDivElement>,

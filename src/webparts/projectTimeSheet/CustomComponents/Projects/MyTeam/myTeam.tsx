@@ -60,7 +60,7 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
       try {
         team = project?.ProjectTeam ? JSON.parse(project.ProjectTeam) : [];
       } catch (error) {
-        console.error("Error parsing ProjectTeam JSON:", error);
+       // console.error("Error parsing ProjectTeam JSON:", error);
         // Handle error, if necessary
       }
 
@@ -81,20 +81,20 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
             const reportingManager = JSON.parse(data.ReportingManager);
             name = reportingManager[0].match(/text":"([^"]+)"/)[1];
           } catch (error) {
-            console.error("Error parsing ReportingManager JSON:", error);
+           // console.error("Error parsing ReportingManager JSON:", error);
           }
         } else if (data.ProjectManager) {
           try {
             const projectManager = JSON.parse(data.ProjectManager);
             name = projectManager[0].name;
           } catch (error) {
-            console.error("Error parsing ProjectManager JSON:", error);
+            //console.error("Error parsing ProjectManager JSON:", error);
           }
         } else if (data.ProjectTeam) {
           try {
             name = data.ProjectTeam[0].name;
           } catch (error) {
-            console.error("Error parsing ProjectTeam JSON:", error);
+           // console.error("Error parsing ProjectTeam JSON:", error);
           }
         }
   
@@ -229,7 +229,7 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
                     }
                   }
                 } catch (error) {
-                  console.error("Error parsing ReportingManager JSON:", error);
+                 // console.error("Error parsing ReportingManager JSON:", error);
                 }
                 if (reportingManagerName !== undefined && reportingManagerName !== "") {
                   title = "Reporting Manager ";
@@ -245,7 +245,7 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
                     cost = parsedData[0].cost;
                   }
                 } catch (error) {
-                  console.error("Error parsing ProjectManager JSON:", error);
+                  //console.error("Error parsing ProjectManager JSON:", error);
                 }
                 if (projectManagerName !== undefined && projectManagerName !== "") {
                   title = "Project Manager";
@@ -260,7 +260,7 @@ import {React,Dropdown,Box,IProjectProps,Avatar,IDropdownOption,Label,SearchBox,
                     cost = row.ProjectTeam[0].cost;
                   }
                 } catch (error) {
-                  console.error("Error parsing ProjectTeam JSON:", error);
+                  //console.error("Error parsing ProjectTeam JSON:", error);
                 }
                 if (projectTeamName !== undefined && projectTeamName !== "") {
                   title = "Project Team";

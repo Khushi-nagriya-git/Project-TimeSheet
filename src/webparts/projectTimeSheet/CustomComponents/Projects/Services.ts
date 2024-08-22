@@ -257,9 +257,14 @@ export async function updateUserRecords(
               if(updateformData.projectTeam.length === 0){
                 updateformData.projectTeam = JSON.parse(data.value[0].ProjectTeam);
               }
+            
               const ProjectManagerPeoplePickerId = updateformData.ProjectManagerPeoplePicker?.[0]?.id;
-              const ReportingManagerPeoplePickerId = updateformData.ReportingManagerPeoplePicker?.[0]?.id;
-
+              let ReportingManagerPeoplePickerId =  updateformData.ReportingManagerPeoplePicker?.[0]?.id;
+              if(updateformData.ReportingManagerPeoplePicker){
+                ReportingManagerPeoplePickerId=ReportingManagerPeoplePickerId
+              }else{
+                ReportingManagerPeoplePickerId = JSON.parse(data.value[0].ReportingManager)[0].id;
+              }
               const ProjectTeamPeoplePickerIds = 
               Array.isArray(updateformData.ProjectTeamPeoplePicker) && updateformData.ProjectTeamPeoplePicker.length > 0
                 ? updateformData.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
@@ -267,14 +272,13 @@ export async function updateUserRecords(
               let listItemData = {'__metadata': { 'type': "SP.Data.ProjectsListItem" },
                 ProjectName: updateformData.projectName,
                 ClientName: updateformData.clientName,
-                ProjectCost: updateformData.projectCost,
+                ProjectCost: updateformData.projectCost, 
                 ReportingManager: JSON.stringify([updateformData.ReportingManager]),
                 ProjectManager: JSON.stringify(updateformData.projectManager),
                 ProjectTeam: JSON.stringify(updateformData.projectTeam),
                 ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 
                 ProjectManagerPeoplePickerId: ProjectManagerPeoplePickerId,
                 ReportingManagerPeoplePickerId:  ReportingManagerPeoplePickerId,
-
                 DepartmentsORTeam: updateformData.department,
                 Description: updateformData.description,
                 ProjectType: updateformData.projectType,

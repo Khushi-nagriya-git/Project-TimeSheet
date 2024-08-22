@@ -35,7 +35,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
         await getDepartments(props.absoluteURL, props.spHttpClient, setDepartmentNames);
         await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
       } catch (error) {
-        console.log("Error fetching data:", error);
+       // console.log("Error fetching data:", error);
       }
     };
     fetchData();
@@ -47,7 +47,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
         try {
           await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
         } catch (error) {
-          console.log("Error fetching job data:", error);
+          //console.log("Error fetching job data:", error);
         }
       };
       fetchJobData();
@@ -76,12 +76,12 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
       setAddSuccessFullyAlert(true);
       await  getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails,props.isUserAdmin);
     } else if (mode === "edit") {
-      updateUserRecords(props.spHttpClient,props.absoluteURL,editProjectId,data,setProjectsData,setCurrentData)
+      await updateUserRecords(props.spHttpClient,props.absoluteURL,editProjectId,data,setProjectsData,setCurrentData)
       await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
       setAddFormOpen(false);
       setAlert(true);
       setEditSuccessFullyAlert(true);
-      setCurrentData(initialState.formData);
+      setCurrentData(initialState.formData); 
     }
     setMode("add");
     setCurrentData(initialState.formData);
