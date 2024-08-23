@@ -6,9 +6,8 @@ import Button from "@mui/material/Button";
 import { IJobsProps } from "./IJobsProps";
 import TopNavigation from "../Navigation/TopNavigation";
 import JobsFiltersandSearch from "./JobsView/JobsFiltersandSearch";
-import { JobsData, initialJobsData, jobsInitialState } from "./IJobsStats";
+import { JobsData } from "./IJobsStats";
 import {
-  LoggedInUserDetails,
   ProjectsData,
   projectsInitialState,
 } from "../Projects/IProjectStats";
@@ -73,7 +72,6 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [selectedStatusName, setSelectedStatusName] = useState<string[]>([]);
   const [selectedAssigneesName, setSelectedAssigneesName] = useState<string[]>([]);
   const [peoplePickerDefaultTeam, setPeoplePickerDefaultTeam] = useState('');
-  const [teamActiveLink, setTeamActiveLink] = useState<string>("ProjectMembers");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -94,7 +92,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
     const fetchData = async () => {
       try {
         await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
-        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
+        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails);
       } catch (error) {
         console.log("Error fetching data:", error);
       }
@@ -132,7 +130,6 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
 
   const handleTabChange = (tab: string) => {
     setMyDataActiveLink(tab);
-
   };
 
   const handleAddProject = () => {
@@ -218,6 +215,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                         width: "120px",
                         height: "35px",
                         fontSize: "12px",
+                        textTransform: "none",
                       }}
                     >
                       Add Jobs

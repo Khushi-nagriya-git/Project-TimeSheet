@@ -8,8 +8,7 @@ export interface TimeLogsData {
    Description:string;
    LoggedHours:number;
    EstimatedHours:number;
-   DetailLogs:{};
-   User:string;
+   Status:string;
    Created:'';
 }
 
@@ -37,8 +36,7 @@ const initialTimeLogsData: TimeLogsData = {
    Description:'',
    LoggedHours:0,
    EstimatedHours:0,
-   DetailLogs:{},
-   User:'',
+   Status:'',
    Created:''
 };
 

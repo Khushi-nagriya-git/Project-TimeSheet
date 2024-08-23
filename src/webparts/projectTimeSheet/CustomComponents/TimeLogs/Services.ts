@@ -4,11 +4,18 @@ import { TimeLogsData } from "./ITimeLogsStats";
 export const getTimeLogsListData = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient,
-  setTimeLogsData: React.Dispatch<React.SetStateAction<any>>
+  setTimeLogsData: React.Dispatch<React.SetStateAction<any>>,
+  loggedInUserDetails: any
 ) => {
+  let filterQuery = "";
+  if(loggedInUserDetails){
+    filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}'`;
+  }else{
+    filterQuery = "";
+  }
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Time Logs')/items?$select=TimelogsId,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,LoggedHours,EstimatedHours,Modified,Created,User&$orderby=Created desc`,
+      `${absoluteURL}/_api/web/lists/GetByTitle('Time Logs')/items?$select=TimelogsId,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc&$filter=${filterQuery}`,
       SPHttpClient.configurations.v1
     );
     if (response.ok) {
@@ -72,7 +79,6 @@ export const addTimeLogs = async (
     Description:data.Description,
     LoggedHours:data.LoggedHours,
     EstimatedHours:estimatedTime,
-    DetailLogs:JSON.stringify(data.DetailLogs)
     };
 
   const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items`;
@@ -88,80 +94,129 @@ export const addTimeLogs = async (
     console.error("Error adding Project records");
     return;
   }else{
-    getTimeLogsListData(absoluteURL, spHttpClient, setTimeLogsData);
+   // getTimeLogsListData(absoluteURL, spHttpClient, setTimeLogsData );
   }
 };
 
 export async function updateRecords(
   spHttpClient: SPHttpClient,
   absoluteURL: string,
-  updateType:string,
-  LockedMinutes:number,
-  setTimeLogsData: React.Dispatch<React.SetStateAction<any>>,
-  updateddata : any,
-  editTimeLogId : number
+  updateType: string,
+  LockedMinutes: number,
+  updateddata: any, // This can be an array when updating multiple rows
+  editTimeLogId: number
 ) {
   let timerTimeLogId;
-  if(updateType === "timer"){
+
+  if (updateType === "timer") {
     timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
-  }else{
-    timerTimeLogId = editTimeLogId
+  } else {
+    timerTimeLogId = editTimeLogId;
   }
-  let listItemData;
+
   try {
-      const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timerTimeLogId}`,
+    // Handle multiple updates for updateTimeLogStatusforApproval
+    if (updateType === "updateTimeLogStatusforApproval") {
+      const updatePromises = updateddata.map(async (timeLog: any) => {
+        // Fetch the existing item data for each time log
+        const response = await spHttpClient.get(
+          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
           SPHttpClient.configurations.v1
-      );
-      if (response.ok) {
-          const data = await response.json(); 
+        );
+
+        if (response.ok) {
+          const data = await response.json();
           if (data.value && data.value.length > 0) {
-              const itemToUpdate = data.value[0];
-              if(updateType === 'timer'){
-              listItemData = {
-                LoggedHours: LockedMinutes
-              };
-            }else{
-              listItemData = {
-                ProjectId:updateddata.ProjectId,
-                ProjectName:updateddata.ProjectName,
-                JobId:updateddata.JobId,
-                JobName:updateddata.JobName,
-                BillableStatus:updateddata.BillableStatus,
-                Description:updateddata.Description,
-                LoggedHours:updateddata.LoggedHours,
-                EstimatedHours:updateddata.EstimatedHours,
-                DetailLogs:JSON.stringify(data.DetailLogs)
-              };
-            }
-              const itemId = itemToUpdate.ID;
-              const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
-              const updateResponse = await spHttpClient.post(updateEndpoint, SPHttpClient.configurations.v1, {
-                  headers: {
-                      Accept: "application/json;odata=nometadata",
-                      "Content-type": "application/json;odata=nometadata",
-                      "odata-version": "",
-                      "IF-MATCH": "*",
-                      "X-HTTP-Method": "MERGE",
-                  },
-                  body: JSON.stringify(listItemData),
-              });
-              if (updateResponse.ok) {
-                await getTimeLogsListData(absoluteURL, spHttpClient, setTimeLogsData);
-                
-              } else {
-                  console.log("Error updating item:", updateResponse.statusText);
+            const itemToUpdate = data.value[0];
+            const itemId = itemToUpdate.ID;
+            const listItemData = {
+              Status: timeLog.Status, 
+            };
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateResponse = await spHttpClient.post(
+              updateEndpoint,
+              SPHttpClient.configurations.v1,
+              {
+                headers: {
+                  Accept: "application/json;odata=nometadata",
+                  "Content-type": "application/json;odata=nometadata",
+                  "odata-version": "",
+                  "IF-MATCH": "*",
+                  "X-HTTP-Method": "MERGE",
+                },
+                body: JSON.stringify(listItemData),
               }
+            );
+
+            if (!updateResponse.ok) {
+              console.log("Error updating item:", updateResponse.statusText);
+            }
           } else {
-              console.log("No item found with the specified EmployeeID.");
+            console.log("No item found with the specified TimelogsId.");
           }
-      } else {
+        } else {
           console.log("Error fetching item:", response.statusText);
+        }
+      });
+
+      await Promise.all(updatePromises);
+    } else {
+      // Single item update for other types
+      const response = await spHttpClient.get(
+        `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timerTimeLogId}`,
+        SPHttpClient.configurations.v1
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.value && data.value.length > 0) {
+          const itemToUpdate = data.value[0];
+          const itemId = itemToUpdate.ID;
+
+          const listItemData = updateType === "timer" 
+            ? { LoggedHours: LockedMinutes } 
+            : {
+              ProjectId: updateddata.ProjectId,
+              ProjectName: updateddata.ProjectName,
+              JobId: updateddata.JobId,
+              JobName: updateddata.JobName,
+              BillableStatus: updateddata.BillableStatus,
+              Description: updateddata.Description,
+              LoggedHours: updateddata.LoggedHours,
+              EstimatedHours: updateddata.EstimatedHours,
+            };
+
+          const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+          const updateResponse = await spHttpClient.post(
+            updateEndpoint,
+            SPHttpClient.configurations.v1,
+            {
+              headers: {
+                Accept: "application/json;odata=nometadata",
+                "Content-type": "application/json;odata=nometadata",
+                "odata-version": "",
+                "IF-MATCH": "*",
+                "X-HTTP-Method": "MERGE",
+              },
+              body: JSON.stringify(listItemData),
+            }
+          );
+
+          if (!updateResponse.ok) {
+            console.log("Error updating item:", updateResponse.statusText);
+          }
+        } else {
+          console.log("No item found with the specified TimelogsId.");
+        }
+      } else {
+        console.log("Error fetching item:", response.statusText);
       }
+    }
   } catch (error) {
-      console.log("Error fetching item:", error);
+    console.log("Error fetching item:", error);
   }
 }
+
 
 export const deleteTimelog = async (
   absoluteURL: string,
@@ -169,7 +224,6 @@ export const deleteTimelog = async (
   timelogId: number,
   setTimeLogsData: React.Dispatch<React.SetStateAction<any>>,
 ) => {
-  
   try {
     // First, get the internal ID based on the ProjectId
     const getResponse = await spHttpClient.get(
@@ -185,9 +239,7 @@ export const deleteTimelog = async (
         console.error("Item does not exist. It may have been deleted by another user.");
         return;
       }
-
       const internalId = items[0].ID;
-      
       // Then, delete the item using the internal ID
       const deleteResponse = await spHttpClient.post(
         `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${internalId})`,
@@ -199,10 +251,7 @@ export const deleteTimelog = async (
           }
         }
       );
-
       if (deleteResponse.ok) {
-        // Refresh project data after deletion
-        getTimeLogsListData(absoluteURL, spHttpClient, setTimeLogsData);
       } else {
         console.error("Failed to delete project. Status:", deleteResponse.status);
       }

@@ -171,6 +171,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                       width: "120px",
                       height: "35px",
                       fontSize: "12px",
+                      textTransform: "none",
                     }}
                   >
                     Add Project

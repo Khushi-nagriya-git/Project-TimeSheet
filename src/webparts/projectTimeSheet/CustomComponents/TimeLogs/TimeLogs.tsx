@@ -32,7 +32,7 @@ import { Alert } from "@mui/material";
 import DeleteDialogBox from "./DialogBoxs/DeleteDialogBox";
 import EditTimeLog from "./AddEditTimeLog/EditTimeLog";
 import { IconButton } from "@mui/material";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, Pending } from "@mui/icons-material";
 import { updateJobRecords } from "../Jobs/Services";
 import { LoggedInUserDetails } from "../Projects/IProjectStats";
 
@@ -52,9 +52,8 @@ const NavigationLinks = styled("div")({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  marginBottom: "10px",
-  gap: "5px",
-  width: "100%", // Ensures it takes full width of the container
+  width: "100%", // Ensures it takes the full width of the container
+  gap: "10px", // Space between items
 });
 
 const IconButtonStyled = styled(IconButton)({
@@ -87,9 +86,7 @@ const WeekDateDisplay = styled("div")({
   fontSize: "14px",
   color: "rgba(0, 0, 0, 0.87)",
   fontWeight: "600",
-  
 });
-
 
 const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   const { absoluteURL, spHttpClient } = props;
@@ -130,10 +127,10 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   const [projectsData, setProjectsData] = useState<ProjectsData[]>(
     projectsInitialState.projectsData
   );
-  const [currentWeek, setCurrentWeek] = useState<Date[]>([]); // State to store the current week's dates
-  const [startDate, setStartDate] = useState<Date>(new Date()); // State to manage the start date
+  const [currentWeek, setCurrentWeek] = useState<Date[]>([]); 
+  const [startDate, setStartDate] = useState<Date>(new Date()); 
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
- 
+
   useEffect(() => {
     setCurrentWeek(getCurrentWeek(startDate));
   }, [startDate]);
@@ -184,16 +181,33 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
-        await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData,props.isUserAdmin);
-        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData);
+        await getProjectListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setProjectsData,
+          props.loggedInUserDetails,
+          props.isUserAdmin
+        );
+        await getJobListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setJobsData,
+          props.loggedInUserDetails,
+          projectsData,
+          props.isUserAdmin
+        );
+        await getTimeLogsListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setTimeLogsData,
+          props.loggedInUserDetails
+        );
       } catch (error) {
         console.log("Error fetching data:", error);
       }
     };
     fetchData();
   }, []);
-  
 
   useEffect(() => {
     let timer: number | undefined;
@@ -213,14 +227,19 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       let endTime = Date.now();
       let milliseconds = endTime - startTime;
       const LockedMinutes = Math.floor(milliseconds / 60000);
-      updateRecords(
+      await updateRecords(
         props.spHttpClient,
         props.absoluteURL,
         "timer",
         LockedMinutes,
-        setTimeLogsData,
         initialFormData,
         editTimeLogId
+      );
+      await getTimeLogsListData(
+        props.absoluteURL,
+        props.spHttpClient,
+        setTimeLogsData,
+        props.loggedInUserDetails
       );
       //   await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
       //   let data;
@@ -334,7 +353,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       await getTimeLogsListData(
         props.absoluteURL,
         props.spHttpClient,
-        setTimeLogsData
+        setTimeLogsData,
+        props.loggedInUserDetails
       );
       setTimerAlert(true);
     }
@@ -344,7 +364,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
     await getTimeLogsListData(
       props.absoluteURL,
       props.spHttpClient,
-      setTimeLogsData
+      setTimeLogsData,
+      props.loggedInUserDetails
     );
     const jobTimeLogData = timeLogsData.filter(
       (timelog: any) => timelog.TimelogsId === id
@@ -404,6 +425,12 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       deletedTimelogId,
       setTimeLogsData
     );
+    await getTimeLogsListData(
+      props.absoluteURL,
+      props.spHttpClient,
+      setTimeLogsData,
+      props.loggedInUserDetails
+    );
     setIsOpen(false);
     setDeleteSuccessfullyAlert(true);
   };
@@ -435,14 +462,19 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   };
 
   const handleSubmit = async (data: TimeLogsData) => {
-    updateRecords(
+    await updateRecords(
       props.spHttpClient,
       props.absoluteURL,
       "formdata",
       0,
-      setTimeLogsData,
       data,
       editTimeLogId
+    );
+    await getTimeLogsListData(
+      props.absoluteURL,
+      props.spHttpClient,
+      setTimeLogsData,
+      props.loggedInUserDetails
     );
     setEditFormOpen(false);
     // setAlert(true);
@@ -450,18 +482,38 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
     // setCurrentData(initialState.formData);
   };
 
+  const updateTimeLogStatusforApproval = async () => {
+    const updatedTimeLogsData = filteredTimeLogsData.map((timeLog) => ({
+      ...timeLog,
+      Status: "Pending",
+    }));
+  
+    await updateRecords(
+      props.spHttpClient,
+      props.absoluteURL,
+      "updateTimeLogStatusforApproval",
+      0,
+      updatedTimeLogsData,
+      editTimeLogId
+    );
+  };
+  
+
+
   const weekStart = currentWeek[0];
   const weekEnd = currentWeek[6];
   const formatDate = (date?: Date) => {
     if (date) {
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: '2-digit' 
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
       });
     }
-    return "N/A"; // Fallback text if date is undefined
+    return "N/A"; 
   };
+
+
   return (
     <div>
       <FullHeightGrid container>
@@ -497,7 +549,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                     </IconButtonStyled>
                     <img
                       src={require("../../assets/calendars.png")}
-                      alt="Calender"
+                      alt="Calendar"
                       style={{
                         width: "21px",
                         height: "21px",
@@ -511,6 +563,20 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       {`${formatDate(weekStart)} - ${formatDate(weekEnd)}`}
                     </WeekDateDisplay>
                   </div>
+                  <Button
+                     onClick={updateTimeLogStatusforApproval}
+                    style={{
+                      backgroundColor: "#6fbb4d",
+                      color: "white",
+                      width: "90px",
+                      textAlign: "center",
+                      height: "30px",
+                      fontSize: "16px",
+                      textTransform: "none",
+                    }}
+                  >
+                    Submit
+                  </Button>
                 </NavigationLinks>
 
                 {myDataActiveLink === "TimeLog" && (
@@ -545,8 +611,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       setSelectedBillableStatus={setSelectedBillableStatus}
                       selectedBillableStatus={selectedBillableStatus}
                       loggedInUserDetails={props.loggedInUserDetails}
-                      isUserReportingManager={props.isUserReportingManager} 
-                      isUserProjectTeam={props.isUserProjectTeam} 
+                      isUserReportingManager={props.isUserReportingManager}
+                      isUserProjectTeam={props.isUserProjectTeam}
                       isUserProjectManager={props.isUserProjectManager}
                       isUserAdmin={props.isUserAdmin}
                     ></AddTimeLog>
@@ -568,6 +634,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       setEditFormOpen={setEditFormOpen}
                       setIsRunning={setIsRunning}
                       filteredTimeLogsData={filteredTimeLogsData}
+                      loggedInUserDetails={props.loggedInUserDetails}
                     ></TimeLogTable>
                   </>
                 )}
@@ -591,8 +658,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                     initialFormData={initialFormData}
                     setInitialFormData={setInitialFormData}
                     loggedInUserDetails={props.loggedInUserDetails}
-                    isUserReportingManager={props.isUserReportingManager} 
-                    isUserProjectTeam={props.isUserProjectTeam} 
+                    isUserReportingManager={props.isUserReportingManager}
+                    isUserProjectTeam={props.isUserProjectTeam}
                     isUserProjectManager={props.isUserProjectManager}
                   />
                 )}

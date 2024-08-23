@@ -118,11 +118,8 @@ export const addProjects = async (
   Array.isArray(data.ProjectTeamPeoplePicker) && data.ProjectTeamPeoplePicker.length > 0
     ? data.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
     : [];
-
-
   const ProjectManagerPeoplePickerId = data.ProjectManagerPeoplePicker?.[0]?.id;
   const ReportingManagerPeoplePickerId = data.ReportingManagerPeoplePicker?.[0]?.id;
-
   const listItemData = { '__metadata': { 'type': "SP.Data.ProjectsListItem" },
     ProjectName: data.projectName,
     ProjectId: newProjectId,
