@@ -19,6 +19,7 @@ import TimeSheetForm from "../ApproveRejectForm";
     loggedInUserDetails: any;
     setTimeLogsData: any;
     timeLogsData: any;
+    myDataActiveLink:any;
   }) => {
     const [selectedWeekData, setSelectedWeekData] = useState<any[]>([]);
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -76,16 +77,19 @@ import TimeSheetForm from "../ApproveRejectForm";
             <Table size="small" stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    sx={{
-                      fontWeight: "600",
-                      backgroundColor: "#f3f2f1",
-                      height: "20px",
-                      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
-                    Employee Name
-                  </TableCell>
+                  {props.myDataActiveLink === "TeamTimeSheet" && (
+                     <TableCell
+                     sx={{
+                       fontWeight: "600",
+                       backgroundColor: "#f3f2f1",
+                       height: "20px",
+                       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                     }}
+                   >
+                     Employee Name
+                   </TableCell>
+                  )}
+                 
                   <TableCell
                     sx={{
                       fontWeight: "600",
@@ -115,13 +119,18 @@ import TimeSheetForm from "../ApproveRejectForm";
                     onClick={() => handleRowClick(groupedTimeLogs[weekKey].logs)}
                     style={{ cursor: 'pointer' }}
                   >
+                     {props.myDataActiveLink === "TeamTimeSheet" && (
                     <TableCell>
                       <Box display="flex" alignItems="left" justifyContent="left">
-                        <Box sx={{ mt: 0.5 }}>
-                          {groupedTimeLogs[weekKey].logs[0].Author.Title}
-                        </Box>
+                       
+                           <Box sx={{ mt: 0.5 }}>
+                           {groupedTimeLogs[weekKey].logs[0].Author.Title}
+                         </Box>
+                       
+                       
                       </Box>
                     </TableCell>
+                     )}
                     <TableCell>
                       {formatDateRange(
                         groupedTimeLogs[weekKey].startDate,

@@ -26,9 +26,9 @@ const MainContainer = styled("div")({
 const NavigationLinks = styled("div")({
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
-  width: "100%", // Ensures it takes the full width of the container
-  gap: "10px", // Space between items
+  justifyContent: "flex-start",
+  width: "100%", 
+  gap: "0px", 
 });
 
 const NavLink = styled(Button)(({}) => ({
@@ -51,19 +51,12 @@ const Content = styled("div")({
   boxShadow: "0 4px 8px #9D9D9D",
 });
 
-const WeekDateDisplay = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  fontSize: "14px",
-  color: "rgba(0, 0, 0, 0.87)",
-  fontWeight: "600",
-});
 
 const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
   const { absoluteURL, spHttpClient } = props;
   const [topNavigationMode, setTopNavigationMode] = useState();
   const [topNavigationState, setTopNavigationState] = useState("myData");
-  const [myDataActiveLink, setMyDataActiveLink] = useState<string>("TimeSheet");
+  const [myDataActiveLink, setMyDataActiveLink] = useState<string>("MyTimeSheet");
   const [timeLogsData, setTimeLogsData] = useState<TimeLogsData[]>([]);
   const [projectsData, setProjectsData] = useState<ProjectsData[]>(projectsInitialState.projectsData);
 
@@ -85,34 +78,48 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
         props.isUserAdmin,
         props.isUserReportingManager
       );
-      //await filterDataForReportingManager(timeLogsData,projectsData,setTimeLogsData)
     };
     fetchData();
   }, []); 
 
-  // const filterDataForReportingManager = (
-  //   timeLogsData: any[],
-  //   projectsData: any[],
-  //   setTimeLogsData: (data: any) => void
-  // ) => {
-  //   if (props.isUserReportingManager) {
-  //     const filteredTimeLogs = timeLogsData.filter((timeLog) => {
-  //       const project = projectsData.find(
-  //         (project) =>
-  //           project.ProjectTid === timeLog.projectId &&
-  //           project.reportingManager?.Email === props.loggedInUserDetails.Email
-  //       );
-  //       return !!project;
-  //     });
+  const filterDataForReportingManager = (
+    timeLogsData: any[],
+    projectsData: any[],
+    setTimeLogsData: (data: any) => void
+  ) => {
+    
+    if (props.isUserReportingManager) {
+      const filteredTimeLogs = timeLogsData.filter((timeLog) => {
+        const project = projectsData.find(
+          (project) =>
+            project.ProjectId === timeLog.ProjectId &&
+            JSON.parse(project.ReportingManager)?.[0]?.[0]?.secondaryText === props.loggedInUserDetails.Email
+        );
+        return !!project;
+      });
   
-  //     setTimeLogsData(filteredTimeLogs);
-  //   }
-  // };
-  
-  
-
-  const handleTabChange = (tab: string) => {
+      setTimeLogsData(filteredTimeLogs);
+    }
+  };
+ 
+  const handleTabChange = async (tab: string) => {
     setMyDataActiveLink(tab);
+    if(tab === "TeamTimeSheet"){
+    await filterDataForReportingManager(timeLogsData,projectsData,setTimeLogsData)
+    }
+    if(tab === "MyTimeSheet"){
+      let isUserAdmin = false;
+      let isUserReportingManager = false;
+      await getTimeLogsListData(
+        props.absoluteURL, 
+        props.spHttpClient,
+        setTimeLogsData,
+        props.loggedInUserDetails,
+        "TimeSheet",
+        isUserReportingManager,
+        isUserAdmin
+      );
+    }
   };
 
   return (
@@ -131,14 +138,20 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
             <Content>
               <NavigationLinks>
                 <NavLink
-                  className={myDataActiveLink === "TimeSheet" ? "active" : ""}
-                  onClick={() => handleTabChange("TimeSheet")}
+                  className={myDataActiveLink === "MyTimeSheet" ? "active" : ""}
+                  onClick={() => handleTabChange("MyTimeSheet")}
                 >
-                  Time Sheet
+                  My TimeSheet
+                </NavLink>
+                <NavLink
+                  className={myDataActiveLink === "TeamTimeSheet" ? "active" : ""}
+                  onClick={() => handleTabChange("TeamTimeSheet")}
+                >
+                 Team TimeSheet
                 </NavLink>
               </NavigationLinks>
 
-              {myDataActiveLink === "TimeSheet" && (
+              {myDataActiveLink === "MyTimeSheet" && (
               <>
               <TimeSheetTable
               absoluteURL = {props.absoluteURL}
@@ -146,8 +159,22 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
               loggedInUserDetails = {props.loggedInUserDetails}
               setTimeLogsData = {setTimeLogsData}
               timeLogsData = {timeLogsData}
+              myDataActiveLink = {myDataActiveLink}
               ></TimeSheetTable>
               </>
+              )}
+
+              {myDataActiveLink === "TeamTimeSheet" && (
+                  <>
+                  <TimeSheetTable
+                  absoluteURL = {props.absoluteURL}
+                  spHttpClient = {props.spHttpClient}
+                  loggedInUserDetails = {props.loggedInUserDetails}
+                  setTimeLogsData = {setTimeLogsData}
+                  timeLogsData = {timeLogsData}
+                  myDataActiveLink = {myDataActiveLink}
+                  ></TimeSheetTable>
+                  </>
               )}
             </Content>
           )}
