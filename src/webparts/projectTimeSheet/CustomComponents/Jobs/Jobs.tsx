@@ -92,7 +92,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
     const fetchData = async () => {
       try {
         await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
-        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails);
+        await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails,"TimeLogs",props.isUserAdmin,props.isUserReportingManager);
       } catch (error) {
         console.log("Error fetching data:", error);
       }
@@ -115,7 +115,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   }, [projectsData]); 
 
   useEffect(() => {
-    let timer: number | undefined;
+    let timer: any;
     if (deleteSuccessfullyAlert || addSuccessFullyAlert || editSuccessFullyAlert) {
       timer = setTimeout(() => {
         setDeleteSuccessfullyAlert(false);

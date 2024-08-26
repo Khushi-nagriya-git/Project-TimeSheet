@@ -16,6 +16,7 @@ import {
   KeyboardArrowDownIcon,
   KeyboardArrowUpIcon,
 } from "../../../../../index";
+import Tooltip from "@mui/material/Tooltip";
 
 const TimeLogRows = (props: {
   row: ReturnType<any>;
@@ -32,6 +33,7 @@ const TimeLogRows = (props: {
   const { row, handleDeleteIconClick, handleEditIconClick } = props;
   const [open, setOpen] = useState(false);
   let timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
+  const isPending = row.Status === "Pending";
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -74,11 +76,6 @@ const TimeLogRows = (props: {
       : today.getDate().toString();
   const formattedDate = `${year}-${month}-${day}`;
 
-  const cellContent =
-    props.isRunning &&
-    timerTimeLogId === row.TimeLogsId &&
-    row.LoggedTime === 0;
-
   let showButton = row.Created.split("T")[0] === formattedDate;
 
   const handleClickStart = (id:number) => {
@@ -99,18 +96,15 @@ const TimeLogRows = (props: {
     props.handleStartStop();
   };
 
+  const disabledStyle = {
+    opacity: 0.5,
+    pointerEvents: "none",
+  };
+
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" , ...(isPending && disabledStyle) }}>
+       
         <TableCell
           component="th"
           scope="row"
@@ -127,16 +121,7 @@ const TimeLogRows = (props: {
         >
           {row.JobName}
         </TableCell>
-        {/* <TableCell align="left" sx={{ height: "10px" ,  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}>
-          <Box display="flex" alignItems="left" justifyContent="left">
-            <Avatar
-              alt={row.projectManager}
-              src={`${props.timelogProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${row.projectManagerEmail}&Size=S`}
-              style={{ marginRight: 8, height: "30px", width: "30px" }}
-            />
-            <Box sx={{ mt: 0.5 }}>{row.projectManager}</Box>
-          </Box>
-        </TableCell> */}
+     
         <TableCell
           align="left"
           sx={{
@@ -183,6 +168,7 @@ const TimeLogRows = (props: {
               aria-label="edit"
               size="small"
               onClick={handleClickPause}
+              disabled={isPending}
             >
               <img
               src={require("../../../assets/pause.png")}
@@ -195,6 +181,7 @@ const TimeLogRows = (props: {
               aria-label="edit"
               size="small"
               onClick={() => handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)}
+              disabled={isPending}
             >
               <img
               src={require("../../../assets/play.png")}
@@ -212,6 +199,7 @@ const TimeLogRows = (props: {
               aria-label="edit"
               size="small"
               onClick={() => handleEditIconClick(row.TimeLogsId)}
+              disabled={isPending}
             >
               <img
                 src={require("../../../assets/edit.png")}
@@ -229,6 +217,7 @@ const TimeLogRows = (props: {
               aria-label="delete"
               size="small"
               onClick={() => handleDeleteIconClick(row.TimeLogsId)}
+              disabled={isPending}
             >
               <img
                 src={require("../../../assets/delete.png")}
@@ -242,93 +231,6 @@ const TimeLogRows = (props: {
               />
             </IconButton>
           </Box>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                component="div"
-                sx={{
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                }}
-              >
-                Project Jobs
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow
-                    sx={{
-                      backgroundColor: "#f3f2f1",
-                      fontWeight: "600",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "40%",
-                        fontWeight: "600",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      Job Name
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "20%",
-                        fontWeight: "600",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      Estimated Hour
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "20%",
-                        fontWeight: "600",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      Logged Hours
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "20%",
-                        fontWeight: "600",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      Status
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* {row.history.map((historyRow:any) => (
-                    <TableRow key={}>
-                      <TableCell align="left" component="th" scope="row" sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}>
-                        {}
-                      </TableCell>
-                      <TableCell align="left" sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}></TableCell>
-                      <TableCell align="left" sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}></TableCell>
-                      <TableCell align="left" sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"}}></TableCell>
-                    </TableRow>
-                  ))} */}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
         </TableCell>
       </TableRow>
     </React.Fragment>

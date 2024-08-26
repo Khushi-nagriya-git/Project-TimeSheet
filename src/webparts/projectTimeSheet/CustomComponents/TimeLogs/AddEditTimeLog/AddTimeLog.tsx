@@ -95,7 +95,7 @@ const AddTimeLog = (props: {
 }, []);
 
   useEffect(() => {
-    let interval: number | undefined;
+    let interval :any;
     if (props.isRunning && props.startTime !== null) {
       interval = setInterval(() => {
         const now = Date.now();

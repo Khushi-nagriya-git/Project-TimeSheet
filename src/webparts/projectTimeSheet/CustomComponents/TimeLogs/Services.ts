@@ -1,3 +1,4 @@
+import { filter } from "lodash";
 import { SPHttpClient } from "../../../..";
 import { TimeLogsData } from "./ITimeLogsStats";
 
@@ -5,32 +6,43 @@ export const getTimeLogsListData = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient,
   setTimeLogsData: React.Dispatch<React.SetStateAction<any>>,
-  loggedInUserDetails: any
+  loggedInUserDetails: { Email: string } | null,
+  type: string,
+  isUserAdmin: boolean,
+  isUserReportingManager: boolean
+
 ) => {
   let filterQuery = "";
-  if(loggedInUserDetails){
+  if (type === "TimeLogs" && loggedInUserDetails) {
     filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}'`;
-  }else{
-    filterQuery = "";
-  }
+  } else if (type === "TimeSheet") {
+    if (loggedInUserDetails) {
+      if (isUserAdmin || isUserReportingManager) {
+        filterQuery = `Status eq 'Pending'`;
+      } else {
+        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending'`;
+      }
+    }
+  }  
+
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Time Logs')/items?$select=TimelogsId,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc&$filter=${filterQuery}`,
+      `${absoluteURL}/_api/web/lists/GetByTitle('Time Logs')/items?$select=TimelogsId,Author/EMail,Author/Title,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc${filterQuery ? `&$filter=${filterQuery}` : ""}&$expand=Author`,
       SPHttpClient.configurations.v1
-    );
+    ); 
+
     if (response.ok) {
       const data = await response.json();
       if (data.value.length > 0) {
         setTimeLogsData(data.value);
       }
     } else {
-      console.log("Please enter the correct name of the list in the property pane.");
+      console.error("Please enter the correct name of the list in the property pane.");
     }
   } catch (error) {
-    console.log("Error fetching data:", error);
+    console.error("Error fetching data:", error);
   }
 };
-
 
 export const getLastItemId = async (absoluteURL: string, spHttpClient: SPHttpClient): Promise<number> => {
   const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$orderby=ID desc&$top=1`;

@@ -13,10 +13,11 @@ import {
 import { getTimeLogsListData } from "../Services";
 import TimeLogRows from "./TimeLogRows";
 
-const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUserDetails:any; timelogProps:any ;filteredTimeLogsData:any; currentUserDetails:any ; isRunning:any ; elapsedTime:any ; setTimeLogsData:React.Dispatch<React.SetStateAction<any>> ; timeLogsData:any ; jobResumeTimer:any;handleStartStop:any ; setDeletedTimelogId:React.Dispatch<React.SetStateAction<any>> ; setIsOpen:React.Dispatch<React.SetStateAction<any>>;setIsRunning: React.Dispatch<React.SetStateAction<any>>; setEditTimeLogId: React.Dispatch<React.SetStateAction<any>> ; setInitialFormData:React.Dispatch<React.SetStateAction<any>>; setEditFormOpen:React.Dispatch<React.SetStateAction<any>>}) => {
+const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUserDetails:any; isUserAdmin:any; timelogProps:any ;filteredTimeLogsData:any;isUserReportingManager:any;currentUserDetails:any ; isRunning:any ; elapsedTime:any ; setTimeLogsData:React.Dispatch<React.SetStateAction<any>> ; timeLogsData:any ; jobResumeTimer:any;handleStartStop:any ; setDeletedTimelogId:React.Dispatch<React.SetStateAction<any>> ; setIsOpen:React.Dispatch<React.SetStateAction<any>>;setIsRunning: React.Dispatch<React.SetStateAction<any>>; setEditTimeLogId: React.Dispatch<React.SetStateAction<any>> ; setInitialFormData:React.Dispatch<React.SetStateAction<any>>; setEditFormOpen:React.Dispatch<React.SetStateAction<any>>}) => {
 
   useEffect(() => {
-    getTimeLogsListData(props.absoluteURL, props.spHttpClient, props.setTimeLogsData,props.loggedInUserDetails);
+    getTimeLogsListData(props.absoluteURL, props.spHttpClient, props.setTimeLogsData,props.loggedInUserDetails,"TimeLogs",props.isUserAdmin,props.isUserReportingManager
+    );
     props.setTimeLogsData(props.filteredTimeLogsData);
   }, []);
 
@@ -49,8 +50,6 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
       Description: timelog.Description,
       LoggedHours: timelog.LoggedHours,
       EstimatedHours: timelog.EstimatedHours,
-      
-      
     });
   
     props.setEditFormOpen(true);
@@ -66,8 +65,8 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
     Description: string,
     LoggedTime: string,
     EstimatedHours: number,
-    
-    Created:'',  
+    Created:'',
+    Status:string  
   ) {
     return {
       TimeLogsId,
@@ -80,7 +79,8 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
       LoggedTime,
       EstimatedHours,
       history:[] ,
-      Created,  
+      Created, 
+      Status 
     };
   }
 
@@ -99,7 +99,6 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
               <TableHead>
            
                 <TableRow sx={{ height: "40px", background: "#f3f2f1" }}>
-                <TableCell sx={{width: "5%"}} />
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -249,7 +248,8 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       row.Description,
                       row.LoggedHours,
                       row.EstimatedHours,
-                      row.Created,                      
+                      row.Created, 
+                      row.Status                     
                     );
 
                     return (

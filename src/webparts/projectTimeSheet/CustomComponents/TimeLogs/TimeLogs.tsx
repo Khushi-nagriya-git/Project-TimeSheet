@@ -200,7 +200,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
           props.absoluteURL,
           props.spHttpClient,
           setTimeLogsData,
-          props.loggedInUserDetails
+          props.loggedInUserDetails,
+          "TimeLogs",
+          props.isUserAdmin,
+          props.isUserReportingManager
+
         );
       } catch (error) {
         console.log("Error fetching data:", error);
@@ -210,7 +214,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    let timer: number | undefined;
+    let timer: any;
     if (deleteSuccessfullyAlert) {
       timer = setTimeout(() => {
         setDeleteSuccessfullyAlert(false);
@@ -239,7 +243,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.absoluteURL,
         props.spHttpClient,
         setTimeLogsData,
-        props.loggedInUserDetails
+        props.loggedInUserDetails,
+        "TimeLogs",
+        props.isUserAdmin,
+        props.isUserReportingManager
+
       );
       //   await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
       //   let data;
@@ -354,7 +362,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.absoluteURL,
         props.spHttpClient,
         setTimeLogsData,
-        props.loggedInUserDetails
+        props.loggedInUserDetails,
+        "TimeLogs",
+        props.isUserAdmin,
+        props.isUserReportingManager
+
       );
       setTimerAlert(true);
     }
@@ -365,7 +377,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.absoluteURL,
       props.spHttpClient,
       setTimeLogsData,
-      props.loggedInUserDetails
+      props.loggedInUserDetails,
+      "TimeLogs",
+      props.isUserAdmin,
+      props.isUserReportingManager
+
     );
     const jobTimeLogData = timeLogsData.filter(
       (timelog: any) => timelog.TimelogsId === id
@@ -429,7 +445,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.absoluteURL,
       props.spHttpClient,
       setTimeLogsData,
-      props.loggedInUserDetails
+      props.loggedInUserDetails,
+      "TimeLogs",
+      props.isUserAdmin,
+      props.isUserReportingManager
+
     );
     setIsOpen(false);
     setDeleteSuccessfullyAlert(true);
@@ -474,7 +494,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.absoluteURL,
       props.spHttpClient,
       setTimeLogsData,
-      props.loggedInUserDetails
+      props.loggedInUserDetails,
+      "TimeLogs",
+      props.isUserAdmin,
+      props.isUserReportingManager
+
     );
     setEditFormOpen(false);
     // setAlert(true);
@@ -496,9 +520,18 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       updatedTimeLogsData,
       editTimeLogId
     );
-  };
-  
+    await getTimeLogsListData(
+      props.absoluteURL,
+      props.spHttpClient,
+      setTimeLogsData,
+      props.loggedInUserDetails,
+      "TimeLogs",
+      props.isUserAdmin,
+      props.isUserReportingManager
+    );
+    alert("TimeSheet Submitted")
 
+  };
 
   const weekStart = currentWeek[0];
   const weekEnd = currentWeek[6];
@@ -512,7 +545,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
     }
     return "N/A"; 
   };
-
 
   return (
     <div>
@@ -635,6 +667,9 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       setIsRunning={setIsRunning}
                       filteredTimeLogsData={filteredTimeLogsData}
                       loggedInUserDetails={props.loggedInUserDetails}
+                      isUserAdmin={props.isUserAdmin}
+                      isUserReportingManager={props.isUserReportingManager}
+
                     ></TimeLogTable>
                   </>
                 )}

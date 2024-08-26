@@ -55,7 +55,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   }, [projectsData]); 
 
   useEffect(() => {
-    let timer: number | undefined;
+    let timer: any;
     if (deleteSuccessfullyAlert || addSuccessFullyAlert || editSuccessFullyAlert) {
       timer = setTimeout(() => {
         setDeleteSuccessfullyAlert(false);

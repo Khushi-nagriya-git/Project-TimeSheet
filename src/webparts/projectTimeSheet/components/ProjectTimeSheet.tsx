@@ -11,6 +11,7 @@ import TimeLogs from "../CustomComponents/TimeLogs/TimeLogs";
 import { SPHttpClient } from "../../..";
 import { LoggedInUserDetails, projectsInitialState } from "../CustomComponents/Projects/IProjectStats";
 import { getLoggedInUserData } from "../CustomComponents/Projects/Services";
+import TimeSheet from "../CustomComponents/TimeSheet/TimeSheet";
 
 
 const MainContainer = styled(Box)({
@@ -119,6 +120,19 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                   isUserAdmin={isUserAdmin}
                   isUserProjectManager={isUserProjectManager}
                   isUserReportingManager={isUserReportingManager}
+                />
+              )}
+              {moduleTab === "TimeSheets" && (
+                <TimeSheet 
+                spHttpClient={props.spHttpClient}
+                absoluteURL={props.absoluteURL}
+                context={props.context}
+                setModuleTab={setModuleTab}
+                loggedInUserDetails={loggedInUserDetails}
+                isUserProjectTeam={isUserProjectTeam}
+                isUserAdmin={isUserAdmin}
+                isUserProjectManager={isUserProjectManager}
+                isUserReportingManager={isUserReportingManager}
                 />
               )}
             </ContentContainer>

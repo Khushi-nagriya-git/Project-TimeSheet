@@ -10,6 +10,7 @@ export interface TimeLogsData {
    EstimatedHours:number;
    Status:string;
    Created:'';
+   CreatedBy:any;
 }
 
 export interface CurrentUserDetails {
@@ -37,7 +38,8 @@ const initialTimeLogsData: TimeLogsData = {
    LoggedHours:0,
    EstimatedHours:0,
    Status:'',
-   Created:''
+   Created:'',
+   CreatedBy:''
 };
 
 export const timeLogsDataInitialState = {
