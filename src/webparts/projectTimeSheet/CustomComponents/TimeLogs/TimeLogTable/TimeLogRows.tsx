@@ -35,17 +35,33 @@ const TimeLogRows = (props: {
   let timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
   const isPending = row.Status === "Pending";
 
-  const getStatusColor = (status: string) => {
+  const getTaskTypeColor = (status: string) => {
     switch (status) {
       case "Non Billable":
-        return "#65B741";
+        return "#007bff";
       case "Billable":
-        return "#FFB6C1";
+        return "#65B741";
       default:
         return "#9D9D9D";
     }
   };
-  const borderColor = getStatusColor(row.BillableStatus);
+  const borderColorforTaskType = getTaskTypeColor(row.BillableStatus);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "#9D9D9D";
+      case "Not Submitted":
+        return "#007bff";
+      case "Rejected":
+        return "#FFB6C1";
+      case "Approved":
+        return "#65B741";
+      default:
+        return "#9D9D9D";
+    }
+  };
+  const borderColorStatus = getStatusColor(row.Status);
 
   const convertMinutesToHoursAndMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -136,7 +152,24 @@ const TimeLogRows = (props: {
           <Box
             sx={{
               borderRadius: "20px",
-              border: `2px solid ${borderColor}`,
+              border: `2px solid ${borderColorStatus}`,
+              height: "30px",
+              width: "115px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            }}
+          >
+            {row.Status}
+          </Box>
+        </TableCell>
+
+        <TableCell align="left" sx={{ height: "10px" }}>
+          <Box
+            sx={{
+              borderRadius: "20px",
+              border: `2px solid ${borderColorforTaskType}`,
               height: "30px",
               width: "100px",
               display: "flex",

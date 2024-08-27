@@ -13,17 +13,30 @@ export const getTimeLogsListData = async (
 
 ) => {
   let filterQuery = "";
-  if (type === "TimeLogs" && loggedInUserDetails) {
-    filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}'`;
-  } else if (type === "TimeSheet") {
-    if (loggedInUserDetails) {
-      if (isUserAdmin || isUserReportingManager) {
-        filterQuery = `Status eq 'Pending'`;
-      } else {
+
+  if (loggedInUserDetails) {
+    switch (type) {
+      case "TimeLogs":
+        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}'`;
+        break;
+  
+      case "TimeSheet":
+        if (isUserAdmin || isUserReportingManager) {
+          filterQuery = `Status eq 'Pending'`;
+        } else {
+          filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending'`;
+        }
+        break;
+  
+      case "MyTimeSheet":
         filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending'`;
-      }
+        break;
+  
+      default:
+        break;
     }
-  }  
+  }
+  
 
   try {
     const response = await spHttpClient.get(

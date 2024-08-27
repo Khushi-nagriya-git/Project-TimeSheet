@@ -182,8 +182,13 @@ const ProjectTable = (props: {
         }
       }
     } else {
-      if (props.isUserProjectManager || ProjectManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
-        if (ProjectManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
+      if (
+        props.isUserProjectManager ||
+        ProjectManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email
+      ) {
+        if (
+          ProjectManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email
+        ) {
           for (const job of props.jobsData) {
             if (job.ProjectId === projectId && !seenJobIds.has(job.JobId)) {
               seenJobIds.add(job.JobId);
@@ -192,9 +197,15 @@ const ProjectTable = (props: {
           }
         }
       }
-    
-      if (props.isUserReportingManager || ReportingManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
-        if (ReportingManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email) {
+
+      if (
+        props.isUserReportingManager ||
+        ReportingManagerPeoplePicker?.EMail === props.loggedInUserDetails.Email
+      ) {
+        if (
+          ReportingManagerPeoplePicker?.EMail ===
+          props.loggedInUserDetails.Email
+        ) {
           for (const job of props.jobsData) {
             if (job.ProjectId === projectId && !seenJobIds.has(job.JobId)) {
               seenJobIds.add(job.JobId);
@@ -204,64 +215,38 @@ const ProjectTable = (props: {
         }
       }
 
+      // Filter jobs based on the user's email and ID in AssignedTo
+      const projectTeamJobs = props.jobsData.filter(
+        (job: { ProjectId: number; AssignedTo: string; JobId: number }) => {
+          if (job.ProjectId !== projectId) return false;
 
+          let jobDataFilter: { email: string; id: number }[] = [];
+          try {
+            jobDataFilter = JSON.parse(job.AssignedTo);
+          } catch (error) {
+            console.error("Error parsing AssignedTo:", error);
+            return false;
+          }
 
-// Filter jobs based on the user's email and ID in AssignedTo
-const projectTeamJobs = props.jobsData.filter((job: { ProjectId: number; AssignedTo: string; JobId: number; }) => {
-  if (job.ProjectId !== projectId) return false;
+          const isAssignedToUser = jobDataFilter.some(
+            (assigned) =>
+              assigned.email === props.loggedInUserDetails.Email &&
+              assigned.id === props.loggedInUserDetails.Id
+          );
 
-  let jobDataFilter: { email: string; id: number }[] = [];
-  try {
-    jobDataFilter = JSON.parse(job.AssignedTo);
-  } catch (error) {
-    console.error("Error parsing AssignedTo:", error);
-    return false;
-  }
+          return isAssignedToUser && !seenJobIds.has(job.JobId);
+        }
+      );
 
-  const isAssignedToUser = jobDataFilter.some(
-    (assigned) =>
-      assigned.email === props.loggedInUserDetails.Email &&
-      assigned.id === props.loggedInUserDetails.Id
-  );
-
-  return isAssignedToUser && !seenJobIds.has(job.JobId);
-});
-
-// Add the relevant jobs to the set if the user is in the project team or if any relevant jobs were found
-if (props.isUserProjectTeam || projectTeamJobs.length > 0) {
-  for (const job of projectTeamJobs) {
-    seenJobIds.add(job.JobId);
-    relevantJobs.push(job);
-  }
-}
-
-    
-      // if (props.isUserProjectTeam) {
-      //   for (const job of props.jobsData) {
-      //     if (job.ProjectId !== projectId) continue;
-    
-      //     let jobDataFilter: { email: string; id: number }[] = [];
-      //     try {
-      //       jobDataFilter = JSON.parse(job.AssignedTo);
-      //     } catch (error) {
-      //       console.error("Error parsing AssignedTo:", error);
-      //       continue;
-      //     }
-    
-      //     const isAssignedToUser = jobDataFilter.some(
-      //       (assigned) =>
-      //         assigned.email === props.loggedInUserDetails.Email &&
-      //         assigned.id === props.loggedInUserDetails.Id
-      //     );
-    
-      //     if (isAssignedToUser && !seenJobIds.has(job.JobId)) {
-      //       seenJobIds.add(job.JobId);
-      //       relevantJobs.push(job);
-      //     }
-      //   }
-      // }
+      // Add the relevant jobs to the set if the user is in the project team or if any relevant jobs were found
+      if (props.isUserProjectTeam || projectTeamJobs.length > 0) {
+        for (const job of projectTeamJobs) {
+          seenJobIds.add(job.JobId);
+          relevantJobs.push(job);
+        }
+      }
     }
-    
+
     return {
       projectId,
       projectName,
@@ -376,28 +361,26 @@ if (props.isUserProjectTeam || projectTeamJobs.length > 0) {
                     }}
                     align="left"
                   >
-                    Jobs
+                    Tasks
                   </TableCell>
-                  {props.topNavigationMode === "Employee" &&
-                    (props.isUserAdmin || props.isUserReportingManager) && (
-                      <TableCell
-                        sx={{
-                          padding: "4px 16px",
-                          fontWeight: "600",
-                          width: "24%",
-                          position: "sticky",
-                          top: 0,
-                          backgroundColor: "#f3f2f1",
-                          zIndex: 1,
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          // color: "#323130"
-                        }}
-                        align="left"
-                      >
-                        Actions
-                      </TableCell>
-                    )}
+                  <TableCell
+                    sx={{
+                      padding: "4px 16px",
+                      fontWeight: 600,
+                      width: "24%",
+                      position: "sticky",
+                      top: 0,
+                      backgroundColor: "#f3f2f1",
+                      zIndex: 1,
+                      fontFamily:
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    }}
+                    align="left"
+                  >
+                    {props.topNavigationMode === "Employee" &&
+                      (props.isUserAdmin || props.isUserReportingManager) &&
+                      "Actions"}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

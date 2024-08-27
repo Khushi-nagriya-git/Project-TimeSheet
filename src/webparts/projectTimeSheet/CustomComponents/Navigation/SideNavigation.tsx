@@ -100,7 +100,7 @@ const SideNavigation = (props: { setModuleTab: React.Dispatch<React.SetStateActi
                 ? require("../../assets/jobwhite.png")
                 : require("../../assets/jobgray.png")
             }
-            alt="Jobs"
+            alt="Tasks"
             style={{
               marginRight: "10px",
               height: "25px",
@@ -108,7 +108,7 @@ const SideNavigation = (props: { setModuleTab: React.Dispatch<React.SetStateActi
               marginLeft: "10px"
             }}
           />
-          Jobs
+          Tasks
         </StyledButton>
         <StyledButton
           className={activeTab === "Projects" ? "active" : ""}

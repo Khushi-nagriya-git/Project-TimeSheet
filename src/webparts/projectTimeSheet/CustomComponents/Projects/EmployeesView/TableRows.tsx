@@ -123,7 +123,7 @@ const Row = (props: {
           <IconButton aria-label="Detail Logs" size="small">
             <img
               src={require("../../../assets/jobgray.png")}
-              alt="Jobs"
+              alt="Tasks"
               style={{ width: "21px", height: "21px", cursor: "pointer" }}
               onClick={() => setOpen(!open)}
             />
@@ -187,7 +187,7 @@ const Row = (props: {
                   fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                 }}
               >
-                Project Jobs
+                Project Tasks
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
@@ -208,7 +208,7 @@ const Row = (props: {
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
                     >
-                      Job Name
+                      Task Name
                     </TableCell>
                     <TableCell
                       align="left"

@@ -244,7 +244,7 @@ export async function updateJobRecords(
     ? "On Hold"
     : updateformData.jobStatus;
     let listItemData;
-    const assignedToPeoplePickerIds = updateformData.AssignedToPeoplePicker.map(
+    const assignedToPeoplePickerIds = updateformData.JobAssigness.map(
       (person: { id: number }) => person.id
     );
   

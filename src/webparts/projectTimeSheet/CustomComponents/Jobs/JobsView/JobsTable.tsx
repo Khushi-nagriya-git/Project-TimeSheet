@@ -290,7 +290,7 @@ const JobsTable = (props: {
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
                   >
-                    Job Name
+                    Task Name
                   </TableCell>
                   <TableCell
                     sx={{

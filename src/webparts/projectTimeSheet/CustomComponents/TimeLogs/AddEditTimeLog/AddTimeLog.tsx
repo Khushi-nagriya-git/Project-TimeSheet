@@ -264,9 +264,9 @@ const AddTimeLog = (props: {
           </Grid>
 
           <Grid item>
-            <Label style={{ fontWeight: "600" }}>Jobs</Label>
+            <Label style={{ fontWeight: "600" }}>Tasks</Label>
             <Dropdown
-              placeholder="Select Job"
+              placeholder="Select Task"
               selectedKey={props.selectedJob}
               onChange={handleJobChange}
               disabled={props.isRunning}

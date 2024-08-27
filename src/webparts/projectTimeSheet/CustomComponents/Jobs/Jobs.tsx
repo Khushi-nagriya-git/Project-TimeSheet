@@ -201,7 +201,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                     onClick={() => handleTabChange("Jobs")}
                   >
                     {" "}
-                    Jobs
+                    Tasks
                   </NavLink>
 
                   <Grid item sx={{ marginLeft: "auto", marginBottom: "10px" }}>
@@ -214,11 +214,11 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                         borderRadius: "5px",
                         width: "120px",
                         height: "35px",
-                        fontSize: "12px",
+                        fontSize: "14px",
                         textTransform: "none",
                       }}
                     >
-                      Add Jobs
+                      Add Tasks
                     </Button>
 
                   </Grid>
@@ -309,7 +309,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
            zIndex: 9999, 
          }}
        >
-        {deleteSuccessfullyAlert ?"Job has been successfully deleted!" : addSuccessFullyAlert ? "Job has been successfully added!" : editSuccessFullyAlert ? "Project has been successfully edited!" : ""}
+        {deleteSuccessfullyAlert ?"Task has been successfully deleted!" : addSuccessFullyAlert ? "Task has been successfully added!" : editSuccessFullyAlert ? "Project has been successfully edited!" : ""}
        </Alert>
       )}
     </div>

@@ -33,8 +33,7 @@ import DeleteDialogBox from "./DialogBoxs/DeleteDialogBox";
 import EditTimeLog from "./AddEditTimeLog/EditTimeLog";
 import { IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, Pending } from "@mui/icons-material";
-import { updateJobRecords } from "../Jobs/Services";
-import { LoggedInUserDetails } from "../Projects/IProjectStats";
+
 
 const FullHeightGrid = styled(Grid)({
   height: "100%",

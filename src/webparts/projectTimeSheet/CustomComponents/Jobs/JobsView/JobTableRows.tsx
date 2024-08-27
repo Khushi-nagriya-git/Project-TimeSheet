@@ -118,7 +118,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
           <IconButton aria-label="users" size="small">
             <img
               src={require("../../../assets/user.png")}
-              alt="Jobs"
+              alt="Assignees"
               style={{ width: "27px", height: "27px", cursor: "pointer" }}
               onClick={() => setOpen(!open)}
             />
@@ -178,7 +178,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
                   fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                 }}
               >
-                Jobs Assignee
+                Task Assignee
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>

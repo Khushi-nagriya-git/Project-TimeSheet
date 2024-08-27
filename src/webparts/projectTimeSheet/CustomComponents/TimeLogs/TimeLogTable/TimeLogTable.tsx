@@ -131,24 +131,9 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                     }}
                     align="left"
                   >
-                    Job Name
+                    Task Name
                   </TableCell>
-                  {/* <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "10%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#f3f2f1",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
-                    Job Assignes
-                  </TableCell> */}
+                 
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -181,7 +166,24 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                     }}
                     align="left"
                   >
-                    Billable Status 
+                    Status
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      padding: "4px 16px",
+                      fontWeight: "600",
+                      width: "10%",
+                      position: "sticky",
+                      top: 0,
+                      backgroundColor: "#f3f2f1",
+                      zIndex: 1,
+                      // color:"#323130",
+                      fontFamily:
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                    }}
+                    align="left"
+                  >
+                    Task Type
                   </TableCell>
                   <TableCell
                     sx={{

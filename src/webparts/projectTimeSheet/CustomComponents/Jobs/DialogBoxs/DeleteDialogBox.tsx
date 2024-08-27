@@ -32,7 +32,7 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title"className={dialogBox.dialogTitle}>
-        {isTimeLogAvailable ? "Job Deletion Not Allowed" : "Delete Job"}
+        {isTimeLogAvailable ? "Task Deletion Not Allowed" : "Delete Task"}
         <IconButton className={dialogBox.buttonIcon} aria-label="close"onClick={handleClose} >
           <CloseIcon/>
         </IconButton>
@@ -40,8 +40,8 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
       <DialogContent>
         <DialogContentText id="alert-dialog-description" className={dialogBox.dialogContentText}>
           {isTimeLogAvailable
-            ? "This job cannot be deleted as it contains associated time logs."
-            : "Are you sure you want to delete this job?"}
+            ? "This Task cannot be deleted as it contains associated time logs."
+            : "Are you sure you want to delete this Task?"}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

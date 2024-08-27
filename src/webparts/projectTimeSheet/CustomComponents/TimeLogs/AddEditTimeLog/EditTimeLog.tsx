@@ -223,8 +223,8 @@ const EditTimeLog = (props: {
               style={{ width: "320px" }}
             />
             <Dropdown
-              label="Job Name"
-              placeholder="Select Job"
+              label="Task Name"
+              placeholder="Select Task"
               selectedKey={selectedJob}
               onChange={handleJobChange}
               options={filterJobs.map((job: { JobId: any; JobName: any }) => ({

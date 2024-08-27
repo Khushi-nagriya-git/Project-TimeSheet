@@ -17,7 +17,7 @@ export default function AppHeader(props: {
       />
 
       <Text  block className={styles.bt_ah_HeaderText}>
-       Project Timesheet
+       Employee Timesheet
       </Text>
       <div
         className={styles.bt_ah_HomeIcon}
