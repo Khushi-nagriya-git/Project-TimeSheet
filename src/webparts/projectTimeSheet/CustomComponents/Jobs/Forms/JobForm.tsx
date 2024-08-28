@@ -8,16 +8,11 @@ import {
   DefaultButton,
   PrimaryButton,
 } from "@fluentui/react";
-import {
-  PeoplePicker,
-  PrincipalType,
-} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { Box } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import { IJobFormProps } from "./IJobFormProps";
-import styles from "./JobForm.module.scss";
 import { JobAssginees, JobFormData, initialState } from "./IJobFormStats";
 
 const drawerStyle = {
@@ -49,12 +44,41 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
   const projectTeamOptions: IDropdownOption[] =
     props.projectsData
       ?.filter((project: any) => project.ProjectId === formData.projectId)
-      ?.flatMap((project: any) =>
-        JSON.parse(project.ProjectTeam).map((member: any) => ({
-          key: member.id,
-          text: member.name,
-        }))
-      ) || [];
+      ?.flatMap((project: any) => {
+        // Use a Map to track unique options by key
+        const optionsMap = new Map<string, IDropdownOption>();
+
+        // Parse and map ProjectTeam data
+        JSON.parse(project.ProjectTeam).forEach((member: any) => {
+          if (!optionsMap.has(member.id)) {
+            optionsMap.set(member.id, {
+              key: member.id,
+              text: member.name,
+            });
+          }
+        });
+
+        // Parse and map ReportingManager data
+        const reportingManager = JSON.parse(project.ReportingManager)[0];
+        if (!optionsMap.has(reportingManager.id)) {
+          optionsMap.set(reportingManager.id, {
+            key: reportingManager.id,
+            text: reportingManager.text, // Ensure this is the correct property
+          });
+        }
+
+        // Parse and map ProjectManager data
+        const projectManager = JSON.parse(project.ProjectManager)[0];
+        if (!optionsMap.has(projectManager.id)) {
+          optionsMap.set(projectManager.id, {
+            key: projectManager.id,
+            text: projectManager.name,
+          });
+        }
+
+        // Return an array of unique options
+        return Array.from(optionsMap.values());
+      }) || [];
 
   const [showEstimatedHour, setShowEstimatedHour] = useState(false);
 
@@ -78,73 +102,90 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         const memberIds = props.initialData.JobAssigness.map(
           (jobAssignee: any) => jobAssignee.id
         );
-  
+
         // Set the selected team member IDs
         setSelectedTeamMemberIds(memberIds);
-  
+
         setShowEstimatedHour(true);
       }
     }
   }, [props.mode, props.initialData]);
 
+  const [selectedTeamMemberIds, setSelectedTeamMemberIds] = useState<string[]>(
+    []
+  );
+  const selectedTeamMembers: any[] = [];
 
+  const handleAssigneeChange = (
+    event: React.FormEvent<HTMLDivElement>,
+    option?: IDropdownOption
+  ): void => {
+    if (option) {
+      const selectedId = option.key as string;
+      const selectedProject = props.projectsData.find(
+        (project: any) => project.ProjectId === formData.projectId
+      );
   
-  const [selectedTeamMemberIds, setSelectedTeamMemberIds] = useState<string[]>([]);
-const selectedTeamMembers: any[] = [];
-
-const handleAssigneeChange = (
-  event: React.FormEvent<HTMLDivElement>,
-  option?: IDropdownOption
-): void => {
-  if (option) {
-    const selectedId = option.key as string;
-    const selectedProject = props.projectsData.find(
-      (project: any) => project.ProjectId === formData.projectId
-    );
-
-    if (selectedProject) {
-      const projectTeam = JSON.parse(selectedProject.ProjectTeam) as any[];
-      const selectedMember = projectTeam.find((member: any) => member.id === selectedId);
-
-      let updatedSelectedTeamMemberIds = [...selectedTeamMemberIds];
-      let updatedJobAssignees = [...(formData.JobAssigness || [])];
-
-      if (option.selected) {
-        // Add member to the selected list
-        if (selectedMember) {
-          selectedTeamMembers.push(selectedMember);
-          updatedSelectedTeamMemberIds.push(selectedMember.id);
-
-          updatedJobAssignees.push({
-            name: selectedMember.name,
-            email: selectedMember.email,
-            id: selectedMember.id,
-            estimatedHours: estimatedHours[selectedMember.id] || 0,
-            loggedHours: 0,
-          });
+      if (selectedProject) {
+        const projectTeam = JSON.parse(selectedProject.ProjectTeam) as any[];
+        const reportingManager = JSON.parse(selectedProject.ReportingManager)[0];
+        const projectManager = JSON.parse(selectedProject.ProjectManager)[0];
+  
+        // Combine all potential assignees (team members, project manager, reporting manager)
+        const allAssignees = [
+          ...projectTeam,
+          reportingManager,
+          projectManager,
+        ];
+  
+        // Find the selected member from the combined list
+        const selectedMember = allAssignees.find(
+          (member: any) => member.id === selectedId
+        );
+  
+        let updatedSelectedTeamMemberIds = [...selectedTeamMemberIds];
+        let updatedJobAssignees = [...(formData.JobAssigness || [])];
+  
+        if (option.selected) {
+          // Add member to the selected list
+          if (selectedMember) {
+            selectedTeamMembers.push(selectedMember);
+            updatedSelectedTeamMemberIds.push(selectedMember.id);
+  
+            updatedJobAssignees.push({
+              name: selectedMember.name?selectedMember.name:selectedMember.text,
+              email: selectedMember.email ? selectedMember.email : selectedMember.secondaryText,
+              id: selectedMember.id,
+              estimatedHours: estimatedHours[selectedMember.id] || 0,
+              loggedHours: 0,
+            });
+          }
+        } else {
+          // Remove member from the selected list
+          updatedSelectedTeamMemberIds = updatedSelectedTeamMemberIds.filter(
+            (id) => id !== selectedId
+          );
+          updatedJobAssignees = updatedJobAssignees.filter(
+            (assignee) => assignee.id !== selectedId
+          );
         }
-      } else {
-        // Remove member from the selected list
-        updatedSelectedTeamMemberIds = updatedSelectedTeamMemberIds.filter(id => id !== selectedId);
-        updatedJobAssignees = updatedJobAssignees.filter(assignee => assignee.id !== selectedId);
+  
+        setSelectedTeamMemberIds(updatedSelectedTeamMemberIds);
+        setShowEstimatedHour(true);
+        setFormData((prevData) => ({
+          ...prevData,
+          JobAssigness: updatedJobAssignees,
+        }));
       }
-
-      setSelectedTeamMemberIds(updatedSelectedTeamMemberIds);
-      setShowEstimatedHour(true);
-      setFormData(prevData => ({
+    } else {
+      setShowEstimatedHour(false);
+      setFormData((prevData) => ({
         ...prevData,
-        JobAssigness: updatedJobAssignees,
+        JobAssigness: [],
       }));
     }
-  } else {
-    setShowEstimatedHour(false);
-    setFormData(prevData => ({
-      ...prevData,
-      JobAssigness: [],
-    }));
-  }
-};
-
+  };
+  
 
   const handleChangeEstimatedHours = (userId: string, hours: number) => {
     setEstimatedHours((prevState) => ({
@@ -337,21 +378,21 @@ const handleAssigneeChange = (
               }}
             >
               <Dropdown
-               label="Task Assignees"
-               selectedKeys={selectedTeamMemberIds}
-               onChange={handleAssigneeChange}
-               options={projectTeamOptions}
-               style={{ width: "100%" }}
-               multiSelect
+                label="Task Assignees"
+                selectedKeys={selectedTeamMemberIds}
+                onChange={handleAssigneeChange}
+                options={projectTeamOptions}
+                style={{ width: "100%" }}
+                multiSelect
               />
 
-              {showEstimatedHour && formData?.JobAssigness  && (
+              {showEstimatedHour && formData?.JobAssigness && (
                 <Box
                   sx={{
                     display: "flex",
                     flexDirection: "column",
                     gap: "10px",
-                    width: "100%", 
+                    width: "100%",
                   }}
                 >
                   <Label>.25 = 15Min, .5 = 30Min, .75 = 45Min, 1 = 1Hour</Label>
@@ -362,7 +403,7 @@ const handleAssigneeChange = (
                         display: "flex",
                         alignItems: "center",
                         gap: "10px",
-                        width: "100%", 
+                        width: "100%",
                       }}
                     >
                       <TextField
@@ -370,7 +411,7 @@ const handleAssigneeChange = (
                         type="number"
                         value={user?.estimatedHours?.toString()}
                         onChange={handleChangeEstimatedHoursInput(user.id)}
-                        styles={{ root: { width: "100%" } }} 
+                        styles={{ root: { width: "100%" } }}
                         label={`Estimated Hours for ${user.name}`}
                       />
                     </Box>
@@ -384,7 +425,7 @@ const handleAssigneeChange = (
                 display: "flex",
                 flexDirection: "column",
                 gap: "10px",
-                width: "auto", 
+                width: "auto",
               }}
             >
               <Label style={{ fontWeight: "600", marginTop: "5px" }}>
