@@ -7,9 +7,6 @@ import {
   TableContainer,
   TableRow,
   TableHead,
-  useEffect,
-  Grid,
-  Avatar,
   useState,
 } from "../../../../../index";
 import TimeSheetForm from "../ApproveRejectForm";
@@ -20,6 +17,8 @@ const TimeSheetTable = (props: {
   timeLogsData: any;
   myDataActiveLink: any;
   TableType: any;
+  updateStatus: any;
+  setUpdateStatus:React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const [selectedWeekData, setSelectedWeekData] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -187,6 +186,10 @@ const TimeSheetTable = (props: {
         open={isFormOpen}
         onClose={handleCloseForm}
         selectedData={selectedWeekData}
+        spHttpClient={props.spHttpClient}
+        absoluteURL={props.absoluteURL}
+        setUpdateStatus={props.setUpdateStatus}
+        updateStatus={props.updateStatus}
       />
     </>
   );

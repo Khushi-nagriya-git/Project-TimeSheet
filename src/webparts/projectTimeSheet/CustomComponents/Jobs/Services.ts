@@ -105,9 +105,9 @@ export const addJobs = async (
       : data.jobStatus === "OnHold"
       ? "On Hold"
       : data.jobStatus;
-      // const assignedToPeoplePickerIds = data.AssignedToPeoplePicker.map(
-      //   (person: { id: number }) => person.id
-      // );
+      const assignedToPeoplePickerIds = data.JobAssigness.map(
+        (person: { id: number }) => person.id
+      );
     
   const listItemData = { '__metadata': { 'type': "SP.Data.TasksListItem" },
     JobName: data.jobName,
@@ -117,7 +117,7 @@ export const addJobs = async (
     StartDate: data.startDate,
     EndDate: data.endDate,
     AssignedTo: JSON.stringify(data.JobAssigness),
-    //AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
+    AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
     Description: data.description,
     BillableStatus: data.billableStatus,
     JobStatus: status,

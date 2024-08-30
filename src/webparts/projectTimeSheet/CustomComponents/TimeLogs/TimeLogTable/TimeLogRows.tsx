@@ -232,7 +232,7 @@ const TimeLogRows = (props: {
               aria-label="edit"
               size="small"
               onClick={() => handleEditIconClick(row.TimeLogsId)}
-              disabled={isPending}
+              disabled={isPending || props.isRunning}
             >
               <img
                 src={require("../../../assets/edit.png")}
@@ -250,7 +250,7 @@ const TimeLogRows = (props: {
               aria-label="delete"
               size="small"
               onClick={() => handleDeleteIconClick(row.TimeLogsId)}
-              disabled={isPending}
+              disabled={isPending || props.isRunning}
             >
               <img
                 src={require("../../../assets/delete.png")}

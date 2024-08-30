@@ -4,7 +4,6 @@ import { ITimeSheetProps } from "./ITimeSheetProps";
 import { styled } from "styled-components";
 import { Button, Grid, IconButton } from "@mui/material";
 import TopNavigation from "../Navigation/TopNavigation";
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import TimeSheetTable from "./TimeSheetTable/TimeSheetTable";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
 import { getTimeLogsListData } from "../TimeLogs/Services";
@@ -31,7 +30,7 @@ const NavigationLinks = styled("div")({
   gap: "0px",
 });
 
-const NavLink = styled(Button)(({}) => ({
+const NavLink = styled(Button)(({ }) => ({
   textTransform: "none",
   color: "#000",
   borderBottom: "3px solid transparent",
@@ -55,15 +54,15 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
   const { absoluteURL, spHttpClient } = props;
   const [topNavigationMode, setTopNavigationMode] = useState();
   const [topNavigationState, setTopNavigationState] = useState("myData");
-  const [myDataActiveLink, setMyDataActiveLink] =
-    useState<string>("MyTimeSheet");
+  const [myDataActiveLink, setMyDataActiveLink] = useState<string>("MyTimeSheet");
   const [timeLogsData, setTimeLogsData] = useState<TimeLogsData[]>([]);
-  const [myTimeSheetData , setMyTimeSheetData] = useState<TimeLogsData[]>([]);
+  const [myTimeSheetData, setMyTimeSheetData] = useState<TimeLogsData[]>([]);
   const [projectsData, setProjectsData] = useState<ProjectsData[]>(
     projectsInitialState.projectsData
   );
+  const [teamTimeSheetData, setTeamTimeSheetData] = useState<TimeLogsData[]>([]);
+  const [updateStatus, setUpdateStatus] = useState(false);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       await getProjectListData(
@@ -82,46 +81,38 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
         props.isUserAdmin,
         props.isUserReportingManager
       );
+      setTeamTimeSheetData(teamTimeSheetData);
+      await handleTabChange("MyTimeSheet");
     };
     fetchData();
   }, []);
-  
+
 
   const filterDataForReportingManager = (
-    timeLogsData: any[],
     projectsData: any[],
-    setTimeLogsData: (data: any) => void
+    setTeamTimeSheetData: (data: any) => void
   ) => {
+    
     if (props.isUserReportingManager) {
-      const filteredTimeLogs = timeLogsData.filter((timeLog) => {
+      const filteredTimeLogs = teamTimeSheetData.filter((timeLog) => {
         const project = projectsData.find(
           (project) =>
             project.ProjectId === timeLog.ProjectId &&
             JSON.parse(project.ReportingManager)?.[0]?.[0]?.secondaryText ===
-              props.loggedInUserDetails.Email
+            props.loggedInUserDetails.Email
         );
         return !!project;
       });
-      setTimeLogsData(filteredTimeLogs);
+      setTeamTimeSheetData(filteredTimeLogs);
     }
   };
 
   const handleTabChange = async (tab: string) => {
     setMyDataActiveLink(tab);
     if (tab === "TeamTimeSheet") {
-      await getTimeLogsListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setTimeLogsData,
-        props.loggedInUserDetails,
-        "TimeSheet",
-        props.isUserAdmin,
-        props.isUserReportingManager,
-      );
       await filterDataForReportingManager(
-        timeLogsData,
         projectsData,
-        setTimeLogsData
+        setTeamTimeSheetData
       );
     }
     if (tab === "MyTimeSheet") {
@@ -180,7 +171,9 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
                     loggedInUserDetails={props.loggedInUserDetails}
                     timeLogsData={myTimeSheetData}
                     myDataActiveLink={myDataActiveLink}
-                    TableType = "MyTimeSheet"
+                    TableType="MyTimeSheet"
+                    setUpdateStatus = {setUpdateStatus}
+                    updateStatus = {updateStatus}
                   ></TimeSheetTable>
                 </>
               )}
@@ -193,10 +186,14 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
                     loggedInUserDetails={props.loggedInUserDetails}
                     timeLogsData={timeLogsData}
                     myDataActiveLink={myDataActiveLink}
-                    TableType = "TeamTimeSheet"
+                    TableType="TeamTimeSheet"
+                    setUpdateStatus = {setUpdateStatus}
+                    updateStatus ={updateStatus}
                   ></TimeSheetTable>
                 </>
               )}
+
+
             </Content>
           )}
         </MainContainer>

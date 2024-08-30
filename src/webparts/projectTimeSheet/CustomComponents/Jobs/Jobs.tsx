@@ -309,7 +309,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
            zIndex: 9999, 
          }}
        >
-        {deleteSuccessfullyAlert ?"Task has been successfully deleted!" : addSuccessFullyAlert ? "Task has been successfully added!" : editSuccessFullyAlert ? "Project has been successfully edited!" : ""}
+        {deleteSuccessfullyAlert ?"Task has been successfully deleted!" : addSuccessFullyAlert ? "Task has been successfully added!" : editSuccessFullyAlert ? "Task has been successfully edited!" : ""}
        </Alert>
       )}
     </div>

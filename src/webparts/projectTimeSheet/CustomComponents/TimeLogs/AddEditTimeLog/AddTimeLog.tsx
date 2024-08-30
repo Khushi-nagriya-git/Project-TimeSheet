@@ -117,38 +117,49 @@ const AddTimeLog = (props: {
       try {
         await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
       } catch (error) {
-        console.log("Error fetching data:", error);
+       // console.log("Error fetching data:", error);
       }
     };
     fetchData();
-    console.log(jobsData)
   }, []);
   
 
   useEffect(() => {
-    const fetchData = async () => {
-      await getJobListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setJobsData,
-        props.loggedInUserDetails,
-        projectsData,
-        props.isUserAdmin
-      );
-  
-      if (props.selectedProject) {
-        const filtered = jobsData.filter(
-          (job) => job.ProjectId === props.selectedProject
-        );
-        setFilteredJobs(filtered);
-      } else {
-        setFilteredJobs(jobsData);
-      }
-    };
-  
-    fetchData();
-  }, [props.selectedProject, jobsData]);
-  
+  const fetchData = async () => {
+    await getJobListData(
+      props.absoluteURL,
+      props.spHttpClient,
+      setJobsData,
+      props.loggedInUserDetails,
+      projectsData,
+      props.isUserAdmin
+    );
+  };
+
+  fetchData();
+}, [props.absoluteURL, props.spHttpClient, props.loggedInUserDetails, projectsData, props.isUserAdmin]);
+
+useEffect(() => {
+  if (jobsData.length > 0) {
+    const filtered = jobsData.filter((job) => {
+     // console.log('Filtering Job:', job); 
+      const isProjectMatch = job.ProjectId === props.selectedProject;
+      const isAssigneeMatch = job.AssignedToPeoplePicker &&
+          job.AssignedToPeoplePicker.some(
+              (assignee) => assignee.EMail === props.loggedInUserDetails.Email
+          );
+
+      return isProjectMatch && isAssigneeMatch;
+    });
+
+  //  console.log('Filtered Jobs:', filtered); 
+    setFilteredJobs(filtered);
+  } else {
+    setFilteredJobs([]);
+  }
+}, [jobsData, props.selectedProject, props.loggedInUserDetails]);
+
+
 
   const handleProjectChange = (
     event: React.FormEvent<HTMLDivElement>,

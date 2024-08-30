@@ -13,23 +13,22 @@ export const getTimeLogsListData = async (
 
 ) => {
   let filterQuery = "";
-
   if (loggedInUserDetails) {
     switch (type) {
       case "TimeLogs":
-        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}'`;
+        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending' or Status eq 'Not Submitted' or Status eq 'Rejected'`;
         break;
   
       case "TimeSheet":
         if (isUserAdmin || isUserReportingManager) {
-          filterQuery = `Status eq 'Pending'`;
+          filterQuery = `Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected'`;
         } else {
-          filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending'`;
+          filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected'`;
         }
         break;
   
       case "MyTimeSheet":
-        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending'`;
+        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected'`;
         break;
   
       default:
@@ -129,7 +128,8 @@ export async function updateRecords(
   updateType: string,
   LockedMinutes: number,
   updateddata: any, // This can be an array when updating multiple rows
-  editTimeLogId: number
+  editTimeLogId: number,
+  setUpdateStatus:React.Dispatch<React.SetStateAction<any>>
 ) {
   let timerTimeLogId;
 
@@ -142,6 +142,52 @@ export async function updateRecords(
   try {
     // Handle multiple updates for updateTimeLogStatusforApproval
     if (updateType === "updateTimeLogStatusforApproval") {
+      const updatePromises = updateddata.map(async (timeLog: any) => {
+        const response = await spHttpClient.get(
+          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
+          SPHttpClient.configurations.v1
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.value && data.value.length > 0) {
+            const itemToUpdate = data.value[0];
+            const itemId = itemToUpdate.ID;
+            const listItemData = {
+              Status: timeLog.Status, 
+            };
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateResponse = await spHttpClient.post(
+              updateEndpoint,
+              SPHttpClient.configurations.v1,
+              {
+                headers: {
+                  Accept: "application/json;odata=nometadata",
+                  "Content-type": "application/json;odata=nometadata",
+                  "odata-version": "",
+                  "IF-MATCH": "*",
+                  "X-HTTP-Method": "MERGE",
+                },
+                body: JSON.stringify(listItemData),
+              }
+            );
+            if(updateResponse.ok){
+              setUpdateStatus(true)
+            }
+            if (!updateResponse.ok) {
+              console.log("Error updating item:", updateResponse.statusText);
+            }
+          } else {
+            console.log("No item found with the specified TimelogsId.");
+          }
+        } else {
+          console.log("Error fetching item:", response.statusText);
+        }
+      });
+
+      await Promise.all(updatePromises);
+
+    } else if(updateType === "TimeLogforApproval"){
+
       const updatePromises = updateddata.map(async (timeLog: any) => {
         // Fetch the existing item data for each time log
         const response = await spHttpClient.get(
@@ -172,7 +218,10 @@ export async function updateRecords(
                 body: JSON.stringify(listItemData),
               }
             );
-
+            if(updateResponse.ok){
+              alert("TimeSheet Approved")
+              setUpdateStatus(true)
+            }
             if (!updateResponse.ok) {
               console.log("Error updating item:", updateResponse.statusText);
             }
@@ -185,7 +234,54 @@ export async function updateRecords(
       });
 
       await Promise.all(updatePromises);
-    } else {
+    }if(updateType === "TimeLogforRejection"){
+      const updatePromises = updateddata.map(async (timeLog: any) => {
+        // Fetch the existing item data for each time log
+        const response = await spHttpClient.get(
+          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
+          SPHttpClient.configurations.v1
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.value && data.value.length > 0) {
+            const itemToUpdate = data.value[0];
+            const itemId = itemToUpdate.ID;
+            const listItemData = {
+              Status: timeLog.Status, 
+            };
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateResponse = await spHttpClient.post(
+              updateEndpoint,
+              SPHttpClient.configurations.v1,
+              {
+                headers: {
+                  Accept: "application/json;odata=nometadata",
+                  "Content-type": "application/json;odata=nometadata",
+                  "odata-version": "",
+                  "IF-MATCH": "*",
+                  "X-HTTP-Method": "MERGE",
+                },
+                body: JSON.stringify(listItemData),
+              }
+            );
+            if(updateResponse.ok){
+              alert("TimeSheet Reject")
+              setUpdateStatus(true)
+            }
+            if (!updateResponse.ok) {
+              console.log("Error updating item:", updateResponse.statusText);
+            }
+          } else {
+            console.log("No item found with the specified TimelogsId.");
+          }
+        } else {
+          console.log("Error fetching item:", response.statusText);
+        }
+      });
+
+      await Promise.all(updatePromises);
+    }else{
       // Single item update for other types
       const response = await spHttpClient.get(
         `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timerTimeLogId}`,

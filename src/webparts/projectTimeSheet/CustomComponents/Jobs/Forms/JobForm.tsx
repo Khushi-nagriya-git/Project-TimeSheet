@@ -175,6 +175,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         setFormData((prevData) => ({
           ...prevData,
           JobAssigness: updatedJobAssignees,
+          
         }));
       }
     } else {
@@ -219,8 +220,10 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
   const handleCancel = () => {
     setOpen(false);
     props.setDrawerOpen(false);
+    setShowEstimatedHour(false);
+    formData.JobAssigness=[];
     props.setMode("add");
-    setFormData(props.initialData);
+    setFormData(initialState.jobFormData);
     setSelectedPeoplePicker([]);
   };
 

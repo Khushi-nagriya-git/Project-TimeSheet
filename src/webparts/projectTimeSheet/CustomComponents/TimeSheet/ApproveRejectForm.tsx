@@ -2,7 +2,9 @@ import * as React from "react";
 import {
   Box,
   Button,
+  Checkbox,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
@@ -13,31 +15,46 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TableSortLabel,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Label } from "@fluentui/react/lib/Label";
 import { Dropdown } from "@fluentui/react/lib/components/Dropdown";
 import { TextField } from "@fluentui/react";
+import { updateRecords } from "../TimeLogs/Services";
+import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
 
 const TimeSheetForm = ({
   open,
   onClose,
   selectedData,
+  absoluteURL,
+  spHttpClient,
+  setUpdateStatus,
+  updateStatus
 }: {
   open: boolean;
   onClose: () => void;
   selectedData: any[];
+  absoluteURL: any;
+  spHttpClient: any;
+  setUpdateStatus:React.Dispatch<React.SetStateAction<any>>;
+  updateStatus:any
 }) => {
   const [currentWeek, setCurrentWeek] = React.useState(new Date());
   const TaskTypeOptions = ["Billable", "Non Billable"];
   const statusOptions = ["Pending", "Approved", "Rejected"];
+  const [selected, setSelected] = React.useState<string[]>([]);
+  const [order, setOrder] = React.useState<"asc" | "desc">("asc");
+  const [orderBy, setOrderBy] = React.useState<string>("ProjectName");
+
   if (!selectedData || selectedData.length === 0) return null;
 
   const convertMinutesToHoursAndMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${hours} Hrs ${mins} Mins`;
+    return `${hours} H ${mins} M`;
   };
 
   const getStartOfWeek = (date: Date) => {
@@ -72,17 +89,19 @@ const TimeSheetForm = ({
   };
 
   const weekDates = getWeekDates(currentWeek);
-
-  const formatDate = (date?: Date) => {
+  const formatDate = (date?: Date): string => {
     if (date) {
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-      });
+      return date
+        .toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "2-digit",
+          month: "numeric",
+        })
+        .replace(",", "");
     }
     return "N/A";
   };
+
   const groupedData = selectedData.reduce((acc: any, log: any) => {
     const logDate = new Date(log.Created);
 
@@ -96,6 +115,7 @@ const TimeSheetForm = ({
           Status: log.Status,
           BillableStatus: log.BillableStatus,
           LoggedHoursByDay: {},
+          TimelogsId: log.TimelogsId,
         };
       }
 
@@ -107,7 +127,106 @@ const TimeSheetForm = ({
     return acc;
   }, {});
 
-  const groupedDataArray = Object.values(groupedData);
+  const groupedDataArray:TimeLogsData[] = Object.values(groupedData);
+
+  const handleRequestSort = (property: string) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
+  const sortedData = groupedDataArray.sort((a: any, b: any) => {
+    if (orderBy === "Status" || orderBy === "TaskType") {
+      if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
+      if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+      return 0;
+    }
+    return order === "asc"
+      ? a[orderBy].localeCompare(b[orderBy])
+      : b[orderBy].localeCompare(a[orderBy]);
+  });
+
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelecteds = sortedData.map((log: any) => log.TimelogsId);
+      setSelected(newSelecteds);
+      return;
+    }
+    setSelected([]);
+  };
+
+  const handleClick = (name: string) => {
+    const selectedIndex = selected.indexOf(name);
+    let newSelected: string[] = [];
+
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, name);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+
+    setSelected(newSelected);
+  };
+
+  const isSelected = (name: string) => selected.indexOf(name) !== -1;
+
+  const handleApproved = async () => {
+   let updatedTimeLogsData :TimeLogsData[] =[];
+    for (let i=0;i<groupedDataArray.length;i++){
+      for(let j=0;j<selected.length;j++){
+       if(groupedDataArray[i]?.TimelogsId === parseInt(selected[j])){
+        updatedTimeLogsData.push(groupedDataArray[i])
+       }
+      }
+    }
+    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
+      ...timeLog,
+      Status: "Approved",
+    }));
+    await updateRecords(
+      spHttpClient,
+      absoluteURL,
+      "TimeLogforApproval",
+      0,
+      updatedTimeLogsData,
+      0,
+      setUpdateStatus
+    );
+   
+  };
+
+  const handleReject = async () => {
+    let updatedTimeLogsData :TimeLogsData[] =[];
+     for (let i=0;i<groupedDataArray.length;i++){
+       for(let j=0;j<selected.length;j++){
+        if(groupedDataArray[i]?.TimelogsId === parseInt(selected[j])){
+         updatedTimeLogsData.push(groupedDataArray[i])
+        }
+       }
+     }
+     updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
+       ...timeLog,
+       Status: "Rejected",
+     }));
+     await updateRecords(
+       spHttpClient,
+       absoluteURL,
+       "TimeLogforRejection",
+       0,
+       updatedTimeLogsData,
+       0,
+       setUpdateStatus
+     );
+    
+   };
+
 
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
@@ -120,6 +239,7 @@ const TimeSheetForm = ({
             position: "absolute",
             right: 8,
             top: 8,
+            border: "1px solid grey",
             color: (theme) => theme.palette.grey[500],
           }}
         >
@@ -243,7 +363,7 @@ const TimeSheetForm = ({
                 />
               </Grid>
 
-              <Grid item sx={{ marginBottom: "33px" }}>
+              {/* <Grid item sx={{ marginBottom: "33px" }}>
                 <Label style={{ fontWeight: "600" }}>Pending Count</Label>
                 <TextField
                   type="number"
@@ -254,7 +374,7 @@ const TimeSheetForm = ({
                   // )}
                   style={{ width: "230px" }}
                 />
-              </Grid>
+              </Grid> */}
 
               <Grid item>
                 <Box
@@ -311,43 +431,80 @@ const TimeSheetForm = ({
                       "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                   }}
                 >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      color="primary"
+                      indeterminate={
+                        selected.length > 0 &&
+                        selected.length < sortedData.length
+                      }
+                      checked={
+                        sortedData.length > 0 &&
+                        selected.length === sortedData.length
+                      }
+                      onChange={handleSelectAllClick}
+                    />
+                  </TableCell>
                   <TableCell
-                    align="left"
                     sx={{
-                      width: "15%",
+                      width: "14%",
                       fontWeight: "600",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
+                    align="left"
+                    sortDirection={orderBy === "ProjectName" ? order : false}
                   >
-                    Project
+                    <TableSortLabel
+                      active={orderBy === "ProjectName"}
+                      direction={orderBy === "ProjectName" ? order : "asc"}
+                      onClick={() => handleRequestSort("ProjectName")}
+                    >
+                      Project
+                    </TableSortLabel>
                   </TableCell>
                   <TableCell
                     align="left"
                     sx={{
-                      width: "15%",
+                      width: "14%",
                       fontWeight: "600",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
+                    sortDirection={orderBy === "JobName" ? order : false}
                   >
-                    Task
+                    <TableSortLabel
+                      active={orderBy === "JobName"}
+                      direction={orderBy === "JobName" ? order : "asc"}
+                      onClick={() => handleRequestSort("JobName")}
+                    >
+                      Task
+                    </TableSortLabel>
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
-                      width: "10%",
+                      width: "8%",
                       fontWeight: "600",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
+                    sortDirection={orderBy === "Status" ? order : false}
                   >
-                    Status
+                    <TableSortLabel
+                      active={orderBy === "Status"}
+                      direction={orderBy === "Status" ? order : "asc"}
+                      onClick={() => handleRequestSort("Status")}
+                    >
+                      Status
+                    </TableSortLabel>
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
-                      width: "10%",
+                      width: "8%",
                       fontWeight: "600",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -355,89 +512,173 @@ const TimeSheetForm = ({
                   >
                     Task Type
                   </TableCell>
-                  {weekDates.map((date, index) => (
-                    <TableCell key={index}  align="left"
-                    sx={{
-                      width: "8%",
-                      fontWeight: "600",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}>
-                      {date.toLocaleDateString("en-US")}
+                  {weekDates.map((date) => (
+                    <TableCell
+                      key={date.toDateString()}
+                      align="center"
+                      sx={{
+                        width: "8%",
+                        fontWeight: "600",
+                        fontFamily:
+                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      }}
+                    >
+                      {formatDate(date)}
                     </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {groupedDataArray.map((log: any, index: number) => (
-                  <TableRow key={index}>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
+                {sortedData.map((log: any, index: number) => {
+                  const isItemSelected = isSelected(log.TimelogsId);
+                  const labelId = `enhanced-table-checkbox-${index}`;
+
+                  return (
+                    <TableRow
+                      key={log.TimelogsId}
+                      hover
+                      onClick={() => handleClick(log.TimelogsId)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      selected={isItemSelected}
                     >
-                      {log.ProjectName}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      {log.JobName}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      {log.Status}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
-                      {log.BillableStatus}
-                    </TableCell>
-                    {weekDates.map((date, dateIndex) => (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          color="primary"
+                          checked={isItemSelected}
+                          inputProps={{
+                            "aria-labelledby": labelId,
+                          }}
+                        />
+                      </TableCell>
                       <TableCell
-                        key={dateIndex}
-                        align="left"
                         sx={{
                           fontFamily:
                             "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                         }}
                       >
-                        {log.LoggedHoursByDay[date.toLocaleDateString("en-US")]
-                          ? convertMinutesToHoursAndMinutes(
-                              log.LoggedHoursByDay[
-                                date.toLocaleDateString("en-US")
-                              ]
-                            )
-                          : ""}
+                        {log.ProjectName}
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                      <TableCell
+                        sx={{
+                          fontFamily:
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        }}
+                      >
+                        {log.JobName}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontFamily:
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        }}
+                      >
+                        {log.Status}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontFamily:
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        }}
+                      >
+                        {log.BillableStatus}
+                      </TableCell>
+                      {weekDates.map((date) => {
+                        const loggedHours =
+                          log.LoggedHoursByDay[
+                            date.toLocaleDateString("en-US")
+                          ] || 0;
+
+                        return (
+                          <TableCell
+                            key={date.toDateString()}
+                            align="center"
+                            sx={{
+                              fontFamily:
+                                "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                            }}
+                          >
+                            {loggedHours > 0
+                              ? convertMinutesToHoursAndMinutes(loggedHours)
+                              : ""}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
-
-          <Box sx={{ mt: 2 }}>
-            <Button onClick={onClose} variant="contained" color="primary">
-              Close
-            </Button>
-          </Box>
         </Box>
       </DialogContent>
+
+      <DialogActions
+        sx={{
+          justifyContent: "flex-start",
+          padding: "8px 24px",
+        }}
+      >
+        <Button
+          onClick={handleApproved}
+          sx={{
+            backgroundColor: "#65b741",
+            color: "#fff",
+            height: "35px",
+            borderRadius: "5px",
+            marginBottom: "5px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#65b741",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            },
+            width: "79px",
+
+          }}
+        >
+          Approve
+        </Button>
+
+        <Button
+          onClick={handleReject}
+          sx={{
+            backgroundColor: "#ff8a8a",
+            color: "#fff",
+            height: "35px",
+            borderRadius: "5px",
+            marginBottom: "5px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            textTransform: "none",
+            "&:hover": {
+              backgroundColor: "#ff8a8a",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            },
+            width: "79px",
+
+          }}
+        >
+          Reject
+        </Button>
+
+        <Button
+          onClick={onClose}
+          sx={{
+            color: "rgb(50, 49, 48)",
+            backgroundColor: "white",
+            height: "35px",
+            border: "1px solid grey",
+            borderRadius: "5px",
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+            marginBottom: "5px",
+            textTransform: "none",
+            width: "79px",
+          }}
+        >
+          Cancel
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

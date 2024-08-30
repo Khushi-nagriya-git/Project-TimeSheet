@@ -144,7 +144,10 @@ const EditTimeLog = (props: {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.currentTarget;
-    setFormData({ ...formData, [name]: parseInt(value, 10) });
+  
+    if (value === '' || (!isNaN(Number(value)) && Number(value) >= 0)) {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleChange = (
@@ -260,7 +263,7 @@ const EditTimeLog = (props: {
             <TextField
               type="number"
               name="LoggedHours" 
-              value={formData.LoggedHours?.toString() || '0'}
+              value={formData.LoggedHours?.toString() || ''}
               onChange={handleChangeEstimatedHoursInput}
               style={{ width: "320px" }}
               label="Logged Mintues"

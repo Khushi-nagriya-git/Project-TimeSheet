@@ -34,7 +34,6 @@ import EditTimeLog from "./AddEditTimeLog/EditTimeLog";
 import { IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, Pending } from "@mui/icons-material";
 
-
 const FullHeightGrid = styled(Grid)({
   height: "100%",
   boxSizing: "border-box",
@@ -126,9 +125,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   const [projectsData, setProjectsData] = useState<ProjectsData[]>(
     projectsInitialState.projectsData
   );
-  const [currentWeek, setCurrentWeek] = useState<Date[]>([]); 
-  const [startDate, setStartDate] = useState<Date>(new Date()); 
+  const [currentWeek, setCurrentWeek] = useState<Date[]>([]);
+  const [startDate, setStartDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [updateStatus, setUpdateStatus] = useState(false);
+
 
   useEffect(() => {
     setCurrentWeek(getCurrentWeek(startDate));
@@ -203,7 +204,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
           "TimeLogs",
           props.isUserAdmin,
           props.isUserReportingManager
-
         );
       } catch (error) {
         console.log("Error fetching data:", error);
@@ -236,7 +236,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         "timer",
         LockedMinutes,
         initialFormData,
-        editTimeLogId
+        editTimeLogId,
+        setUpdateStatus
       );
       await getTimeLogsListData(
         props.absoluteURL,
@@ -246,7 +247,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         "TimeLogs",
         props.isUserAdmin,
         props.isUserReportingManager
-
       );
       //   await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
       //   let data;
@@ -365,7 +365,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         "TimeLogs",
         props.isUserAdmin,
         props.isUserReportingManager
-
       );
       setTimerAlert(true);
     }
@@ -380,7 +379,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       "TimeLogs",
       props.isUserAdmin,
       props.isUserReportingManager
-
     );
     const jobTimeLogData = timeLogsData.filter(
       (timelog: any) => timelog.TimelogsId === id
@@ -448,7 +446,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       "TimeLogs",
       props.isUserAdmin,
       props.isUserReportingManager
-
     );
     setIsOpen(false);
     setDeleteSuccessfullyAlert(true);
@@ -487,7 +484,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       "formdata",
       0,
       data,
-      editTimeLogId
+      editTimeLogId,
+      setUpdateStatus
     );
     await getTimeLogsListData(
       props.absoluteURL,
@@ -497,7 +495,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       "TimeLogs",
       props.isUserAdmin,
       props.isUserReportingManager
-
     );
     setEditFormOpen(false);
     // setAlert(true);
@@ -510,14 +507,15 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       ...timeLog,
       Status: "Pending",
     }));
-  
+
     await updateRecords(
       props.spHttpClient,
       props.absoluteURL,
       "updateTimeLogStatusforApproval",
       0,
       updatedTimeLogsData,
-      editTimeLogId
+      editTimeLogId,
+      setUpdateStatus
     );
     await getTimeLogsListData(
       props.absoluteURL,
@@ -528,8 +526,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserAdmin,
       props.isUserReportingManager
     );
-    alert("TimeSheet Submitted")
-
+    alert("TimeSheet Submitted");
   };
 
   const weekStart = currentWeek[0];
@@ -542,7 +539,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         day: "2-digit",
       });
     }
-    return "N/A"; 
+    return "N/A";
   };
 
   return (
@@ -595,7 +592,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                     </WeekDateDisplay>
                   </div>
                   <Button
-                     onClick={updateTimeLogStatusforApproval}
+                    onClick={updateTimeLogStatusforApproval}
+                    disabled={isRunning}
                     style={{
                       backgroundColor: "#6fbb4d",
                       color: "white",
@@ -668,7 +666,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                       loggedInUserDetails={props.loggedInUserDetails}
                       isUserAdmin={props.isUserAdmin}
                       isUserReportingManager={props.isUserReportingManager}
-
                     ></TimeLogTable>
                   </>
                 )}
