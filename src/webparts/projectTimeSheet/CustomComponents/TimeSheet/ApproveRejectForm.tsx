@@ -53,6 +53,9 @@ const TimeSheetForm = ({
   const [selected, setSelected] = React.useState<string[]>([]);
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = React.useState<string>("ProjectName");
+  const [projectFilter, setProjectFilter] = React.useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(undefined);
+  const [taskTypeFilter, setTaskTypeFilter] = React.useState<string | undefined>(undefined);
 
   if (!selectedData || selectedData.length === 0) return null;
 
@@ -260,6 +263,27 @@ const TimeSheetForm = ({
     }
   };
 
+  const handleProjectFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+    setProjectFilter(option?.key);
+  };
+  
+  const handleStatusFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+    setStatusFilter(option?.key);
+  };
+  
+  const handleTaskTypeFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+    setTaskTypeFilter(option?.key);
+  };
+
+  const filteredData = sortedData.filter((log: any) => {
+    const matchesProject = projectFilter ? log.ProjectName === projectFilter : true;
+    const matchesStatus = statusFilter ? log.Status === statusFilter : true;
+    const matchesTaskType = taskTypeFilter ? log.BillableStatus === taskTypeFilter : true;
+  
+    return matchesProject && matchesStatus && matchesTaskType;
+  });
+  
+
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
       <DialogTitle>
@@ -291,10 +315,8 @@ const TimeSheetForm = ({
                 <Label style={{ fontWeight: "600" }}>Projects</Label>
                 <Dropdown
                   placeholder="Select project"
-                  // selectedKey={props.selectedBillableStatus}
-                  // onChange={handleBillableStatusChange}
-                  // disabled={props.isRunning}
-                  // errorMessage={props.statusError}
+                  selectedKey={projectFilter}
+                  onChange={handleProjectFilterChange}
                   options={TaskTypeOptions.map((status) => ({
                     key: status,
                     text: status,
@@ -327,10 +349,8 @@ const TimeSheetForm = ({
                 <Label style={{ fontWeight: "600" }}>Status</Label>
                 <Dropdown
                   placeholder="Select status"
-                  // selectedKey={props.selectedBillableStatus}
-                  // onChange={handleBillableStatusChange}
-                  // disabled={props.isRunning}
-                  // errorMessage={props.statusError}
+                  selectedKey={statusFilter}
+                  onChange={handleStatusFilterChange}
                   options={statusOptions.map((status) => ({
                     key: status,
                     text: status,
@@ -363,10 +383,8 @@ const TimeSheetForm = ({
                 <Label style={{ fontWeight: "600" }}>Task Type</Label>
                 <Dropdown
                   placeholder="Select Task Type"
-                  // selectedKey={props.selectedBillableStatus}
-                  // onChange={handleBillableStatusChange}
-                  // disabled={props.isRunning}
-                  // errorMessage={props.statusError}
+                  selectedKey={taskTypeFilter}
+                  onChange={handleTaskTypeFilterChange}
                   options={TaskTypeOptions.map((status) => ({
                     key: status,
                     text: status,
@@ -565,8 +583,8 @@ const TimeSheetForm = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedData.length > 0 ? (
-                  sortedData.map((log: any, index: number) => {
+                {filteredData.length > 0 ? (
+                  filteredData.map((log: any, index: number) => {
                     const isApproved = log.Status === "Approved";
                     const isItemSelected = isSelected(log.TimelogsId);
                     const labelId = `enhanced-table-checkbox-${index}`;
