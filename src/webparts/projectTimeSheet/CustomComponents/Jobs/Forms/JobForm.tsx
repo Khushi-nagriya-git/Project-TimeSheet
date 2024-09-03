@@ -287,7 +287,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         <Label
           style={{ fontSize: "20px", fontWeight: "bold", marginLeft: "13px" }}
         >
-          {props.mode === "edit" ? "Edit Task" : "Add Task"}
+          {props.mode === "edit" ? "Update Task" : "Add Task"}
         </Label>
         <IconButton
           aria-label="close"
@@ -311,6 +311,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               label="Task Name"
               name="jobName"
               required
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               style={{ width: "320px" }}
               value={formData.jobName}
               onChange={handleChange}
@@ -318,6 +319,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
             <Dropdown
               label="Project Name"
               selectedKey={formData.projectId}
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               onChange={handleDropdownChange("projectName")}
               options={Projects}
               style={{ width: "320px" }}
@@ -328,6 +330,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               label="Start Date"
               type="date"
               name="startDate"
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               required
               style={{ width: "320px" }}
               value={formData.startDate}
@@ -337,6 +340,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               label="End Date"
               type="date"
               name="endDate"
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               required
               style={{ width: "320px" }}
               value={formData.endDate}
@@ -345,10 +349,11 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
           </Box>
           <Box style={{ display: "flex", gap: "10px" }}>
             <Dropdown
-              label="Billable Status"
+              label="Task Type"
               selectedKey={formData.billableStatus}
               onChange={handleDropdownChange("billableStatus")}
               options={billableStatusOptions}
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               style={{ width: "320px" }}
             />
             <Dropdown
@@ -366,6 +371,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               autoAdjustHeight={false}
               name="description"
               style={{ width: "650px" }}
+              disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
               value={formData.description}
               onChange={handleChange}
             />
@@ -385,6 +391,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
                 selectedKeys={selectedTeamMemberIds}
                 onChange={handleAssigneeChange}
                 options={projectTeamOptions}
+                disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
                 style={{ width: "100%" }}
                 multiSelect
               />
@@ -412,6 +419,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
                       <TextField
                         key={index}
                         type="number"
+                        disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
                         value={user?.estimatedHours?.toString()}
                         onChange={handleChangeEstimatedHoursInput(user.id)}
                         styles={{ root: { width: "100%" } }}
@@ -436,6 +444,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               </Label>
               <input
                 type="file"
+                disabled = {props.mode === "edit" && !(formData.Author === props.loggedInUserDetails.Email)}
                 name="attachment"
                 id="attachment"
                 onChange={handleChangeAttachment}

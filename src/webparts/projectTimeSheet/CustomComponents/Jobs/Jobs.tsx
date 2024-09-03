@@ -19,7 +19,11 @@ import { JobFormData, initialState } from "./Forms/IJobFormStats";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
 import { getTimeLogsListData } from "../TimeLogs/Services";
 import DeleteDialogBox from "./DialogBoxs/DeleteDialogBox"
-import { Alert, MyTeam } from "../../../..";
+import { Alert, Box, MyTeam } from "../../../..";
+import { CircularProgress } from "@mui/material";
+import { Drawer, IconButton } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import SideNavigation from "../Navigation/SideNavigation";
 
 const FullHeightGrid = styled(Grid)({
   height: "100%",
@@ -51,8 +55,13 @@ const NavLink = styled(Button)(({ theme }) => ({
   },
 }));
 
+const DrawerContainer = styled(Drawer)({
+  width: 500,
+  flexShrink: 0,
+});
+
 const Content = styled("div")({
-  height: "440px",
+  height: "calc(100vh - 143px)",
   backgroundColor: "#F9F9F9",
   boxSizing: "border-box",
   padding: "13px",
@@ -73,7 +82,6 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [selectedAssigneesName, setSelectedAssigneesName] = useState<string[]>([]);
   const [peoplePickerDefaultTeam, setPeoplePickerDefaultTeam] = useState('');
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [editJobId , setEditJobId ]= useState<number>(0);
   const [currentData, setCurrentData] = useState<JobFormData>(initialState.jobFormData);
@@ -87,17 +95,24 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [addSuccessFullyAlert, setAddSuccessFullyAlert] = useState(false);
   const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<JobsData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpenNavigation(open);
+  };
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [ drawerOpenNavigation , setDrawerOpenNavigation] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin);
+        await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails, props.isUserAdmin);
         await getTimeLogsListData(props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails,"TimeLogs",props.isUserAdmin,props.isUserReportingManager);
       } catch (error) {
-        console.log("Error fetching data:", error);
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  
     fetchData();
   }, []); 
   
@@ -153,13 +168,15 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
     if (mode === "add") {
       await addJobs(data, props.absoluteURL, props.spHttpClient);
       setAddFormOpen(false);
-      setAddSuccessFullyAlert(true);
       await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
+      setAlert(true);
+      setAddSuccessFullyAlert(true);
       await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails,props.isUserAdmin);
     } else if (mode === "edit") {
-      updateJobRecords(props.spHttpClient,props.absoluteURL,editJobId,data,"formEdit",setJobsData,setCurrentData)
-      await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
+      await updateJobRecords(props.spHttpClient,props.absoluteURL,editJobId,data,"formEdit",setJobsData,setCurrentData,props.loggedInUserDetails)
       setAddFormOpen(false);
+      await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData,props.loggedInUserDetails,projectsData,props.isUserAdmin);
+      await getProjectListData(props.absoluteURL, props.spHttpClient, setProjectsData,props.loggedInUserDetails,props.isUserAdmin);
       setAlert(true);
       setEditSuccessFullyAlert(true);
       setCurrentData(initialState.jobFormData);
@@ -188,14 +205,27 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
           style={{ display: "flex", height: "100%", width: "100%" }}
         >
           <MainContainer>
-            <TopNavigation
-              setTopNavigationState={setTopNavigationState}
-              setTopNavigationMode={setTopNavigationMode}
-              setModuleTab = {props.setModuleTab}
-            />
             {topNavigationState === "myData" && (
               <Content>
                 <NavigationLinks>
+                <Box display="flex" alignItems="center" marginRight="10px">
+                    <IconButton
+                      edge="start"
+                      color="inherit"
+                      aria-label="menu"
+                      onClick={toggleDrawer(true)}
+                      sx={{ margin: 0 }}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <DrawerContainer
+                      anchor="left"
+                      open={drawerOpenNavigation}
+                      onClose={toggleDrawer(false)}
+                    >
+                      <SideNavigation setModuleTab={props.setModuleTab} />
+                    </DrawerContainer>
+                  </Box>
                   <NavLink
                     className={myDataActiveLink === "Jobs" ? "active" : ""}
                     onClick={() => handleTabChange("Jobs")}
@@ -220,55 +250,69 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                     >
                       Add Tasks
                     </Button>
-
                   </Grid>
 
                 </NavigationLinks>
-                  <>
-                    <JobsFiltersandSearch
-                      projectsData={projectsData}
-                      onJobFilterChange={onjobFilterChange}
-                      onJobStatusChange={onJobsStatusChange}
-                      onJobsAssigneesChange={onJobsAssigneesChange}
-                      setSearchQuery={setSearchQuery}
-                      searchQuery={searchQuery}
-                      setFilteredJobs={setFilteredJobs}
-                      filteredJobs={filteredJobs}
-                      jobsData={jobsData}
-                      isUserProjectManager={props.isUserProjectManager}
-                      isUserReportingManager={props.isUserReportingManager}
-                      isUserProjectTeam={props.isUserProjectTeam}
-                      isUserAdmin={props.isUserAdmin}
-                    ></JobsFiltersandSearch>
-                    <JobsTable
-                      projectsData={projectsData}
-                      jobsProps={props}
-                      jobsData={jobsData}
-                      setMode={setMode}
-                      mode={mode}
-                      setEditJobId={setEditJobId}
-                      setCurrentData={setCurrentData}
-                      setAddFormOpen={setAddFormOpen}
-                      setDeleteAlert={setDeleteAlert}
-                      setDrawerOpen={setDrawerOpen}
-                      setIsTimeLogAvailable={setIsTimeLogAvailable}
-                      setIsOpen={setIsOpen}
-                      timeLogsData={timeLogsData}
-                      setDeletedJobId={setDeletedJobId}
-                      setFilteredJobs={setFilteredJobs}
-                      setPeoplePickerDefaultTeam={setPeoplePickerDefaultTeam}  
-                      selectedAssigneesName={selectedAssigneesName}
-                      selectedStatusName={selectedStatusName}
-                      selectedProjectName={selectedProjectName}
-                      searchQuery={searchQuery}
-                      filteredJobs={filteredJobs}
-                      isUserProjectManager={props.isUserProjectManager}
-                      isUserReportingManager={props.isUserReportingManager}
-                      isUserProjectTeam={props.isUserProjectTeam}
-                      isUserAdmin={props.isUserAdmin}
-                      loggedInUserDetails = {props.loggedInUserDetails }
-                    ></JobsTable>
-                  </>
+                {loading && (
+                     <Box
+                     sx={{
+                       display: 'flex',
+                       justifyContent: 'center',
+                       alignItems: 'center',
+                       height: '100%',
+                     }}
+                   >
+                     <CircularProgress />
+                   </Box>
+                  )}
+                  {!loading && (
+                      <>
+                      <JobsFiltersandSearch
+                        projectsData={projectsData}
+                        onJobFilterChange={onjobFilterChange}
+                        onJobStatusChange={onJobsStatusChange}
+                        onJobsAssigneesChange={onJobsAssigneesChange}
+                        setSearchQuery={setSearchQuery}
+                        searchQuery={searchQuery}
+                        setFilteredJobs={setFilteredJobs}
+                        filteredJobs={filteredJobs}
+                        jobsData={jobsData}
+                        isUserProjectManager={props.isUserProjectManager}
+                        isUserReportingManager={props.isUserReportingManager}
+                        isUserProjectTeam={props.isUserProjectTeam}
+                        isUserAdmin={props.isUserAdmin}
+                      ></JobsFiltersandSearch>
+                      <JobsTable
+                        projectsData={projectsData}
+                        jobsProps={props}
+                        jobsData={jobsData}
+                        setMode={setMode}
+                        mode={mode}
+                        setEditJobId={setEditJobId}
+                        setCurrentData={setCurrentData}
+                        setAddFormOpen={setAddFormOpen}
+                        setDeleteAlert={setDeleteAlert}
+                        setDrawerOpen={setDrawerOpen}
+                        setIsTimeLogAvailable={setIsTimeLogAvailable}
+                        setIsOpen={setIsOpen}
+                        timeLogsData={timeLogsData}
+                        setDeletedJobId={setDeletedJobId}
+                        setFilteredJobs={setFilteredJobs}
+                        setPeoplePickerDefaultTeam={setPeoplePickerDefaultTeam}  
+                        selectedAssigneesName={selectedAssigneesName}
+                        selectedStatusName={selectedStatusName}
+                        selectedProjectName={selectedProjectName}
+                        searchQuery={searchQuery}
+                        filteredJobs={filteredJobs}
+                        isUserProjectManager={props.isUserProjectManager}
+                        isUserReportingManager={props.isUserReportingManager}
+                        isUserProjectTeam={props.isUserProjectTeam}
+                        isUserAdmin={props.isUserAdmin}
+                        loggedInUserDetails = {props.loggedInUserDetails }
+                      ></JobsTable>
+                    </>
+                  )}
+                
               </Content>
             )}
 
@@ -281,7 +325,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
         </FullHeightGrid> 
       </FullHeightGrid>
       {addFormOpen && (
-          <JobForm spHttpClient={props.spHttpClient} onSubmit={handleSubmit} setMode={setMode} initialData={currentData ?? undefined} absoluteURL={props.absoluteURL} context={props.context} peoplePickerDefaultTeam = {peoplePickerDefaultTeam} projectsData={projectsData} mode={mode} setAddFormOpen={setAddFormOpen} drawerOpen={drawerOpen} setDrawerOpen = {setDrawerOpen}/>
+          <JobForm spHttpClient={props.spHttpClient} onSubmit={handleSubmit} setMode={setMode} initialData={currentData ?? undefined} loggedInUserDetails={props.loggedInUserDetails} absoluteURL={props.absoluteURL} context={props.context} peoplePickerDefaultTeam = {peoplePickerDefaultTeam} projectsData={projectsData} mode={mode} setAddFormOpen={setAddFormOpen} drawerOpen={drawerOpen} setDrawerOpen = {setDrawerOpen}/>
       )}
       {( isOpen || deleteAlert ) && (
         <DeleteDialogBox
@@ -309,7 +353,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
            zIndex: 9999, 
          }}
        >
-        {deleteSuccessfullyAlert ?"Task has been successfully deleted!" : addSuccessFullyAlert ? "Task has been successfully added!" : editSuccessFullyAlert ? "Task has been successfully edited!" : ""}
+        {deleteSuccessfullyAlert ?"Task has been successfully deleted!" : addSuccessFullyAlert ? "Task has been successfully added!" : editSuccessFullyAlert ? "Task has been successfully Updated!" : ""}
        </Alert>
       )}
     </div>

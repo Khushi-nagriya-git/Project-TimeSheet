@@ -41,7 +41,7 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
         <DialogContentText id="alert-dialog-description" className={dialogBox.dialogContentText}>
           {isTimeLogAvailable
             ? "This Task cannot be deleted as it contains associated time logs."
-            : "Are you sure you want to delete this Task?"}
+            : "Are you sure you want to delete this task?"}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -56,7 +56,7 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
             },
           }}
         >
-          {isTimeLogAvailable ? "Okay" : "Cancel"}
+          {isTimeLogAvailable ? "Ok" : "Cancel"}
         </Button>
         {!isTimeLogAvailable && (
           <Button

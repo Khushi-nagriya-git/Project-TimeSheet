@@ -16,6 +16,7 @@ import {
   KeyboardArrowDownIcon,
   KeyboardArrowUpIcon,
 } from "../../../../../index";
+import { Tooltip } from "@mui/material";
 
 const Row = (props: {
   row: ReturnType<any>;
@@ -58,6 +59,8 @@ const Row = (props: {
     return `${hours} Hrs ${mins} Mins`;
   };
 
+  const isLongName = row.projectName.length > 30;
+
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" }}>
@@ -84,7 +87,13 @@ const Row = (props: {
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
         >
-          {row.projectName}
+          {isLongName ? (
+            <Tooltip title={row.projectName}>
+              <span>{row.projectName.substring(0, 30)}...</span>
+            </Tooltip>
+          ) : (
+            row.projectName
+          )}
         </TableCell>
         <TableCell
           align="left"
@@ -107,7 +116,7 @@ const Row = (props: {
             sx={{
               borderRadius: "20px",
               border: `2px solid ${borderColor}`,
-              height: "30px",
+              height: "22px",
               width: "100px",
               display: "flex",
               alignItems: "center",
@@ -130,11 +139,10 @@ const Row = (props: {
           </IconButton>
         </TableCell>
 
-        {props.topNavigationMode === "Employee" && 
+        {props.topNavigationMode === "Employee" &&
           (props.isUserAdmin ||
-            (
-              props.loggedInUserDetails.Email ===
-                row.ReportingManagerPeoplePicker?.EMail)) && (
+            props.loggedInUserDetails.Email ===
+              row.ReportingManagerPeoplePicker?.EMail) && (
             <TableCell align="left" sx={{ height: "10px" }}>
               <Box display="flex" alignItems="left" justifyContent="left">
                 <IconButton
@@ -246,54 +254,66 @@ const Row = (props: {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow: any) => (
-                    <TableRow key={historyRow.JobName}>
-                      <TableCell
-                        align="left"
-                        component="th"
-                        scope="row"
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {historyRow.JobName}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {convertMinutesToHoursAndMinutes(
-                          historyRow.EstimatedHours
-                            ? historyRow.EstimatedHours
-                            : 0
-                        )}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {convertMinutesToHoursAndMinutes(
-                          historyRow.loggedHours ? historyRow.loggedHours : 0
-                        )}
-                      </TableCell>
-                      <TableCell
-                        align="left"
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {historyRow.JobStatus}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {row.history.map((historyRow: any) => {
+                    const isLongName = historyRow.JobName.length > 100;
+
+                    return (
+                      <TableRow key={historyRow.JobName}>
+                        <TableCell
+                          align="left"
+                          component="th"
+                          scope="row"
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {isLongName ? (
+                            <Tooltip title={historyRow.JobName}>
+                              <span>
+                                {historyRow.JobName.substring(0, 100)}...
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            historyRow.JobName
+                          )}
+                        </TableCell>
+                        <TableCell
+                          align="left"
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {convertMinutesToHoursAndMinutes(
+                            historyRow.EstimatedHours
+                              ? historyRow.EstimatedHours
+                              : 0
+                          )}
+                        </TableCell>
+                        <TableCell
+                          align="left"
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {convertMinutesToHoursAndMinutes(
+                            historyRow.loggedHours ? historyRow.loggedHours : 0
+                          )}
+                        </TableCell>
+                        <TableCell
+                          align="left"
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {historyRow.JobStatus}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </Box>

@@ -1,4 +1,5 @@
 export interface ProjectManager {
+    id: any;
     name: string;
     cost: number;
   }

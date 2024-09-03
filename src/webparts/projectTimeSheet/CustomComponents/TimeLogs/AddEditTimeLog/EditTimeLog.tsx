@@ -240,11 +240,12 @@ const EditTimeLog = (props: {
 
           <div style={{ display: "flex", gap: "10px" }}>
             <Dropdown
-              label="Billable Status"
-              placeholder="Select Billable Status"
+              label="Task Type"
+              placeholder="Select Task Type"
               selectedKey={selectedBillableStatus}
               onChange={handleBillableStatusChange}
               options={options}
+              disabled
               style={{ width: "320px" }}
             />
             <TextField

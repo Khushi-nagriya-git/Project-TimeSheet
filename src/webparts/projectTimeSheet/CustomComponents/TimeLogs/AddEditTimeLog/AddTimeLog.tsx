@@ -57,6 +57,7 @@ const AddTimeLog = (props: {
   const [filterJobs, setFilteredJobs] = useState<JobsData[]>(
     jobsInitialState.jobsData
   );
+  const [TaskType , setTaskType] = useState('');
 
   useEffect(() => {
     const savedStartTime = localStorage.getItem("stopwatchStartTime");
@@ -66,7 +67,7 @@ const AddTimeLog = (props: {
     const savedJob = localStorage.getItem("selectedJob");
     const savedBillableStatus = localStorage.getItem("selectedBillableStatus");
     const savedDescription = localStorage.getItem("description");
-
+  
     if (savedStartTime && savedElapsedTime && savedIsRunning) {
         props.setStartTime(Number(savedStartTime));
         props.setElapsedTime(Number(savedElapsedTime));
@@ -178,6 +179,7 @@ useEffect(() => {
     }
   };
 
+  
   const handleJobChange = (
     event: React.FormEvent<HTMLDivElement>,
     option?: IDropdownOption
@@ -186,11 +188,21 @@ useEffect(() => {
       const selectedValue = option.key as string;
       props.setSelectedJob(selectedValue);
       props.onJobChange(selectedValue);
+      let abc=""
+      for(let i=0;i<jobsData.length;i++){
+        if(jobsData[i].JobId === option.key){
+          abc= (jobsData[i].BillableStatus === "billable" ? "Billable" : "Non Billable")
+          setTaskType(abc);
+        }
+      }
+      props.setSelectedBillableStatus(abc);
       props.setAddTimeLog({
         ...props.addTimeLog,
         JobId: option.key as number,
         JobName: option.text,
+        BillableStatus: abc
       });
+   
     }
   };
 
@@ -311,12 +323,12 @@ useEffect(() => {
           </Grid>
 
           <Grid item>
-            <Label style={{ fontWeight: "600" }}>Billable Status</Label>
+            <Label style={{ fontWeight: "600" }}>Task Type</Label>
             <Dropdown
-              placeholder="Select billable status"
-              selectedKey={props.selectedBillableStatus}
+              placeholder="Select Task Type"
+              selectedKey={props.selectedBillableStatus??TaskType}
               onChange={handleBillableStatusChange}
-              disabled={props.isRunning}
+              disabled={true}
               errorMessage={props.statusError}
               options={statusOptions.map((status) => ({
                 key: status,

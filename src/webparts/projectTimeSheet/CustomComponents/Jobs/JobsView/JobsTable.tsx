@@ -211,6 +211,8 @@ const JobsTable = (props: {
           : "",
       JobAssigness: jobAssignees,
       attachment: job.Attachment,
+      Author:job.Author.EMail
+
     });
     props.setAddFormOpen(true);
     props.setDrawerOpen(true);
@@ -264,7 +266,7 @@ const JobsTable = (props: {
   }
 
   return (
-    <div style={{ overflowY: "auto", height: "285px", marginTop: "-15px" }}>
+    <div style={{ overflowY: "auto",  height: "calc(100vh - 250px)", marginTop: "-15px" }}>
       <Grid item xs={12}>
         <div style={{ height: "100%", overflow: "auto" }}>
           <TableContainer>
@@ -439,7 +441,7 @@ const JobsTable = (props: {
                       row.StartDate,
                       row.EndDate,
                       row.EstimatedHours,
-                      row.LoggedHours,
+                      row.loggedHours,
                       row.JobStatus,
                       row.AssignedTo,
                       row.Author

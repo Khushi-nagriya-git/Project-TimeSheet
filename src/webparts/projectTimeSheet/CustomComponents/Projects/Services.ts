@@ -152,13 +152,15 @@ export const addProjects = async (
   }
 
   const item: any = await response.json();
+  const itemId = item.d?.ID || item.ID;
   if (data.attachment) {
-    const attachmentResponse = await handleUploadAttachment(item.ID, data.attachment, absoluteURL, spHttpClient);
+    const attachmentResponse = await handleUploadAttachment(itemId, data.attachment, absoluteURL, spHttpClient);
     if (!attachmentResponse.ok) {
       console.error("Error uploading attachment");
       return;
     }
   }
+
 };
 
 export const handleUploadAttachment = async (
@@ -255,16 +257,16 @@ export async function updateUserRecords(
                 updateformData.projectTeam = JSON.parse(data.value[0].ProjectTeam);
               }
             
-              const ProjectManagerPeoplePickerId = updateformData.ProjectManagerPeoplePicker?.[0]?.id;
+              const ProjectManagerPeoplePickerId = updateformData.projectManager?.[0]?.id;
               let ReportingManagerPeoplePickerId =  updateformData.ReportingManagerPeoplePicker?.[0]?.id;
               if(updateformData.ReportingManagerPeoplePicker){
                 ReportingManagerPeoplePickerId=ReportingManagerPeoplePickerId
               }else{
-                ReportingManagerPeoplePickerId = JSON.parse(data.value[0].ReportingManager)[0].id;
+                ReportingManagerPeoplePickerId = ReportingManagerPeoplePickerId;
               }
               const ProjectTeamPeoplePickerIds = 
-              Array.isArray(updateformData.ProjectTeamPeoplePicker) && updateformData.ProjectTeamPeoplePicker.length > 0
-                ? updateformData.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
+              Array.isArray(updateformData.projectTeam) && updateformData?.projectTeam.length > 0
+                ? updateformData?.projectTeam?.map((person: { id: number }) => person?.id)
                 : [];
               let listItemData = {'__metadata': { 'type': "SP.Data.ProjectsListItem" },
                 ProjectName: updateformData.projectName,

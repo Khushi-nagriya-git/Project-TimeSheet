@@ -8,8 +8,11 @@ import {
   TableRow,
   TableHead,
   useState,
+  Avatar,
 } from "../../../../../index";
 import TimeSheetForm from "../ApproveRejectForm";
+import { ITimeSheetProps } from "../ITimeSheetProps";
+
 const TimeSheetTable = (props: {
   absoluteURL: any;
   spHttpClient: any;
@@ -18,7 +21,9 @@ const TimeSheetTable = (props: {
   myDataActiveLink: any;
   TableType: any;
   updateStatus: any;
-  setUpdateStatus:React.Dispatch<React.SetStateAction<any>>;
+  TimeSheetProps: ITimeSheetProps;
+  handleTabChange: (tab: string) => Promise<void>;
+  setUpdateStatus: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const [selectedWeekData, setSelectedWeekData] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -116,6 +121,7 @@ const TimeSheetTable = (props: {
                 )}
 
                 <TableCell
+                  align="left"
                   sx={{
                     fontWeight: "600",
                     backgroundColor: "#f3f2f1",
@@ -129,54 +135,81 @@ const TimeSheetTable = (props: {
               </TableRow>
             </TableHead>
             <TableBody>
-              {Object.keys(groupedTimeLogs).map((groupKey) => (
-                <TableRow
-                  key={groupKey}
-                  onClick={() => handleRowClick(groupedTimeLogs[groupKey].logs)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {props.myDataActiveLink === "TeamTimeSheet" && (
-                    <TableCell>
+              {Object.keys(groupedTimeLogs).length > 0 ? (
+                Object.keys(groupedTimeLogs).map((groupKey) => (
+                  <TableRow
+                    key={groupKey}
+                    onClick={() =>
+                      handleRowClick(groupedTimeLogs[groupKey].logs)
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
+                    {props.myDataActiveLink === "TeamTimeSheet" && (
+                      <TableCell>
+                        <Box
+                          display="flex"
+                          alignItems="left"
+                          justifyContent="left"
+                        >
+                          <Avatar
+                            alt={groupKey}
+                            src={`${props.TimeSheetProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${groupedTimeLogs[groupKey].logs[0].Author.EMail}&Size=S`}
+                            style={{
+                              marginRight: 8,
+                              height: "30px",
+                              width: "30px",
+                            }}
+                          />
+                          <Box sx={{ mt: 0.5 }}>{groupKey}</Box>
+                        </Box>
+                      </TableCell>
+                    )}
+                    {props.TableType === "MyTimeSheet" && (
+                      <TableCell>
+                        {props.TableType === "MyTimeSheet" &&
+                        groupedTimeLogs[groupKey].startDate
+                          ? formatDateRange(
+                              groupedTimeLogs[groupKey].startDate!,
+                              groupedTimeLogs[groupKey].endDate!
+                            )
+                          : "N/A"}
+                      </TableCell>
+                    )}
+                    <TableCell align="left" sx={{ height: "10px" }}>
                       <Box
-                        display="flex"
-                        alignItems="left"
-                        justifyContent="left"
+                        sx={{
+                          borderRadius: "20px",
+                          borderColor: "red",
+                          height: "30px",
+                          width: "100px",
+                          display: "flex",
+                          alignItems: "left",
+                          justifyContent: "left",
+                          fontFamily:
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        }}
                       >
-                        <Box sx={{ mt: 0.5 }}>{groupKey}</Box>
+                        {groupedTimeLogs[groupKey].logs[0].Status}
                       </Box>
                     </TableCell>
-                  )}
-                  {props.TableType === "MyTimeSheet" && (
-                    <TableCell>
-                      {props.TableType === "MyTimeSheet" &&
-                      groupedTimeLogs[groupKey].startDate
-                        ? formatDateRange(
-                            groupedTimeLogs[groupKey].startDate!,
-                            groupedTimeLogs[groupKey].endDate!
-                          )
-                        : "N/A"}
-                    </TableCell>
-                  )}
-
-                  <TableCell align="left" sx={{ height: "10px" }}>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={9}>
                     <Box
                       sx={{
-                        borderRadius: "20px",
-                        borderColor: "red",
-                        height: "30px",
-                        width: "100px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        textAlign: "center",
+                        fontWeight: "600",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
                     >
-                      {groupedTimeLogs[groupKey].logs[0].Status}
+                      No data found
                     </Box>
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -190,6 +223,8 @@ const TimeSheetTable = (props: {
         absoluteURL={props.absoluteURL}
         setUpdateStatus={props.setUpdateStatus}
         updateStatus={props.updateStatus}
+        TableType={props.TableType}
+        handleTabChange={props.handleTabChange}
       />
     </>
   );

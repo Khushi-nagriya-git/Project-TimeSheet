@@ -16,6 +16,7 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
@@ -32,15 +33,19 @@ const TimeSheetForm = ({
   absoluteURL,
   spHttpClient,
   setUpdateStatus,
-  updateStatus
+  updateStatus,
+  TableType,
+  handleTabChange,
 }: {
   open: boolean;
   onClose: () => void;
+  handleTabChange: (tab: string) => Promise<void>;
   selectedData: any[];
   absoluteURL: any;
   spHttpClient: any;
-  setUpdateStatus:React.Dispatch<React.SetStateAction<any>>;
-  updateStatus:any
+  setUpdateStatus: React.Dispatch<React.SetStateAction<any>>;
+  updateStatus: any;
+  TableType: any;
 }) => {
   const [currentWeek, setCurrentWeek] = React.useState(new Date());
   const TaskTypeOptions = ["Billable", "Non Billable"];
@@ -127,7 +132,7 @@ const TimeSheetForm = ({
     return acc;
   }, {});
 
-  const groupedDataArray:TimeLogsData[] = Object.values(groupedData);
+  const groupedDataArray: TimeLogsData[] = Object.values(groupedData);
 
   const handleRequestSort = (property: string) => {
     const isAsc = orderBy === property && order === "asc";
@@ -178,12 +183,12 @@ const TimeSheetForm = ({
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   const handleApproved = async () => {
-   let updatedTimeLogsData :TimeLogsData[] =[];
-    for (let i=0;i<groupedDataArray.length;i++){
-      for(let j=0;j<selected.length;j++){
-       if(groupedDataArray[i]?.TimelogsId === parseInt(selected[j])){
-        updatedTimeLogsData.push(groupedDataArray[i])
-       }
+    let updatedTimeLogsData: TimeLogsData[] = [];
+    for (let i = 0; i < groupedDataArray.length; i++) {
+      for (let j = 0; j < selected.length; j++) {
+        if (groupedDataArray[i]?.TimelogsId === parseInt(selected[j])) {
+          updatedTimeLogsData.push(groupedDataArray[i]);
+        }
       }
     }
     updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
@@ -199,34 +204,61 @@ const TimeSheetForm = ({
       0,
       setUpdateStatus
     );
-   
+    handleTabChange("TeamTimeSheet");
+    onClose();
   };
 
   const handleReject = async () => {
-    let updatedTimeLogsData :TimeLogsData[] =[];
-     for (let i=0;i<groupedDataArray.length;i++){
-       for(let j=0;j<selected.length;j++){
-        if(groupedDataArray[i]?.TimelogsId === parseInt(selected[j])){
-         updatedTimeLogsData.push(groupedDataArray[i])
+    let updatedTimeLogsData: TimeLogsData[] = [];
+    for (let i = 0; i < groupedDataArray.length; i++) {
+      for (let j = 0; j < selected.length; j++) {
+        if (groupedDataArray[i]?.TimelogsId === parseInt(selected[j])) {
+          updatedTimeLogsData.push(groupedDataArray[i]);
         }
-       }
-     }
-     updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
-       ...timeLog,
-       Status: "Rejected",
-     }));
-     await updateRecords(
-       spHttpClient,
-       absoluteURL,
-       "TimeLogforRejection",
-       0,
-       updatedTimeLogsData,
-       0,
-       setUpdateStatus
-     );
-    
-   };
+      }
+    }
+    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
+      ...timeLog,
+      Status: "Rejected",
+    }));
+    await updateRecords(
+      spHttpClient,
+      absoluteURL,
+      "TimeLogforRejection",
+      0,
+      updatedTimeLogsData,
+      0,
+      setUpdateStatus
+    );
+    handleTabChange("TeamTimeSheet");
+    onClose();
+  };
 
+  const getTaskTypeColor = (status: string) => {
+    switch (status) {
+      case "Non Billable":
+        return "#007bff";
+      case "Billable":
+        return "#65B741";
+      default:
+        return "#9D9D9D";
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "#9D9D9D";
+      case "Not Submitted":
+        return "#007bff";
+      case "Rejected":
+        return "#FFB6C1";
+      case "Approved":
+        return "#65B741";
+      default:
+        return "#9D9D9D";
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
@@ -330,7 +362,7 @@ const TimeSheetForm = ({
               <Grid item>
                 <Label style={{ fontWeight: "600" }}>Task Type</Label>
                 <Dropdown
-                  placeholder="Select billable status"
+                  placeholder="Select Task Type"
                   // selectedKey={props.selectedBillableStatus}
                   // onChange={handleBillableStatusChange}
                   // disabled={props.isRunning}
@@ -431,20 +463,23 @@ const TimeSheetForm = ({
                       "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                   }}
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      indeterminate={
-                        selected.length > 0 &&
-                        selected.length < sortedData.length
-                      }
-                      checked={
-                        sortedData.length > 0 &&
-                        selected.length === sortedData.length
-                      }
-                      onChange={handleSelectAllClick}
-                    />
-                  </TableCell>
+                  {TableType === "TeamTimeSheet" && (
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        indeterminate={
+                          selected.length > 0 &&
+                          selected.length < sortedData.length
+                        }
+                        checked={
+                          sortedData.length > 0 &&
+                          selected.length === sortedData.length
+                        }
+                        onChange={handleSelectAllClick}
+                      />
+                    </TableCell>
+                  )}
+
                   <TableCell
                     sx={{
                       width: "14%",
@@ -463,6 +498,7 @@ const TimeSheetForm = ({
                       Project
                     </TableSortLabel>
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
@@ -529,156 +565,248 @@ const TimeSheetForm = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {sortedData.map((log: any, index: number) => {
-                  const isItemSelected = isSelected(log.TimelogsId);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                {sortedData.length > 0 ? (
+                  sortedData.map((log: any, index: number) => {
+                    const isApproved = log.Status === "Approved";
+                    const isItemSelected = isSelected(log.TimelogsId);
+                    const labelId = `enhanced-table-checkbox-${index}`;
+                    const borderColorforTaskType = getTaskTypeColor(
+                      log.BillableStatus
+                    );
+                    const borderColorStatus = getStatusColor(log.Status);
+                    const disabledStyle = {
+                      opacity: 0.7,
+                      pointerEvents: "none",
+                    };
 
-                  return (
-                    <TableRow
-                      key={log.TimelogsId}
-                      hover
-                      onClick={() => handleClick(log.TimelogsId)}
-                      role="checkbox"
-                      aria-checked={isItemSelected}
-                      tabIndex={-1}
-                      selected={isItemSelected}
-                    >
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          color="primary"
-                          checked={isItemSelected}
-                          inputProps={{
-                            "aria-labelledby": labelId,
+                    const isJobName = log.JobName.length > 20;
+                    const isProjectName = log.ProjectName.length > 20;
+
+                    return (
+                      <TableRow
+                        sx={{ ...(isApproved && disabledStyle) }}
+                        key={log.TimelogsId}
+                        hover={TableType === "TeamTimeSheet"}
+                        onClick={
+                          TableType === "TeamTimeSheet"
+                            ? () => handleClick(log.TimelogsId)
+                            : undefined
+                        }
+                        role={
+                          TableType === "TeamTimeSheet" ? "checkbox" : undefined
+                        }
+                        aria-checked={
+                          TableType === "TeamTimeSheet"
+                            ? isItemSelected
+                            : undefined
+                        }
+                        tabIndex={
+                          TableType === "TeamTimeSheet" ? -1 : undefined
+                        }
+                        selected={
+                          TableType === "TeamTimeSheet"
+                            ? isItemSelected
+                            : undefined
+                        }
+                      >
+                        {TableType === "TeamTimeSheet" && (
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                "aria-labelledby": labelId,
+                              }}
+                            />
+                          </TableCell>
+                        )}
+
+                        <TableCell
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                           }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {log.ProjectName}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {log.JobName}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {log.Status}
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        {log.BillableStatus}
-                      </TableCell>
-                      {weekDates.map((date) => {
-                        const loggedHours =
-                          log.LoggedHoursByDay[
-                            date.toLocaleDateString("en-US")
-                          ] || 0;
+                        >
+                          {isProjectName ? (
+                            <Tooltip title={log.ProjectName}>
+                              <span>{log.ProjectName.substring(0, 20)}...</span>
+                            </Tooltip>
+                          ) : (
+                            log.ProjectName
+                          )}
+                        </TableCell>
 
-                        return (
-                          <TableCell
-                            key={date.toDateString()}
-                            align="center"
+                        <TableCell
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {isJobName ? (
+                            <Tooltip title={log.JobName}>
+                              <span>{log.JobName.substring(0, 20)}...</span>
+                            </Tooltip>
+                          ) : (
+                            log.JobName
+                          )}
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          <Box
                             sx={{
+                              borderRadius: "20px",
+                              border: `2px solid ${borderColorStatus}`,
+                              height: "22px",
+                              width: "95px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
                               fontFamily:
                                 "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                             }}
                           >
-                            {loggedHours > 0
-                              ? convertMinutesToHoursAndMinutes(loggedHours)
-                              : ""}
-                          </TableCell>
-                        );
-                      })}
-                    </TableRow>
-                  );
-                })}
+                            {log.Status}
+                          </Box>
+                        </TableCell>
+
+                        <TableCell
+                          sx={{
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              borderRadius: "20px",
+                              border: `2px solid ${borderColorforTaskType}`,
+                              height: "22px",
+                              width: "95px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontFamily:
+                                "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                            }}
+                          >
+                            {log.BillableStatus}
+                          </Box>
+                        </TableCell>
+
+                        {weekDates.map((date) => {
+                          const loggedHours =
+                            log.LoggedHoursByDay[
+                              date.toLocaleDateString("en-US")
+                            ] || 0;
+
+                          return (
+                            <TableCell
+                              key={date.toDateString()}
+                              align="center"
+                              sx={{
+                                fontFamily:
+                                  "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                              }}
+                            >
+                              {loggedHours > 0
+                                ? convertMinutesToHoursAndMinutes(loggedHours)
+                                : ""}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={9}>
+                      <Box
+                        sx={{
+                          textAlign: "center",
+                          fontWeight: "600",
+                          fontFamily:
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        }}
+                      >
+                        No data found
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>
         </Box>
       </DialogContent>
-
-      <DialogActions
-        sx={{
-          justifyContent: "flex-start",
-          padding: "8px 24px",
-        }}
-      >
-        <Button
-          onClick={handleApproved}
+      {TableType === "TeamTimeSheet" && (
+        <DialogActions
           sx={{
-            backgroundColor: "#65b741",
-            color: "#fff",
-            height: "35px",
-            borderRadius: "5px",
-            marginBottom: "5px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            textTransform: "none",
-            "&:hover": {
+            justifyContent: "flex-start",
+            padding: "8px 24px",
+          }}
+        >
+          <Button
+            onClick={handleApproved}
+            sx={{
               backgroundColor: "#65b741",
+              color: "#fff",
+              height: "35px",
+              borderRadius: "5px",
+              marginBottom: "5px",
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            },
-            width: "79px",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#65b741",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              },
+              width: "79px",
+            }}
+          >
+            Approve
+          </Button>
 
-          }}
-        >
-          Approve
-        </Button>
-
-        <Button
-          onClick={handleReject}
-          sx={{
-            backgroundColor: "#ff8a8a",
-            color: "#fff",
-            height: "35px",
-            borderRadius: "5px",
-            marginBottom: "5px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            textTransform: "none",
-            "&:hover": {
+          <Button
+            onClick={handleReject}
+            sx={{
               backgroundColor: "#ff8a8a",
+              color: "#fff",
+              height: "35px",
+              borderRadius: "5px",
+              marginBottom: "5px",
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            },
-            width: "79px",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#ff8a8a",
+                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              },
+              width: "79px",
+            }}
+          >
+            Reject
+          </Button>
 
-          }}
-        >
-          Reject
-        </Button>
-
-        <Button
-          onClick={onClose}
-          sx={{
-            color: "rgb(50, 49, 48)",
-            backgroundColor: "white",
-            height: "35px",
-            border: "1px solid grey",
-            borderRadius: "5px",
-            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-            marginBottom: "5px",
-            textTransform: "none",
-            width: "79px",
-          }}
-        >
-          Cancel
-        </Button>
-      </DialogActions>
+          <Button
+            onClick={onClose}
+            sx={{
+              color: "rgb(50, 49, 48)",
+              backgroundColor: "white",
+              height: "35px",
+              border: "1px solid grey",
+              borderRadius: "5px",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              marginBottom: "5px",
+              textTransform: "none",
+              width: "79px",
+            }}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      )}
     </Dialog>
   );
 };

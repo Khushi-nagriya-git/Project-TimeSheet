@@ -131,19 +131,21 @@ const ProjectTable = (props: {
     let projectManager = project.ProjectManager
       ? JSON.parse(project.ProjectManager)
       : [];
+    let reportingManagerEmail =project.ReportingManagerPeoplePicker.EMail;
     let reportingManager = project.ReportingManager
-      ? JSON.parse(project.ReportingManager)
-      : [];
+    ? JSON.parse(project.ReportingManager)
+    : [];
     let projectTeam = project.ProjectTeam
       ? JSON.parse(project.ProjectTeam)
       : [];
+
     let emails = projectTeam.map((member: { email: string }) => member.email);
     props.setPeoplePickerDefaultManager(
       projectManager.length > 0 ? projectManager[0]?.email : ""
     );
-    props.setPeoplePickerDefaultReportingManager(
-      reportingManager.length > 0 ? reportingManager[0][0]?.secondaryText : ""
-    );
+
+    props.setPeoplePickerDefaultReportingManager(reportingManagerEmail);
+
     props.setPeoplePickerDefaultTeam(emails.length > 0 ? emails : []);
 
     props.setCurrentData({
@@ -259,7 +261,7 @@ const ProjectTable = (props: {
   }
 
   return (
-    <div style={{ overflowY: "auto", height: "285px", marginTop: "-15px" }}>
+    <div style={{ overflowY: "auto", height: "calc(100vh - 250px)", marginTop: "-15px" }}>
       <Grid item xs={12}>
         <div style={{ height: "100%", overflow: "auto" }}>
           <TableContainer>

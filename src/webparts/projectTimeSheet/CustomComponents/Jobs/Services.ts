@@ -1,3 +1,4 @@
+import { JobAssginees } from './IJobsStats';
 import { SPHttpClient } from "@microsoft/sp-http";
 import { JobFormData, initialState } from "../Jobs/Forms/IJobFormStats";
 
@@ -123,7 +124,7 @@ export const addJobs = async (
     JobStatus: status,
     EstimatedHours: final,
     loggedHours: data.loggedHours,
-    Attachments: data.attachment,
+   // Attachments: data.attachment,
   };
 
   const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items`;
@@ -145,19 +146,16 @@ export const addJobs = async (
   }
 
   const item: any = await response.json();
+  const itemId = item.d?.ID || item.ID;
   if (data.attachment) {
-    const attachmentResponse = await handleUploadAttachment(
-      item.ID,
-      data.attachment,
-      absoluteURL,
-      spHttpClient
-    );
+    const attachmentResponse = await handleUploadAttachment(itemId, data.attachment, absoluteURL, spHttpClient);
     if (!attachmentResponse.ok) {
       console.error("Error uploading attachment");
       return;
     }
   }
-  alert("Job added");
+
+  //alert("Job added");
 };
 
 export const handleUploadAttachment = async (
@@ -230,10 +228,11 @@ export async function updateJobRecords(
   spHttpClient: SPHttpClient,
   absoluteURL: string,
   jobId: number,
-  updateformData: JobFormData,
+  updateformData: any,
   type:string,
   setJobsData: React.Dispatch<React.SetStateAction<any>>,
   setCurrentData:  React.Dispatch<React.SetStateAction<any>>,
+  loggedInUserDetails:any,
 ) {
   let status =
   updateformData.jobStatus === "NotStarted"
@@ -244,10 +243,11 @@ export async function updateJobRecords(
     ? "On Hold"
     : updateformData.jobStatus;
     let listItemData;
-    const assignedToPeoplePickerIds = updateformData.JobAssigness.map(
+    const assignedToPeoplePickerIds = updateformData?.JobAssigness?.map(
       (person: { id: number }) => person.id
     );
-  
+    let updatedJobAssgineesLoggedHours;
+    
   try {
       const response = await spHttpClient.get(
           `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items?$filter=JobId eq ${jobId}`,
@@ -257,6 +257,18 @@ export async function updateJobRecords(
           const data = await response.json(); 
           if (data.value && data.value.length > 0) {
               const itemToUpdate = data.value[0];
+              if(type === "loggedTimeUpdate"){
+                const JobAssginees = JSON.parse(data.value[0].AssignedTo);
+                
+                if (JobAssginees && JobAssginees.length === 1) {
+                  updatedJobAssgineesLoggedHours = JobAssginees.map((assignee: { email: any; }) => {
+                    if (assignee.email === loggedInUserDetails.Email) {
+                      return { ...assignee, loggedHours: updateformData };
+                    }
+                    return assignee;
+                  });
+                }
+              }
               if (updateformData.JobAssigness?.length === 0) {
                 const jobAssignees = data.value[0]?.JobAssginees;
                 if (jobAssignees) {
@@ -264,12 +276,14 @@ export async function updateJobRecords(
                 }
             }            
               let final = 0;
-              updateformData.JobAssigness.map((index: { estimatedHours: number; }) => {
+              updateformData.JobAssigness?.map((index: { estimatedHours: number; }) => {
                 final += convertToMinutes(index.estimatedHours);
               });
               if(type === "loggedTimeUpdate"){
-                listItemData = {
-                  loggedHours : updateformData.loggedHours
+
+                listItemData = {  '__metadata': { 'type': "SP.Data.TasksListItem" },
+                  loggedHours: updateformData,
+                  AssignedTo: JSON.stringify(updatedJobAssgineesLoggedHours),
                 }
               }else{
                  listItemData = {'__metadata': { 'type': "SP.Data.TasksListItem" },

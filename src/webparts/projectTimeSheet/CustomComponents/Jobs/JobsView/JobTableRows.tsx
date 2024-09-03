@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/material";
 import {
   React,
   IProjectProps,
@@ -17,8 +18,15 @@ import {
   Avatar,
 } from "../../../../../index";
 
-const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleEditIconClick:any;loggedInUserDetails:any;handleDeleteIconClick:any;}) => {
-  const { row, projectProps ,handleEditIconClick,handleDeleteIconClick  } = props;
+const Row = (props: {
+  row: ReturnType<any>;
+  projectProps: IProjectProps;
+  handleEditIconClick: any;
+  loggedInUserDetails: any;
+  handleDeleteIconClick: any;
+}) => {
+  const { row, projectProps, handleEditIconClick, handleDeleteIconClick } =
+    props;
   const [open, setOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -40,16 +48,24 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
     return `${hours} Hrs ${mins} Mins`;
   };
 
+  const isLongName = row.jobName?.length > 20;
+  const isProjectName = row.projectName?.length > 20;
   return (
     <React.Fragment>
       <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" }}>
-      <TableCell
+        <TableCell
           component="th"
           scope="row"
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
         >
           <Box display="flex" alignItems="center">
-          {row.jobName}
+            {isLongName ? (
+              <Tooltip title={row.jobName}>
+                <span>{row.jobName.substring(0, 20)}...</span>
+              </Tooltip>
+            ) : (
+              row.jobName
+            )}
           </Box>
         </TableCell>
         <TableCell
@@ -58,7 +74,15 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
         >
           <Box display="flex" alignItems="center">
-             {row.projectName}
+          {isProjectName ? (
+                            <Tooltip title={row.projectName}>
+                              <span>
+                                {row.projectName.substring(0, 20)}...
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            row.projectName
+                          )}
           </Box>
         </TableCell>
         <TableCell
@@ -102,7 +126,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
             sx={{
               borderRadius: "20px",
               border: `2px solid ${borderColor}`,
-              height: "30px",
+              height: "22px",
               width: "100px",
               display: "flex",
               alignItems: "center",
@@ -124,47 +148,48 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
             />
           </IconButton>
         </TableCell>
-      {props.loggedInUserDetails.Email === row.Author?.EMail && (
-          <TableCell align="left" sx={{ height: "10px" }}>
-          <Box display="flex" alignItems="left" justifyContent="left">
-            <IconButton
-              aria-label="edit"
-              size="small"
-               onClick={() => handleEditIconClick(row.jobId)}
-            >
-              <img
-                src={require("../../../assets/edit.png")}
-                alt="Edit"
-                style={{
-                  width: "21px",
-                  height: "21px",
-                  cursor: "pointer",
-                  alignItems: "left",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                }}
-              />
-            </IconButton>
-            <IconButton
-              aria-label="delete"
-              size="small"
-              onClick={() => handleDeleteIconClick(row.jobId)}
-            >
-              <img
-                src={require("../../../assets/delete.png")}
-                alt="Delete"
-                style={{
-                  width: "21px",
-                  height: "21px",
-                  cursor: "pointer",
-                  marginLeft: "5px",
-                }}
-              />
-            </IconButton>
-          </Box>
-        </TableCell>
-      )}      
-      
+        <TableCell align="left" sx={{ height: "10px" }}>
+            <Box display="flex" alignItems="left" justifyContent="left">
+              <IconButton
+                aria-label="edit"
+                size="small"
+                onClick={() => handleEditIconClick(row.jobId)}
+              >
+                <img
+                  src={require("../../../assets/edit.png")}
+                  alt="Edit"
+                  style={{
+                    width: "21px",
+                    height: "21px",
+                    cursor: "pointer",
+                    alignItems: "left",
+                    fontFamily:
+                      "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  }}
+                />
+              </IconButton>
+              {props.loggedInUserDetails.Email === row.Author?.EMail && (
+                  <IconButton
+                  aria-label="delete"
+                  size="small"
+                  onClick={() => handleDeleteIconClick(row.jobId)}
+                >
+                  <img
+                    src={require("../../../assets/delete.png")}
+                    alt="Delete"
+                    style={{
+                      width: "21px",
+                      height: "21px",
+                      cursor: "pointer",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </IconButton>
+              )}
+            
 
+            </Box>
+          </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
@@ -223,7 +248,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
                     >
                       Logged Hours
                     </TableCell>
-                    <TableCell
+                    {/* <TableCell
                       align="left"
                       sx={{
                         width: "20%",
@@ -233,7 +258,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
                       }}
                     >
                       Status
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -284,12 +309,12 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
                         }}
                       >
                         {convertMinutesToHoursAndMinutes(
-                          convertToMinutes(
+                        
                             historyRow.loggedHours ? historyRow.loggedHours : 0
-                          )
+                          
                         )}
                       </TableCell>
-                      <TableCell
+                      {/* <TableCell
                         align="left"
                         sx={{
                           fontFamily:
@@ -297,7 +322,7 @@ const Row = (props: { row: ReturnType<any>; projectProps: IProjectProps ;handleE
                         }}
                       >
                         {historyRow.JobStatus}
-                      </TableCell>
+                      </TableCell> */}
                     </TableRow>
                   ))}
                 </TableBody>

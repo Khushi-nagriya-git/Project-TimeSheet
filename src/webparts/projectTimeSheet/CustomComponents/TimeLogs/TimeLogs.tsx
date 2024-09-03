@@ -27,12 +27,22 @@ import {
 } from "../../../..";
 import AddTimeLog from "./AddEditTimeLog/AddTimeLog";
 import TimeLogTable from "./TimeLogTable/TimeLogTable";
-import { Snackbar, SnackbarCloseReason } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Snackbar,
+  SnackbarCloseReason,
+} from "@mui/material";
 import { Alert } from "@mui/material";
 import DeleteDialogBox from "./DialogBoxs/DeleteDialogBox";
 import EditTimeLog from "./AddEditTimeLog/EditTimeLog";
 import { IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, Pending } from "@mui/icons-material";
+import { updateJobRecords } from "../Jobs/Services";
+import { JobFormData, initialState } from "../Jobs/Forms/IJobFormStats";
+import { Drawer } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import SideNavigation from "../Navigation/SideNavigation";
 
 const FullHeightGrid = styled(Grid)({
   height: "100%",
@@ -45,6 +55,11 @@ const MainContainer = styled("div")({
   padding: "16px",
   boxSizing: "border-box",
 });
+const DrawerContainer = styled(Drawer)({
+  width: 500,
+  flexShrink: 0,
+});
+
 
 const NavigationLinks = styled("div")({
   display: "flex",
@@ -70,7 +85,7 @@ const NavLink = styled(Button)(({}) => ({
 }));
 
 const Content = styled("div")({
-  height: "440px",
+  height: "calc(100vh - 143px)",
   backgroundColor: "#F9F9F9",
   boxSizing: "border-box",
   padding: "13px",
@@ -129,7 +144,19 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [updateStatus, setUpdateStatus] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
+  };
+  const [alert, setAlert] = useState(false);
+  const [addSuccessFullyAlert, setAddSuccessFullyAlert] = useState(false);
+  const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
+  const [timerResumeAlert, setTimerResumeAlert] = useState(false);
+  const [timerStopAlert , setTimerStopAlert] = useState(false);
+  const [timeLogSubmitted , setTimeLogSubmitted] = useState(false);
+  const [currentData, setCurrentData] = useState<JobFormData>(initialState.jobFormData);
+  
 
   useEffect(() => {
     setCurrentWeek(getCurrentWeek(startDate));
@@ -141,6 +168,59 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       setStartDate(selectedDate);
     }
   }, [selectedDate]);
+
+  useEffect(() => {
+    let timer: any;
+    if (deleteSuccessfullyAlert || addSuccessFullyAlert || editSuccessFullyAlert) {
+      timer = setTimeout(() => {
+        setDeleteSuccessfullyAlert(false);
+        setAddSuccessFullyAlert(false);
+        setEditSuccessFullyAlert(false);
+        setTimeLogSubmitted(false);
+        setTimerResumeAlert(false);
+        setTimerStopAlert(false);
+        setAlert(false);
+      }, 5000); 
+    }
+    return () => clearTimeout(timer);
+  }, [deleteSuccessfullyAlert, addSuccessFullyAlert , editSuccessFullyAlert]);
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getProjectListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setProjectsData,
+          props.loggedInUserDetails,
+          props.isUserAdmin
+        );
+        await getJobListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setJobsData,
+          props.loggedInUserDetails,
+          projectsData,
+          props.isUserAdmin
+        );
+        await getTimeLogsListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setTimeLogsData,
+          props.loggedInUserDetails,
+          "TimeLogs",
+          props.isUserAdmin,
+          props.isUserReportingManager
+        );
+      } catch (error) {
+        console.log("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Function to get the dates of the current week
   const getCurrentWeek = (date: Date): Date[] => {
@@ -178,51 +258,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
     )
   );
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await getProjectListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setProjectsData,
-          props.loggedInUserDetails,
-          props.isUserAdmin
-        );
-        await getJobListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setJobsData,
-          props.loggedInUserDetails,
-          projectsData,
-          props.isUserAdmin
-        );
-        await getTimeLogsListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setTimeLogsData,
-          props.loggedInUserDetails,
-          "TimeLogs",
-          props.isUserAdmin,
-          props.isUserReportingManager
-        );
-      } catch (error) {
-        console.log("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    let timer: any;
-    if (deleteSuccessfullyAlert) {
-      timer = setTimeout(() => {
-        setDeleteSuccessfullyAlert(false);
-        //setAlert(false);
-      }, 5000);
-    }
-    return () => clearTimeout(timer);
-  }, [deleteSuccessfullyAlert]);
-
   const handleStartStop = async () => {
     if (isRunning) {
       // Stopping the timer
@@ -230,6 +265,14 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       let endTime = Date.now();
       let milliseconds = endTime - startTime;
       const LockedMinutes = Math.floor(milliseconds / 60000);
+      let timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
+      let jobId = 0;
+      for(let i=0;i<timeLogsData.length;i++){
+        if(timeLogsData[i].TimelogsId === timerTimeLogId){
+          jobId = timeLogsData[i].JobId;
+        }
+      }
+      
       await updateRecords(
         props.spHttpClient,
         props.absoluteURL,
@@ -239,6 +282,9 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         editTimeLogId,
         setUpdateStatus
       );
+
+      await updateJobRecords(props.spHttpClient,props.absoluteURL,jobId,LockedMinutes,"loggedTimeUpdate",setJobsData,setCurrentData,props.loggedInUserDetails)
+
       await getTimeLogsListData(
         props.absoluteURL,
         props.spHttpClient,
@@ -248,44 +294,11 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.isUserAdmin,
         props.isUserReportingManager
       );
-      //   await getJobListData(props.absoluteURL, props.spHttpClient, setJobsData);
-      //   let data;
-      //   let timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
-      //   for(let i=0;i<timeLogsData.length; i++){
-      //     timeLogsData[i].TimelogsId = timerTimeLogId;
-      //     data = timeLogsData[i];
-      //   }
-      //   let updatedLoggedTime =0;
-      //   for(let i=0;i<timeLogsData.length;i++){
-      //     if(timeLogsData[i].JobId === data?.JobId){
-      //       updatedLoggedTime += timeLogsData[i].LoggedHours
-      //     }
-      //   }
-      //  await updateJobRecords(
-      //     props.spHttpClient,
-      //     props.absoluteURL,
-      //     data?.JobId as number,
-      //     {
-      //       jobName: "",
-      //       jobId: data?.JobId as number,
-      //       projectName: "",
-      //       projectId: undefined,
-      //       startDate: undefined,
-      //       endDate: undefined,
-      //       JobAssigness: [],
-      //       description: "",
-      //       billableStatus: "",
-      //       jobStatus: "",
-      //       estimatedHours: 0,
-      //       loggedHours: updatedLoggedTime,
-      //       attachment: undefined
-      //     },
-      //     "loggedTimeUpdate",
-      //     setJobsData,
-      //     setJobsData
-      //   );
+      setAlert(true);
+      setTimerStopAlert(true);
 
       setIsRunning(false);
+
       setStartTime(null);
       setElapsedTime(0);
       localStorage.removeItem("stopwatchStartTime");
@@ -302,7 +315,9 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       setSelectedJob("");
       setSelectedBillableStatus("");
       setAddTimeLog(timeLogsDataInitialState.timeLogsData);
+
     } else {
+
       // new data
       if (!selectedProject) {
         setProjectError("Project is required");
@@ -319,7 +334,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       }
 
       if (!selectedBillableStatus) {
-        setStatusError("Billable status is required");
+        setStatusError("Task Type is required");
         return;
       } else {
         setStatusError("");
@@ -366,7 +381,9 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.isUserAdmin,
         props.isUserReportingManager
       );
-      setTimerAlert(true);
+       setAlert(true);
+       setAddSuccessFullyAlert(true);
+
     }
   };
 
@@ -393,6 +410,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       setStartTime(startTime);
       setElapsedTime(loggedMinutes * 60);
       setIsRunning(true);
+      setAlert(true);
+      setTimerResumeAlert(true);
       setSelectedProject(jobTimeLogData.ProjectId as unknown as string);
       setSelectedJob(jobTimeLogData.JobId as unknown as string);
       setSelectedBillableStatus(jobTimeLogData.BillableStatus);
@@ -425,7 +444,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         jobTimeLogData.BillableStatus || ""
       );
       localStorage.setItem("description", jobTimeLogData.Description || "");
-      console.log(jobTimeLogData);
+      
     } else {
       console.error("Job time log data not found.");
     }
@@ -448,6 +467,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserReportingManager
     );
     setIsOpen(false);
+    setAlert(true);
     setDeleteSuccessfullyAlert(true);
   };
 
@@ -467,16 +487,6 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
     setSelectedBillableStatus(status);
   };
 
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: SnackbarCloseReason
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setTimerAlert(false);
-  };
-
   const handleSubmit = async (data: TimeLogsData) => {
     await updateRecords(
       props.spHttpClient,
@@ -487,6 +497,14 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       editTimeLogId,
       setUpdateStatus
     );
+    let timerTimeLogId = editTimeLogId;
+    let jobId = 0;
+    for(let i=0;i<timeLogsData.length;i++){
+      if(timeLogsData[i].TimelogsId === timerTimeLogId){
+        jobId = timeLogsData[i].JobId;
+      }
+    }
+
     await getTimeLogsListData(
       props.absoluteURL,
       props.spHttpClient,
@@ -496,9 +514,12 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserAdmin,
       props.isUserReportingManager
     );
+
+    await updateJobRecords(props.spHttpClient,props.absoluteURL,jobId,data.LoggedHours,"loggedTimeUpdate",setJobsData,setCurrentData, props.loggedInUserDetails)
+
     setEditFormOpen(false);
-    // setAlert(true);
-    // setEditSuccessFullyAlert(true);
+     setAlert(true);
+     setEditSuccessFullyAlert(true);
     // setCurrentData(initialState.formData);
   };
 
@@ -526,7 +547,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserAdmin,
       props.isUserReportingManager
     );
-    alert("TimeSheet Submitted");
+    setTimeLogSubmitted(true);
+    setAlert(true);
   };
 
   const weekStart = currentWeek[0];
@@ -550,21 +572,38 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
           style={{ display: "flex", height: "100%", width: "100%" }}
         >
           <MainContainer>
-            <TopNavigation
-              setTopNavigationState={setTopNavigationState}
-              setTopNavigationMode={setTopNavigationMode}
-              setModuleTab={props.setModuleTab}
-            />
 
             {topNavigationState === "myData" && (
               <Content>
                 <NavigationLinks>
+                  <Box display="flex" alignItems="left" marginRight="10px">
+
+                  <Box display="flex" alignItems="center" marginRight="10px">
+                    <IconButton
+                      edge="start"
+                      color="inherit"
+                      aria-label="menu"
+                      onClick={toggleDrawer(true)}
+                      sx={{ margin: 0 }}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <DrawerContainer
+                      anchor="left"
+                      open={drawerOpen}
+                      onClose={toggleDrawer(false)}
+                    >
+                      <SideNavigation setModuleTab={props.setModuleTab} />
+                    </DrawerContainer>
+                  </Box>
                   <NavLink
                     className={myDataActiveLink === "TimeLog" ? "active" : ""}
                     onClick={() => handleTabChange("TimeLog")}
                   >
                     TimeLogs
                   </NavLink>
+                  </Box>
+              
                   <div
                     style={{
                       display: "flex",
@@ -610,63 +649,77 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
 
                 {myDataActiveLink === "TimeLog" && (
                   <>
-                    <AddTimeLog
-                      onProjectChange={onProjectChange}
-                      onJobChange={onJobChange}
-                      onBillableStatusChange={onBillableStatusChange}
-                      setElapsedTime={setElapsedTime}
-                      elapsedTime={elapsedTime}
-                      isRunning={isRunning}
-                      setIsRunning={setIsRunning}
-                      setTimerAlert={setTimerAlert}
-                      absoluteURL={absoluteURL}
-                      spHttpClient={spHttpClient}
-                      selectedProject={selectedProject}
-                      setSelectedProject={setSelectedProject}
-                      addTimeLog={addTimeLog}
-                      setAddTimeLog={setAddTimeLog}
-                      statusError={statusError}
-                      setStatusError={setStatusError}
-                      selectedJob={selectedJob}
-                      projectError={projectError}
-                      setSelectedJob={setSelectedJob}
-                      startTime={startTime}
-                      setStartTime={setStartTime}
-                      jobError={jobError}
-                      setSelectedJobName={setSelectedJobName}
-                      handleStartStop={handleStartStop}
-                      setSelectedProjectName={setSelectedProjectName}
-                      selectedProjectName={selectedProjectName}
-                      setSelectedBillableStatus={setSelectedBillableStatus}
-                      selectedBillableStatus={selectedBillableStatus}
-                      loggedInUserDetails={props.loggedInUserDetails}
-                      isUserReportingManager={props.isUserReportingManager}
-                      isUserProjectTeam={props.isUserProjectTeam}
-                      isUserProjectManager={props.isUserProjectManager}
-                      isUserAdmin={props.isUserAdmin}
-                    ></AddTimeLog>
-                    <TimeLogTable
-                      absoluteURL={absoluteURL}
-                      spHttpClient={spHttpClient}
-                      timelogProps={props}
-                      currentUserDetails={currentUserDetails}
-                      elapsedTime={elapsedTime}
-                      isRunning={isRunning}
-                      timeLogsData={timeLogsData}
-                      setTimeLogsData={setTimeLogsData}
-                      handleStartStop={handleStartStop}
-                      jobResumeTimer={jobResumeTimer}
-                      setDeletedTimelogId={setDeletedTimelogId}
-                      setIsOpen={setIsOpen}
-                      setEditTimeLogId={setEditTimeLogId}
-                      setInitialFormData={setInitialFormData}
-                      setEditFormOpen={setEditFormOpen}
-                      setIsRunning={setIsRunning}
-                      filteredTimeLogsData={filteredTimeLogsData}
-                      loggedInUserDetails={props.loggedInUserDetails}
-                      isUserAdmin={props.isUserAdmin}
-                      isUserReportingManager={props.isUserReportingManager}
-                    ></TimeLogTable>
+                    {loading && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: "100%",
+                        }}
+                      >
+                        <CircularProgress />
+                      </Box>
+                    )}
+                    {!loading && (
+                        <><AddTimeLog
+                        onProjectChange={onProjectChange}
+                        onJobChange={onJobChange}
+                        onBillableStatusChange={onBillableStatusChange}
+                        setElapsedTime={setElapsedTime}
+                        elapsedTime={elapsedTime}
+                        isRunning={isRunning}
+                        setIsRunning={setIsRunning}
+                        setTimerAlert={setTimerAlert}
+                        absoluteURL={absoluteURL}
+                        spHttpClient={spHttpClient}
+                        selectedProject={selectedProject}
+                        setSelectedProject={setSelectedProject}
+                        addTimeLog={addTimeLog}
+                        setAddTimeLog={setAddTimeLog}
+                        statusError={statusError}
+                        setStatusError={setStatusError}
+                        selectedJob={selectedJob}
+                        projectError={projectError}
+                        setSelectedJob={setSelectedJob}
+                        startTime={startTime}
+                        setStartTime={setStartTime}
+                        jobError={jobError}
+                        setSelectedJobName={setSelectedJobName}
+                        handleStartStop={handleStartStop}
+                        setSelectedProjectName={setSelectedProjectName}
+                        selectedProjectName={selectedProjectName}
+                        setSelectedBillableStatus={setSelectedBillableStatus}
+                        selectedBillableStatus={selectedBillableStatus}
+                        loggedInUserDetails={props.loggedInUserDetails}
+                        isUserReportingManager={props.isUserReportingManager}
+                        isUserProjectTeam={props.isUserProjectTeam}
+                        isUserProjectManager={props.isUserProjectManager}
+                        isUserAdmin={props.isUserAdmin}
+                      ></AddTimeLog><TimeLogTable
+                        absoluteURL={absoluteURL}
+                        spHttpClient={spHttpClient}
+                        timelogProps={props}
+                        currentUserDetails={currentUserDetails}
+                        elapsedTime={elapsedTime}
+                        isRunning={isRunning}
+                        timeLogsData={timeLogsData}
+                        setTimeLogsData={setTimeLogsData}
+                        handleStartStop={handleStartStop}
+                        jobResumeTimer={jobResumeTimer}
+                        setDeletedTimelogId={setDeletedTimelogId}
+                        setIsOpen={setIsOpen}
+                        setEditTimeLogId={setEditTimeLogId}
+                        setInitialFormData={setInitialFormData}
+                        setEditFormOpen={setEditFormOpen}
+                        setIsRunning={setIsRunning}
+                        filteredTimeLogsData={filteredTimeLogsData}
+                        loggedInUserDetails={props.loggedInUserDetails}
+                        isUserAdmin={props.isUserAdmin}
+                        isUserReportingManager={props.isUserReportingManager}
+                      ></TimeLogTable></>
+                    )}
+                  
                   </>
                 )}
                 {(isOpen || deleteAlert) && (
@@ -695,20 +748,29 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                   />
                 )}
 
-                <Snackbar
-                  open={timerAlert}
-                  autoHideDuration={5000}
-                  onClose={handleClose}
-                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                >
-                  <Alert
-                    onClose={handleClose}
-                    severity="success"
-                    sx={{ width: "100%" }}
-                  >
-                    Timer started
-                  </Alert>
-                </Snackbar>
+              
+{alert && (
+         <Alert
+         severity= {deleteSuccessfullyAlert ? "warning":"success"}
+         onClose={function (): void {
+          setDeleteSuccessfullyAlert(false)
+           setEditSuccessFullyAlert(false)
+           setAddSuccessFullyAlert(false)
+           setTimeLogSubmitted(false)
+           setTimerResumeAlert(false);
+           setTimerStopAlert(false);
+        }}
+         sx={{
+           position: "fixed",
+           top: "50px",
+           right: "20px",
+           zIndex: 9999, 
+         }}
+       >
+        {deleteSuccessfullyAlert ?"Timelog has been successfully deleted!" : addSuccessFullyAlert ? "Timelog has been successfully added and Timer started!" : editSuccessFullyAlert ? "TimeLog has been successfully Updated!" : timerStopAlert ? "Timer Stop" : timerResumeAlert ? "Timer Started": timeLogSubmitted ? "TimeLogs Submitted":""}
+       </Alert>
+      )}
+
               </Content>
             )}
           </MainContainer>

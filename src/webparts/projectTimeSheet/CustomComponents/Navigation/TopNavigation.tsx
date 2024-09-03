@@ -82,11 +82,6 @@ const TopNavigation = (props: {
             open={drawerOpen}
             onClose={toggleDrawer(false)}
           >
-            {/* <DrawerHeader>
-              <IconButton onClick={toggleDrawer(false)}>
-                <MenuIcon />
-              </IconButton>
-            </DrawerHeader> */}
             <SideNavigation setModuleTab={props.setModuleTab} />
           </DrawerContainer>
         </Box>

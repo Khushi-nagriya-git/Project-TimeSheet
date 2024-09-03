@@ -25,10 +25,9 @@ const TimeLogRows = (props: {
   timelogProps: any;
   isRunning: any;
   elapsedTime: any;
-  handleStartStop:any;
-  jobResumeTimer:any;
-  setIsRunning:React.Dispatch<React.SetStateAction<any>>;
-  
+  handleStartStop: any;
+  jobResumeTimer: any;
+  setIsRunning: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const { row, handleDeleteIconClick, handleEditIconClick } = props;
   const [open, setOpen] = useState(false);
@@ -94,17 +93,16 @@ const TimeLogRows = (props: {
 
   let showButton = row.Created.split("T")[0] === formattedDate;
 
-  const handleClickStart = (id:number) => {
+  const handleClickStart = (id: number) => {
     if (props.isRunning) {
       alert("Timer is already running. Stop it to resume this task timer.");
       return;
     } else {
-      localStorage.setItem("TimeLogId" , id as unknown as string);
+      localStorage.setItem("TimeLogId", id as unknown as string);
       props.jobResumeTimer(id);
       props.setIsRunning(true);
-      showButton=true;
-      timerTimeLogId = id ;
-
+      showButton = true;
+      timerTimeLogId = id;
     }
   };
 
@@ -117,16 +115,31 @@ const TimeLogRows = (props: {
     pointerEvents: "none",
   };
 
+  const isLongName = row.ProjectName?.length > 20;
+  const isJobName = row.JobName?.length > 25;
+const isDescriptionLong = row.Description?.length > 25;
+
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" , ...(isPending && disabledStyle) }}>
-       
+      <TableRow
+        sx={{
+          "& > *": { borderBottom: "unset" },
+          height: "50px",
+          ...(isPending && disabledStyle),
+        }}
+      >
         <TableCell
           component="th"
           scope="row"
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
         >
-          {row.ProjectName}
+          {isLongName ? (
+            <Tooltip title={row.ProjectName}>
+              <span>{row.ProjectName.substring(0, 20)}...</span>
+            </Tooltip>
+          ) : (
+            row.ProjectName
+          )}
         </TableCell>
         <TableCell
           align="left"
@@ -135,9 +148,15 @@ const TimeLogRows = (props: {
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
         >
-          {row.JobName}
+          {isJobName ? (
+            <Tooltip title={row.JobName}>
+              <span>{row.JobName.substring(0, 25)}...</span>
+            </Tooltip>
+          ) : (
+            row.JobName
+          )}
         </TableCell>
-     
+
         <TableCell
           align="left"
           sx={{
@@ -145,7 +164,13 @@ const TimeLogRows = (props: {
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
         >
-          {row.Description}
+          {isDescriptionLong ? (
+            <Tooltip title={row.Description}>
+              <span>{row.Description.substring(0, 25)}...</span>
+            </Tooltip>
+          ) : (
+            row.Description
+          )}
         </TableCell>
 
         <TableCell align="left" sx={{ height: "10px" }}>
@@ -153,8 +178,8 @@ const TimeLogRows = (props: {
             sx={{
               borderRadius: "20px",
               border: `2px solid ${borderColorStatus}`,
-              height: "30px",
-              width: "115px",
+              height: "22px",
+              width: "100px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -170,7 +195,7 @@ const TimeLogRows = (props: {
             sx={{
               borderRadius: "20px",
               border: `2px solid ${borderColorforTaskType}`,
-              height: "30px",
+              height: "22px",
               width: "100px",
               display: "flex",
               alignItems: "center",
@@ -188,41 +213,43 @@ const TimeLogRows = (props: {
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
         >
-          {props.isRunning &&
-          timerTimeLogId === row.TimeLogsId
+          {props.isRunning && timerTimeLogId === row.TimeLogsId
             ? formatTime(props.elapsedTime)
             : convertMinutesToHoursAndMinutes(row.LoggedTime)}
         </TableCell>
         <TableCell align="left" sx={{ height: "10px" }}>
           {showButton &&
-            (props.isRunning &&
-            timerTimeLogId === row.TimeLogsId ? (
+            (props.isRunning && timerTimeLogId === row.TimeLogsId ? (
               <IconButton
-              aria-label="edit"
-              size="small"
-              onClick={handleClickPause}
-              disabled={isPending}
-            >
-              <img
-              src={require("../../../assets/pause.png")}
-              alt="Pause Button"
-              style={{ cursor: "pointer", height: "21px", width: "21px" }}
-            />
-            </IconButton>
+                aria-label="edit"
+                size="small"
+                onClick={handleClickPause}
+                disabled={isPending}
+              >
+                <img
+                  src={require("../../../assets/pause.png")}
+                  alt="Pause Button"
+                  style={{ cursor: "pointer", height: "21px", width: "21px" }}
+                />
+              </IconButton>
             ) : (
               <IconButton
-              aria-label="edit"
-              size="small"
-              onClick={() => handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)}
-              disabled={isPending}
-            >
-              <img
-              src={require("../../../assets/play.png")}
-              alt="Play Button"
-              onClick={() => handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)}
-              style={{ cursor: "pointer", height: "21px", width: "21px" }}
-            />
-            </IconButton>
+                aria-label="edit"
+                size="small"
+                onClick={() =>
+                  handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)
+                }
+                disabled={isPending}
+              >
+                <img
+                  src={require("../../../assets/play.png")}
+                  alt="Play Button"
+                  onClick={() =>
+                    handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)
+                  }
+                  style={{ cursor: "pointer", height: "21px", width: "21px" }}
+                />
+              </IconButton>
             ))}
         </TableCell>
 
