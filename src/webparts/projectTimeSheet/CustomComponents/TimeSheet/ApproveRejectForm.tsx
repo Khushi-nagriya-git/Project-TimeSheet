@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -25,6 +26,8 @@ import { Dropdown } from "@fluentui/react/lib/components/Dropdown";
 import { TextField } from "@fluentui/react";
 import { updateRecords } from "../TimeLogs/Services";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
+import { useEffect, useState } from "react";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const TimeSheetForm = ({
   open,
@@ -36,6 +39,11 @@ const TimeSheetForm = ({
   updateStatus,
   TableType,
   handleTabChange,
+  setApprovedAlert,
+  setAlert,
+  setRejectAlert,
+  setSelected,
+  selected,
 }: {
   open: boolean;
   onClose: () => void;
@@ -43,19 +51,29 @@ const TimeSheetForm = ({
   selectedData: any[];
   absoluteURL: any;
   spHttpClient: any;
+  selected: any;
+  setSelected: React.Dispatch<React.SetStateAction<any>>;
   setUpdateStatus: React.Dispatch<React.SetStateAction<any>>;
+  setApprovedAlert: React.Dispatch<React.SetStateAction<any>>;
+  setRejectAlert: React.Dispatch<React.SetStateAction<any>>;
+  setAlert: React.Dispatch<React.SetStateAction<any>>;
   updateStatus: any;
   TableType: any;
 }) => {
   const [currentWeek, setCurrentWeek] = React.useState(new Date());
   const TaskTypeOptions = ["Billable", "Non Billable"];
   const statusOptions = ["Pending", "Approved", "Rejected"];
-  const [selected, setSelected] = React.useState<string[]>([]);
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = React.useState<string>("ProjectName");
-  const [projectFilter, setProjectFilter] = React.useState<string | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(undefined);
-  const [taskTypeFilter, setTaskTypeFilter] = React.useState<string | undefined>(undefined);
+  const [projectFilter, setProjectFilter] = React.useState<string | undefined>(
+    undefined
+  );
+  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(
+    undefined
+  );
+  const [taskTypeFilter, setTaskTypeFilter] = React.useState<
+    string | undefined
+  >(undefined);
 
   if (!selectedData || selectedData.length === 0) return null;
 
@@ -209,6 +227,9 @@ const TimeSheetForm = ({
     );
     handleTabChange("TeamTimeSheet");
     onClose();
+    setSelected([]);
+    setAlert(true);
+    setApprovedAlert(true);
   };
 
   const handleReject = async () => {
@@ -235,6 +256,9 @@ const TimeSheetForm = ({
     );
     handleTabChange("TeamTimeSheet");
     onClose();
+    setSelected([]);
+    setAlert(true);
+    setRejectAlert(true);
   };
 
   const getTaskTypeColor = (status: string) => {
@@ -263,26 +287,44 @@ const TimeSheetForm = ({
     }
   };
 
-  const handleProjectFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+  const handleProjectFilterChange = (
+    event: React.FormEvent<HTMLDivElement>,
+    option?: any
+  ) => {
     setProjectFilter(option?.key);
   };
-  
-  const handleStatusFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+
+  const handleStatusFilterChange = (
+    event: React.FormEvent<HTMLDivElement>,
+    option?: any
+  ) => {
     setStatusFilter(option?.key);
   };
-  
-  const handleTaskTypeFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any) => {
+
+  const handleTaskTypeFilterChange = (
+    event: React.FormEvent<HTMLDivElement>,
+    option?: any
+  ) => {
     setTaskTypeFilter(option?.key);
   };
 
   const filteredData = sortedData.filter((log: any) => {
-    const matchesProject = projectFilter ? log.ProjectName === projectFilter : true;
+    const matchesProject = projectFilter
+      ? log.ProjectName === projectFilter
+      : true;
     const matchesStatus = statusFilter ? log.Status === statusFilter : true;
-    const matchesTaskType = taskTypeFilter ? log.BillableStatus === taskTypeFilter : true;
-  
+    const matchesTaskType = taskTypeFilter
+      ? log.BillableStatus === taskTypeFilter
+      : true;
+
     return matchesProject && matchesStatus && matchesTaskType;
   });
-  
+
+  const resetFilters = () => {
+    setTaskTypeFilter('')
+    setStatusFilter('')
+    setProjectFilter('')
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
@@ -311,7 +353,7 @@ const TimeSheetForm = ({
             justifyContent="space-between"
           >
             <Grid container spacing={1} alignItems="center">
-              <Grid item>
+              {/* <Grid item>
                 <Label style={{ fontWeight: "600" }}>Projects</Label>
                 <Dropdown
                   placeholder="Select project"
@@ -343,7 +385,7 @@ const TimeSheetForm = ({
                     },
                   }}
                 />
-              </Grid>
+              </Grid> */}
 
               <Grid item>
                 <Label style={{ fontWeight: "600" }}>Status</Label>
@@ -413,18 +455,21 @@ const TimeSheetForm = ({
                 />
               </Grid>
 
-              {/* <Grid item sx={{ marginBottom: "33px" }}>
-                <Label style={{ fontWeight: "600" }}>Pending Count</Label>
-                <TextField
-                  type="number"
-                  name="EstimatedHours"
-                  disabled
-                  // value={formatHours(
-                  //   convertMinutesToHours(formData.EstimatedHours)
-                  // )}
-                  style={{ width: "230px" }}
-                />
-              </Grid> */}
+              <Grid item>
+                <IconButton   aria-label="reset"
+              size="small" onClick={resetFilters}>
+                <img
+                    src={require("../../assets/reload.png")}
+                    alt="Calendar"
+                    style={{
+                      width: "25px",
+                      height: "25px",
+                      marginLeft: "5px",
+                      marginBottom:"3px"
+                    }}
+                  />
+                </IconButton>
+              </Grid>
 
               <Grid item>
                 <Box

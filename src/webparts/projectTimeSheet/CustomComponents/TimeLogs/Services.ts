@@ -234,7 +234,7 @@ export async function updateRecords(
               }
             );
             if (updateResponse.ok) {
-              alert("TimeSheet Approved");
+              // alert("TimeSheet Approved");
               
               setUpdateStatus(true);
             }
@@ -283,7 +283,7 @@ export async function updateRecords(
               }
             );
             if (updateResponse.ok) {
-              alert("TimeSheet Reject");
+              // alert("TimeSheet Reject");
               setUpdateStatus(true);
             }
             if (!updateResponse.ok) {

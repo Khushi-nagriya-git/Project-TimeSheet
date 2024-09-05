@@ -9,6 +9,8 @@ import {
   TableHead,
   useState,
   Avatar,
+  Alert,
+  useEffect,
 } from "../../../../../index";
 import TimeSheetForm from "../ApproveRejectForm";
 import { ITimeSheetProps } from "../ITimeSheetProps";
@@ -27,7 +29,11 @@ const TimeSheetTable = (props: {
 }) => {
   const [selectedWeekData, setSelectedWeekData] = useState<any[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-
+  const [alert, setAlert] = useState(false);
+  const [rejectAlert, setRejectAlert] = useState(false);
+  const [approvedAlert, setApprovedAlert] = useState(false);
+  const [selected, setSelected] = React.useState<string[]>([]);
+  
   const handleRowClick = (weekData: any[]) => {
     setSelectedWeekData(weekData);
     setIsFormOpen(true);
@@ -36,6 +42,8 @@ const TimeSheetTable = (props: {
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setSelectedWeekData([]);
+    setSelected([]);
+
   };
 
   const groupByWeekOrAuthor = (timeLogs: any[]) => {
@@ -85,6 +93,22 @@ const TimeSheetTable = (props: {
   };
 
   const groupedTimeLogs = groupByWeekOrAuthor(props.timeLogsData);
+
+  useEffect(() => {
+    let timer: any;
+    if (
+      rejectAlert ||
+      approvedAlert 
+      
+    ) {
+      timer = setTimeout(() => {
+        setRejectAlert(false);
+        setApprovedAlert(false);
+        setAlert(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [approvedAlert, rejectAlert]);
 
   return (
     <>
@@ -214,7 +238,27 @@ const TimeSheetTable = (props: {
           </Table>
         </TableContainer>
       </Box>
-
+      {alert && (
+        <Alert
+          severity={rejectAlert ? "warning" : "success"}
+          onClose={function (): void {
+            setRejectAlert(false);
+            setApprovedAlert(false);
+          }}
+          sx={{
+            position: "fixed",
+            top: "50px",
+            right: "20px",
+            zIndex: 9999,
+          }}
+        >
+          {rejectAlert
+            ? "Timesheet Rejected!"
+            : approvedAlert
+            ? "Timesheet approved!"
+            : ""}
+        </Alert>
+      )}
       <TimeSheetForm
         open={isFormOpen}
         onClose={handleCloseForm}
@@ -224,6 +268,11 @@ const TimeSheetTable = (props: {
         setUpdateStatus={props.setUpdateStatus}
         updateStatus={props.updateStatus}
         TableType={props.TableType}
+        setApprovedAlert = {setApprovedAlert}
+        setRejectAlert = {setRejectAlert}
+        setAlert = {setAlert}
+        selected = {selected}
+        setSelected = {setSelected}
         handleTabChange={props.handleTabChange}
       />
     </>

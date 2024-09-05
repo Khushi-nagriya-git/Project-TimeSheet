@@ -40,7 +40,7 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
       <DialogContent>
         <DialogContentText id="alert-dialog-description" className={dialogBox.dialogContentText}>
           {isJobAvailable
-            ? "This project cannot be deleted as it contains associated jobs."
+            ? "This project cannot be deleted as it contains associated tasks."
             : "Are you sure you want to delete this project?"}
         </DialogContentText>
       </DialogContent>
