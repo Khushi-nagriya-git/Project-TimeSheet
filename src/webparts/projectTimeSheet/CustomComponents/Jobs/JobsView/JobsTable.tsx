@@ -279,6 +279,8 @@ const JobsTable = (props: {
             >
               <TableHead>
                 <TableRow sx={{ height: "40px", background: "#f3f2f1" }}>
+                  <TableCell />
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -294,6 +296,7 @@ const JobsTable = (props: {
                   >
                     Task Name
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -326,6 +329,7 @@ const JobsTable = (props: {
                   >
                     Start Date
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -343,6 +347,7 @@ const JobsTable = (props: {
                   >
                     End Date
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -358,8 +363,9 @@ const JobsTable = (props: {
                     }}
                     align="left"
                   >
-                    Estimated Hours
+                    Estimated Hrs
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -375,8 +381,9 @@ const JobsTable = (props: {
                     }}
                     align="left"
                   >
-                    Logged Hours
+                    Logged Hrs
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -394,6 +401,7 @@ const JobsTable = (props: {
                   >
                     Status
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",
@@ -411,6 +419,7 @@ const JobsTable = (props: {
                   >
                     Assignee(s)
                   </TableCell>
+
                   <TableCell
                     sx={{
                       padding: "4px 16px",

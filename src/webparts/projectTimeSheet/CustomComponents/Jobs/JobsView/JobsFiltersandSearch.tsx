@@ -121,12 +121,14 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
             selectedKeys={selectedProjects}
             onChange={handleJobsChange}
             multiSelect
-            options={projectsData.map((project: any) => ({
-              key: project.ProjectName,
-              text: project.ProjectName,
-              selected: selectedProjects.indexOf(project.ProjectName) > -1,
-              checkbox: true,
-            }))}
+            options={projectsData
+              .sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)) // Sort alphabetically by ProjectName
+              .map((project: any) => ({
+                key: project.ProjectName,
+                text: project.ProjectName,
+                selected: selectedProjects.indexOf(project.ProjectName) > -1,
+                checkbox: true,
+              }))}            
             styles={{
               root: {
                 width: 200,
@@ -158,7 +160,7 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
             selectedKeys={selectedStatus}
             onChange={handleStatusChange}
             multiSelect
-            options={statusOptions.map((status) => ({
+            options={statusOptions.sort((a, b) => a.localeCompare(b)).map((status) => ({
               key: status,
               text: status,
               selected: selectedStatus.indexOf(status) > -1,
@@ -197,7 +199,7 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
                 selectedKeys={selectedAssignees}
                 onChange={handleAssigneesChange}
                 multiSelect
-                options={assignees.map((assignee: any) => ({
+                options={assignees.sort((a: any, b: any) => a.name.localeCompare(b.name)).map((assignee: any) => ({
                   key: assignee.id,
                   text: assignee.name,
                   selected: selectedAssignees.indexOf(assignee.name) > -1,

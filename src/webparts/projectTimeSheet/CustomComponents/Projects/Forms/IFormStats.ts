@@ -9,6 +9,7 @@ export interface CustomFormData {
     projectId: number;
     clientName: string;
     projectCost: number;
+    projectHours: number;
     ReportingManager: {};
     projectManager:ProjectManager[];
     projectTeam: ProjectManager[];
@@ -27,6 +28,7 @@ const initialFormData: CustomFormData = {
     projectId: 0,
     clientName: "",
     projectCost: 0,
+    projectHours: 0,
     ReportingManager: {},
     projectManager: [],
     projectTeam: [],

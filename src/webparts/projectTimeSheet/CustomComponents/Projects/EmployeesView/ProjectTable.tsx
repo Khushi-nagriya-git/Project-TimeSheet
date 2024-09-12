@@ -152,6 +152,7 @@ const ProjectTable = (props: {
       projectName: project.ProjectName,
       clientName: project.ClientName,
       projectType: project.ProjectType,
+      projectHours: project.ProjectHours? project.ProjectHours : 0,
       department: project.DepartmentsORTeam,
       projectTeam: projectTeam,
       ReportingManager: reportingManager,

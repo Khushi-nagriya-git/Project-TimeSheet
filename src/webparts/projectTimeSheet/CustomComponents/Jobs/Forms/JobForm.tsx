@@ -36,6 +36,8 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
   const [estimatedHours, setEstimatedHours] = useState<{
     [key: string]: number;
   }>({});
+  const [showEstimatedHour, setShowEstimatedHour] = useState(false);
+
 
   const Projects: IDropdownOption[] = props.projectsData.map(
     (project: any) => ({ key: project.ProjectId, text: project.ProjectName })
@@ -80,7 +82,6 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         return Array.from(optionsMap.values());
       }) || [];
 
-  const [showEstimatedHour, setShowEstimatedHour] = useState(false);
 
   const billableStatusOptions: IDropdownOption[] = [
     { key: "billable", text: "Billable" },
@@ -257,6 +258,8 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
             : {
                 [name]: option?.key || option?.text,
               };
+              formData.JobAssigness=[];
+              setShowEstimatedHour(false); 
         return {
           ...prevData,
           ...update,

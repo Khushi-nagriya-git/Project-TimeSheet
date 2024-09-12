@@ -39,7 +39,6 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   const { setAddFormOpen } = props;
   const [selectedOptionKey, setSelectedOptionKey] = useState<any>("");
   const [selectedDepartment, setSelectedDepartment] = useState<any>("");
-
   const [statusSelectedOptionKey, setStatusSelectedOptionKey] =
     useState<any>("");
   const [formData, setFormData] = useState<CustomFormData>(
@@ -61,7 +60,10 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   ];
 
   const departments: IDropdownOption[] = props.departmentNames?.map(
-    (department: any) => ({ key: department.DepartmentName, text: department.DepartmentName })
+    (department: any) => ({
+      key: department.DepartmentName,
+      text: department.DepartmentName,
+    })
   );
 
   useEffect(() => {
@@ -89,7 +91,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       if (props.initialData.projectStatus === "On Hold") {
         setStatusSelectedOptionKey("onHold");
       }
-      setSelectedDepartment(props.initialData.department)
+      setSelectedDepartment(props.initialData.department);
     }
   }, [props.mode, props.initialData]);
 
@@ -130,12 +132,16 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     newValue?: string
   ) => {
     const { name, value } = ev.currentTarget;
+    if (name === "projectHours" && Number(value) < 0) {
+      return;
+    }
     if (name === "projectCost" && Number(value) < 0) {
       return;
     }
+    
     setFormData({
       ...formData,
-      [name]: name === "projectCost" ? Number(value) : value,
+      [name]: name === "projectCost" || name === "projectHours" ? Number(value) : value,
     });
   };
 
@@ -169,7 +175,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
     setFormData({
       ...formData,
-      department:selectedValue
+      department: selectedValue,
     });
   };
 
@@ -195,13 +201,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         ReportingManager: items[0],
-        ReportingManagerPeoplePicker: items
+        ReportingManagerPeoplePicker: items,
       });
     } else {
       setFormData({
         ...formData,
         ReportingManager: [],
-        ReportingManagerPeoplePicker:[]
+        ReportingManagerPeoplePicker: [],
       });
     }
   };
@@ -217,13 +223,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         projectManager: updatedProjectManagers,
-        ProjectManagerPeoplePicker: items
+        ProjectManagerPeoplePicker: items,
       });
     } else {
       setFormData({
         ...formData,
         projectManager: [],
-        ProjectManagerPeoplePicker: []
+        ProjectManagerPeoplePicker: [],
       });
       setShowCostFields(false);
     }
@@ -240,13 +246,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       setFormData({
         ...formData,
         projectTeam: updatedProjectTeam,
-        ProjectTeamPeoplePicker: items
+        ProjectTeamPeoplePicker: items,
       });
     } else {
       setFormData({
         ...formData,
         projectTeam: [],
-        ProjectTeamPeoplePicker: []
+        ProjectTeamPeoplePicker: [],
       });
       setShowCostFieldsForProjectTeam(false);
     }
@@ -286,6 +292,8 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   const handleCancel = () => {
     setAddFormOpen(false);
     props.initialData({});
+    setFormData( initialState.formData);
+    setShowCostFields(false);
   };
 
   return (
@@ -348,6 +356,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               value={formData.clientName}
               onChange={handleChange}
               style={{ width: "320px" }}
+              
             />
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -355,11 +364,23 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               label="Project Cost"
               type="number"
               name="projectCost"
-              value={formData.projectCost.toString()}
+              value={formData.projectCost?.toString()}
               onChange={handleChange}
               style={{ width: "320px" }}
             />
-             <Dropdown
+             <TextField
+              label="Project Hours"
+              type="number"
+              name="projectHours"
+              value={formData.projectHours?.toString()}
+              onChange={handleChange}
+              style={{ width: "320px" }}
+            />
+          
+          </div>
+
+          <div style={{ display: "flex", gap: "10px" }}>
+          <Dropdown
               label="Department"
               selectedKey={selectedDepartment}
               onChange={handleChangeDepartmentDropDown}
@@ -367,9 +388,6 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               required
               style={{ width: "320px" }}
             />
-          </div>
-
-          <div style={{ display: "flex", gap: "10px" }}>
             <Dropdown
               label="Project Type"
               selectedKey={selectedOptionKey}
@@ -378,17 +396,18 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               style={{ width: "320px" }}
             />
 
-            <Dropdown
+          
+          </div>
+          <div style={{ display: "flex", gap: "10px" }}>
+          <Dropdown
               label="Project Status"
               selectedKey={statusSelectedOptionKey}
               options={projectStatus}
               onChange={handleChangeStatusDropDown}
               style={{ width: "322px" }}
             />
-          </div>
-          <div style={{ display: "flex", gap: "10px" }}>
             <div style={{ width: "320px" }}>
-              <Label style={{ fontWeight: "600", marginTop: "5px" }}>
+              <Label style={{ fontWeight: "600" }}>
                 Reporting Manager
               </Label>
               <PeoplePicker
@@ -409,8 +428,12 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 groupName=""
               />
             </div>
-            <div style={{ width: "321px" }}>
-              <Label style={{ fontWeight: "600", marginTop: "5px" }}>
+           
+          </div>
+
+          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ width: "321px" }}>
+              <Label style={{ fontWeight: "600" }}>
                 Project Manager
               </Label>
               <PeoplePicker
@@ -443,12 +466,9 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                   />
                 ))}
             </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "10px" }}>
             <div>
               <div style={{ gap: "10px", width: "320px" }}>
-                <Label style={{ fontWeight: "600", marginTop: "5px" }}>
+                <Label style={{ fontWeight: "600" }}>
                   Project Team
                 </Label>
 
@@ -482,7 +502,10 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                   />
                 ))}
             </div>
-            <TextField
+          </div>
+
+          <div style={{ display: "flex", gap: "10px" }}>
+          <TextField
               label="Description"
               multiline
               autoAdjustHeight={false}
@@ -497,21 +520,23 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                     ".ms-TextField-field": {
                       height: "100%",
                       paddingTop: "8px",
-                      paddingBottom: "8px", 
+                      paddingBottom: "8px",
                     },
                   },
                 },
               }}
             />
-          </div>
+            <div>
           <Label style={{ fontWeight: "600" }}>Attachment</Label>
           <input
             type="file"
             name="attachment"
             id="attachment"
             onChange={handleChangeAttachment}
-            style={{ display: "block" }}
+            style={{ display: "block" , marginTop:"10px"}}
           />
+          </div>
+          </div>
           <div
             style={{
               padding: "5px",

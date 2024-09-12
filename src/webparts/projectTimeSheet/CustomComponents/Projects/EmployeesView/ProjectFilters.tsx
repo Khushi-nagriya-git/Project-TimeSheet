@@ -52,10 +52,10 @@ const ProjectFilters:React.FC<ProjectFiltersProps> = ({ projectsData , myDataAct
   };
 
   const resetFilters = () => {
+    setSearchQuery('');
     setSelectedStatus([]);
     setSelectedProject([]);
     setSelectedDepartment([]);
-    setSearchQuery('');
     setFilteredProjects(projectsData);
   };
 
@@ -69,7 +69,7 @@ const ProjectFilters:React.FC<ProjectFiltersProps> = ({ projectsData , myDataAct
             selectedKeys={selectedProject}
             onChange={handleProjectChange}
             multiSelect
-            options={projectsData.map((project: any) => ({
+            options={projectsData.sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)).map((project: any) => ({
               key: project.ProjectName,
               text: project.ProjectName,
               selected: selectedProject.indexOf(project.ProjectName) > -1,
@@ -106,7 +106,7 @@ const ProjectFilters:React.FC<ProjectFiltersProps> = ({ projectsData , myDataAct
             selectedKeys={selectedStatus}
             onChange={handleStatusChange}
             multiSelect
-            options={statusOptions.map((status) => ({
+            options={statusOptions.sort((a, b) => a.localeCompare(b)).map((status) => ({
               key: status,
               text: status,
               selected: selectedStatus.indexOf(status) > -1,

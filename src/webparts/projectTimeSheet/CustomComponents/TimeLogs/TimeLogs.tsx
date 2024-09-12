@@ -311,9 +311,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       );
       setAlert(true);
       setTimerStopAlert(true);
-
       setIsRunning(false);
-
       setStartTime(null);
       setElapsedTime(0);
       localStorage.removeItem("stopwatchStartTime");
@@ -400,6 +398,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
   };
 
   const jobResumeTimer = async (id: any) => {
+
     await getTimeLogsListData(
       props.absoluteURL,
       props.spHttpClient,
@@ -409,6 +408,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserAdmin,
       props.isUserReportingManager
     );
+
     const jobTimeLogData = timeLogsData.filter(
       (timelog: any) => timelog.TimelogsId === id
     )[0];

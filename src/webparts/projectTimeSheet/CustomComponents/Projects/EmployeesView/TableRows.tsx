@@ -210,6 +210,30 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
+                        width: "15%",
+                        fontWeight: "600",
+                        fontFamily:
+                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      }}
+                    >
+                      Assigned By
+                    </TableCell>
+
+                    <TableCell
+                      align="left"
+                      sx={{
+                        width: "15%",
+                        fontWeight: "600",
+                        fontFamily:
+                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      }}
+                    >
+                      Assigned To
+                    </TableCell>
+
+                    <TableCell
+                      align="left"
+                      sx={{
                         width: "40%",
                         fontWeight: "600",
                         fontFamily:
@@ -221,7 +245,7 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
-                        width: "20%",
+                        width: "10%",
                         fontWeight: "600",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -232,7 +256,7 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
-                        width: "20%",
+                        width: "10%",
                         fontWeight: "600",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -243,7 +267,7 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
-                        width: "20%",
+                        width: "10%",
                         fontWeight: "600",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -259,6 +283,67 @@ const Row = (props: {
 
                     return (
                       <TableRow key={historyRow.JobName}>
+                        <TableCell
+                          align="left"
+                          sx={{
+                            height: "10px",
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          <Box
+                            display="flex"
+                            alignItems="left"
+                            justifyContent="left"
+                          >
+                            <Avatar
+                              alt={historyRow.Author.Title}
+                              src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${historyRow.Author.EMail}&Size=S`}
+                              style={{
+                                marginRight: 8,
+                                height: "25px",
+                                width: "25px",
+                              }}
+                            />
+
+                            <Box sx={{ mt: 0.5 }}>
+                              {historyRow.Author.Title}
+                            </Box>
+                            
+                          </Box>
+                        </TableCell>
+
+                        <TableCell
+                          align="left"
+                          sx={{
+                            height: "10px",
+                            fontFamily:
+                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          }}
+                        >
+                          {JSON.parse(historyRow.AssignedTo).map(
+                            (assignee: any) => (
+                              <Box
+                                display="flex"
+                                alignItems="left"
+                                justifyContent="left"
+                                key={assignee.EMail}
+                              >
+                                <Avatar
+                                  alt={assignee.name}
+                                  src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${assignee.email}&Size=S`}
+                                  sx={{
+                                    marginRight: 1,
+                                    height: 25,
+                                    width: 25,
+                                  }}
+                                />
+                                <Box sx={{ mt: 0.5 }}>{assignee.name}</Box>
+                              </Box>
+                            )
+                          )}
+                        </TableCell>
+
                         <TableCell
                           align="left"
                           component="th"
@@ -278,6 +363,7 @@ const Row = (props: {
                             historyRow.JobName
                           )}
                         </TableCell>
+
                         <TableCell
                           align="left"
                           sx={{
@@ -291,6 +377,7 @@ const Row = (props: {
                               : 0
                           )}
                         </TableCell>
+
                         <TableCell
                           align="left"
                           sx={{
@@ -302,6 +389,7 @@ const Row = (props: {
                             historyRow.loggedHours ? historyRow.loggedHours : 0
                           )}
                         </TableCell>
+
                         <TableCell
                           align="left"
                           sx={{

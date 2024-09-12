@@ -19,14 +19,14 @@ export const getJobListData = async (
     let response:any ;
     if(isUserAdmin){
       response = await spHttpClient.get(
-        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,Author/EMail,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,loggedHours&$expand=AssignedToPeoplePicker,Author`,
+        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,Author/EMail,Author/Title,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,loggedHours&$expand=AssignedToPeoplePicker,Author`,
         SPHttpClient.configurations.v1
       );
     }else{
       const projectIds = projectsData.map((project: any) => project.ProjectId);
       const projectFilterQuery = projectIds.map((id: string) => `ProjectId eq '${id}'`).join(' or ');
       response = await spHttpClient.get(
-        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,Author/EMail,loggedHours&$expand=AssignedToPeoplePicker,Author&$filter=${projectFilterQuery}`,
+        `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,Author/EMail,Author/Title,loggedHours&$expand=AssignedToPeoplePicker,Author&$filter=${projectFilterQuery}`,
         SPHttpClient.configurations.v1
       );
     }
@@ -234,6 +234,7 @@ export async function updateJobRecords(
   setCurrentData:  React.Dispatch<React.SetStateAction<any>>,
   loggedInUserDetails:any,
 ) {
+  let totalLockedTime = 0;
   let status =
   updateformData.jobStatus === "NotStarted"
     ? "Not Started"
@@ -260,11 +261,13 @@ export async function updateJobRecords(
               if(type === "loggedTimeUpdate"){
                 const JobAssginees = JSON.parse(data.value[0].AssignedTo);
                 
-                if (JobAssginees && JobAssginees.length === 1) {
-                  updatedJobAssgineesLoggedHours = JobAssginees.map((assignee: { email: any; }) => {
+                if (JobAssginees && JobAssginees.length  >= 0) {
+                  updatedJobAssgineesLoggedHours = JobAssginees.map((assignee: any) => {
                     if (assignee.email === loggedInUserDetails.Email) {
+                      totalLockedTime += updateformData; 
                       return { ...assignee, loggedHours: updateformData };
                     }
+                    totalLockedTime += assignee.loggedHours;
                     return assignee;
                   });
                 }
@@ -282,7 +285,7 @@ export async function updateJobRecords(
               if(type === "loggedTimeUpdate"){
 
                 listItemData = {  '__metadata': { 'type': "SP.Data.TasksListItem" },
-                  loggedHours: updateformData,
+                  loggedHours: totalLockedTime,
                   AssignedTo: JSON.stringify(updatedJobAssgineesLoggedHours),
                 }
               }else{

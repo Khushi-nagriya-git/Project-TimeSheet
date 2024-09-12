@@ -19,7 +19,7 @@ export interface JobsData {
     loggedHours:number;
     Attachment:any;
     AssignedToPeoplePicker:[{EMail:string , Title :string}];
-    Author:{EMail:string}
+    Author:{EMail:string,Title:string}
 }
 
 export const initialJobsData: JobsData = {
@@ -37,7 +37,7 @@ export const initialJobsData: JobsData = {
     loggedHours:0,
     Attachment:undefined,
     AssignedToPeoplePicker:[{EMail:'' , Title :''}],
-    Author:{EMail:''}
+    Author:{EMail:'',Title:""}
 
 };
 

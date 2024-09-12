@@ -63,13 +63,13 @@ export const getProjectListData = async (
 
   let filterQuery = "";
   if(isUserAdmin){
-    filterQuery = "";
+    filterQuery = ""; 
   }else{
   filterQuery = `ProjectManagerPeoplePicker/EMail eq '${loggedInUserDetails.Email}' or ProjectTeamPeoplePicker/EMail eq '${loggedInUserDetails.Email}'  or ReportingManagerPeoplePicker/EMail eq '${loggedInUserDetails.Email}'`;
   }
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/Id,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker&$filter=${filterQuery}`,
+      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectHours,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/Id,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker,AttachmentFiles&$filter=${filterQuery}`,
        SPHttpClient.configurations.v1
     );
       if (response.ok) {
@@ -125,6 +125,7 @@ export const addProjects = async (
     ProjectId: newProjectId,
     ClientName: data.clientName,
     ProjectCost: data.projectCost,
+    ProjectHours: data.projectHours,
     ReportingManager: JSON.stringify([data.ReportingManager]),
     ProjectManager: JSON.stringify(data.projectManager),
     ProjectTeam: JSON.stringify(data.projectTeam),
@@ -272,7 +273,8 @@ export async function updateUserRecords(
                 ProjectName: updateformData.projectName,
                 ClientName: updateformData.clientName,
                 ProjectCost: updateformData.projectCost, 
-                ReportingManager: JSON.stringify([updateformData.ReportingManager]),
+                ProjectHours: updateformData.projectHours,
+                ReportingManager: JSON.stringify(updateformData.ReportingManager),
                 ProjectManager: JSON.stringify(updateformData.projectManager),
                 ProjectTeam: JSON.stringify(updateformData.projectTeam),
                 ProjectTeamPeoplePickerId: {results: ProjectTeamPeoplePickerIds}, 

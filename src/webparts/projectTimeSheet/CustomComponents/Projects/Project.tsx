@@ -294,7 +294,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                   )}
 
                   <Grid item sx={{ marginLeft: "auto", marginBottom: "10px" }}>
-                    {(props.isUserReportingManager || props.isUserAdmin) && (
+                    {(props.isUserReportingManager || props.isUserAdmin ) && myDataActiveLink === "Employee" &&(
                       <Button
                         variant="contained"
                         onClick={handleAddProject}

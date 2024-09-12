@@ -258,7 +258,7 @@ useEffect(() => {
               onChange={handleProjectChange}
               disabled={props.isRunning}
               errorMessage={props.projectError}
-              options={projectsData.map((project) => ({
+              options={projectsData.sort((a, b) => a.ProjectName.localeCompare(b.ProjectName)).map((project) => ({
                 key: project.ProjectId,
                 text: project.ProjectName,
               }))}
@@ -294,7 +294,7 @@ useEffect(() => {
               onChange={handleJobChange}
               disabled={props.isRunning}
               errorMessage={props.jobError}
-              options={filterJobs.map((job) => ({
+              options={filterJobs.sort((a, b) => a.JobName.localeCompare(b.JobName)).map((job) => ({
                 key: job.JobId,
                 text: job.JobName,
               }))}
