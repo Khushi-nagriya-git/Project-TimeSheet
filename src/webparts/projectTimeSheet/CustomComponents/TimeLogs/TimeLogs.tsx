@@ -267,18 +267,37 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       let startTime = parseInt(localStorage.getItem("startTime") || "0", 10);
       let endTime = Date.now();
       let milliseconds = endTime - startTime;
-      const LockedMinutes = Math.floor(milliseconds / 60000);
+      let LockedMinutes = Math.floor(milliseconds / 60000);
+      let jobResumeTimer = localStorage.getItem("JobTimerResume");
       let timerTimeLogId = parseInt(
-        localStorage.getItem("TimeLogId") || "0",
-        10
+        localStorage.getItem("TimeLogId") || "0", 10
       );
+
       let jobId = 0;
+      let currentStateTimeLogLoggedHours = 0;
       for (let i = 0; i < timeLogsData.length; i++) {
         if (timeLogsData[i].TimelogsId === timerTimeLogId) {
           jobId = timeLogsData[i].JobId;
+          currentStateTimeLogLoggedHours = timeLogsData[i].LoggedHours
         }
       }
+      
+      if(jobResumeTimer){
+        LockedMinutes =  LockedMinutes - currentStateTimeLogLoggedHours;
+        LockedMinutes = LockedMinutes + currentStateTimeLogLoggedHours
+      }else{
+        LockedMinutes = LockedMinutes;
+      }
 
+      let totalTime = 0;
+      for (let i = 0; i < timeLogsData.length; i++) {
+        if (timeLogsData[i].JobId === jobId) {
+          totalTime += timeLogsData[i].LoggedHours;
+        }
+      }
+      
+      console.log(`Total locked hours for JobId ${jobId}:`, totalTime + LockedMinutes - currentStateTimeLogLoggedHours);
+      localStorage.setItem("JobTimerResume","false");
       await updateRecords(
         props.spHttpClient,
         props.absoluteURL,
@@ -293,7 +312,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.spHttpClient,
         props.absoluteURL,
         jobId,
-        LockedMinutes,
+        (totalTime + LockedMinutes) - currentStateTimeLogLoggedHours ,
         "loggedTimeUpdate",
         setJobsData,
         setCurrentData,
@@ -309,6 +328,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
         props.isUserAdmin,
         props.isUserReportingManager
       );
+
       setAlert(true);
       setTimerStopAlert(true);
       setIsRunning(false);
@@ -417,6 +437,8 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       const loggedMinutes = jobTimeLogData.LoggedHours;
       const now = Date.now();
       const startTime = now - loggedMinutes * 60000;
+      localStorage.setItem("JobTimerResume","true");
+      localStorage.setItem("startTimeForJobTimerResume", Date.now().toString());
       localStorage.setItem("startTime", startTime.toString());
       localStorage.setItem("stopwatchElapsedTime", loggedMinutes.toString());
       setStartTime(startTime);
@@ -516,7 +538,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       }
     }
 
-    await getTimeLogsListData(
+    const updatedTimeLogsData = await getTimeLogsListData(
       props.absoluteURL,
       props.spHttpClient,
       setTimeLogsData,
@@ -525,12 +547,16 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
       props.isUserAdmin,
       props.isUserReportingManager
     );
+    
+    const finalJobTime = updatedTimeLogsData
+    .filter((log: { JobId: number; }) => log.JobId === jobId)
+    .reduce((total: any, log: { LoggedHours: any; }) => total + log.LoggedHours, 0);
 
     await updateJobRecords(
       props.spHttpClient,
       props.absoluteURL,
       jobId,
-      data.LoggedHours,
+      finalJobTime,
       "loggedTimeUpdate",
       setJobsData,
       setCurrentData,

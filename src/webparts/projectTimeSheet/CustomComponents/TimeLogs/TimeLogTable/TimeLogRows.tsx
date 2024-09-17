@@ -234,7 +234,7 @@ const isDescriptionLong = row.Description?.length > 25;
               </IconButton>
             ) : (
               <IconButton
-                aria-label="edit"
+                aria-label="play"
                 size="small"
                 onClick={() =>
                   handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)

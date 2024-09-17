@@ -51,13 +51,10 @@ const EditTimeLog = (props: {
   const [filterJobs, setFilteredJobs] = useState<JobsData[]>(
     jobsInitialState.jobsData
   );
-  const [selectedProjectName, setSelectedProjectName] = useState<string>("");
-  const [selectedJobName, setSelectedJobName] = useState<string>("");
   const [selectedJob, setSelectedJob] = useState<string>();
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [selectedBillableStatus, setSelectedBillableStatus] =
     useState<string>("");
-  const statusOptions = ["Billable", "Non Billable"];
 
   const options: IDropdownOption[] = [
     { key: "Billable", text: "Billable" },

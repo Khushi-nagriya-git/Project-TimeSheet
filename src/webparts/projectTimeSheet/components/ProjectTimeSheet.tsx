@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import TimeLogs from "../CustomComponents/TimeLogs/TimeLogs";
-import { SPHttpClient } from "../../..";
 import { LoggedInUserDetails, projectsInitialState } from "../CustomComponents/Projects/IProjectStats";
 import { getLoggedInUserData } from "../CustomComponents/Projects/Services";
 import TimeSheet from "../CustomComponents/TimeSheet/TimeSheet";
+import { EmployeeTimeSheetProvider } from "../CustomComponents/EmployeeTimeSheetContext";
 
 
 const MainContainer = styled(Box)({
@@ -65,7 +65,8 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
 
   return (
     <>
-      {isDataAvaiable && (
+    <EmployeeTimeSheetProvider>
+    {isDataAvaiable && (
         <div>
           <style>
             {`
@@ -139,6 +140,8 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
           </MainContainer>
         </div>
       )}
+    </EmployeeTimeSheetProvider>
+    
     </>
   );
   

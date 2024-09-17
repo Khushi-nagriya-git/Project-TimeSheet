@@ -264,7 +264,7 @@ export async function updateJobRecords(
                 if (JobAssginees && JobAssginees.length  >= 0) {
                   updatedJobAssgineesLoggedHours = JobAssginees.map((assignee: any) => {
                     if (assignee.email === loggedInUserDetails.Email) {
-                      totalLockedTime += updateformData; 
+                      totalLockedTime += parseInt(updateformData); 
                       return { ...assignee, loggedHours: updateformData };
                     }
                     totalLockedTime += assignee.loggedHours;

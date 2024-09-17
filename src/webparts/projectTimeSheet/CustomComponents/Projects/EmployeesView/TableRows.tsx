@@ -17,6 +17,7 @@ import {
   KeyboardArrowUpIcon,
 } from "../../../../../index";
 import { Tooltip } from "@mui/material";
+import ProjectDashboard from "../ProjectDashboard/ProjectDashboard";
 
 const Row = (props: {
   row: ReturnType<any>;
@@ -39,6 +40,8 @@ const Row = (props: {
     topNavigationMode,
   } = props;
   const [open, setOpen] = useState(false);
+  const [projectIdForDashBoard, setProjectIdForDashBoard] = useState(0);
+  const [isDashBoardOpen, setIsDashBoardOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
@@ -61,9 +64,20 @@ const Row = (props: {
 
   const isLongName = row.projectName.length > 30;
 
+  const dashboardOpen = (projectId: number) => {
+    setIsDashBoardOpen(true);
+    setProjectIdForDashBoard(projectId);
+  };
+
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" }}>
+      <TableRow
+        sx={{
+          "& > *": { borderBottom: "unset" },
+          height: "50px",
+          cursor: "pointer",
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -77,6 +91,7 @@ const Row = (props: {
           component="th"
           scope="row"
           sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+          onClick={() => dashboardOpen(row.projectId)}
         >
           {row.projectId}
         </TableCell>
@@ -86,6 +101,7 @@ const Row = (props: {
             height: "10px",
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
+          onClick={() => dashboardOpen(row.projectId)}
         >
           {isLongName ? (
             <Tooltip title={row.projectName}>
@@ -101,6 +117,7 @@ const Row = (props: {
             height: "10px",
             fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
           }}
+          onClick={() => dashboardOpen(row.projectId)}
         >
           <Box display="flex" alignItems="left" justifyContent="left">
             <Avatar
@@ -111,7 +128,11 @@ const Row = (props: {
             <Box sx={{ mt: 0.5 }}>{row.projectManager}</Box>
           </Box>
         </TableCell>
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell
+          align="left"
+          sx={{ height: "10px" }}
+          onClick={() => dashboardOpen(row.projectId)}
+        >
           <Box
             sx={{
               borderRadius: "20px",
@@ -183,6 +204,7 @@ const Row = (props: {
             </TableCell>
           )}
       </TableRow>
+      
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -309,7 +331,6 @@ const Row = (props: {
                             <Box sx={{ mt: 0.5 }}>
                               {historyRow.Author.Title}
                             </Box>
-                            
                           </Box>
                         </TableCell>
 
@@ -408,6 +429,8 @@ const Row = (props: {
           </Collapse>
         </TableCell>
       </TableRow>
+
+      {isDashBoardOpen && <ProjectDashboard projectId={projectIdForDashBoard} ></ProjectDashboard>}
     </React.Fragment>
   );
 };

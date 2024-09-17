@@ -33,6 +33,7 @@ import { getDepartments } from "./Services";
 import { Drawer, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SideNavigation from "../Navigation/SideNavigation";
+import { useEmployeeTimeSheetContext } from '../EmployeeTimeSheetContext';
 const DrawerContainer = styled(Drawer)({
   width: 500,
   flexShrink: 0,
@@ -49,9 +50,8 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [currentData, setCurrentData] = useState<CustomFormData>(
     initialState.formData
   );
-  const [projectsData, setProjectsData] = useState<ProjectsData[]>(
-    projectsInitialState.projectsData
-  );
+  const {projectsData, setProjectsData} = useEmployeeTimeSheetContext();
+  
   const [jobsData, setJobsData] = useState<JobsData[]>(
     jobsInitialState.jobsData
   );

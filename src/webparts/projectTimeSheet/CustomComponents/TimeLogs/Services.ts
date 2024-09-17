@@ -15,14 +15,14 @@ export const getTimeLogsListData = async (
   if (loggedInUserDetails) {
     switch (type) {
       case "TimeLogs":
-        filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending' or Status eq 'Not Submitted' or Status eq 'Rejected'`;
+        filterQuery = `(Author/EMail eq '${loggedInUserDetails.Email}') and (Status eq 'Pending' or Status eq 'Not Submitted' or Status eq 'Rejected')`;
         break;
 
       case "TimeSheet":
         if (isUserAdmin || isUserReportingManager) {
           filterQuery = `Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected'`;
         } else {
-          filterQuery = `Author/EMail eq '${loggedInUserDetails.Email}' and Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected'`;
+          filterQuery = `(Author/EMail eq '${loggedInUserDetails.Email}') and (Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected')`;
         }
         break;
 
