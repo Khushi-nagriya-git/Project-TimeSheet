@@ -29,6 +29,7 @@
     "material-ui-search-bar": "^1.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-router-dom": "^6.26.2",
     "react-timer-hook": "^3.0.7",
     "styled-components": "^6.1.12",
     "tslib": "2.3.1"

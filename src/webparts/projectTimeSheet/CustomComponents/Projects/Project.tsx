@@ -34,14 +34,15 @@ import { Drawer, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SideNavigation from "../Navigation/SideNavigation";
 import { useEmployeeTimeSheetContext } from '../EmployeeTimeSheetContext';
+
 const DrawerContainer = styled(Drawer)({
   width: 500,
   flexShrink: 0,
 });
+
 const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [myDataActiveLink, setMyDataActiveLink] = useState<string>("Employee");
-  const [teamActiveLink, setTeamActiveLink] = useState<string>("Project");
   const [isOpen, setIsOpen] = useState(false);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [addFormOpen, setAddFormOpen] = useState(false);
@@ -246,7 +247,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
           style={{ display: "flex", height: "100%", width: "100%" }}
         >
           <ProjectStyle.MainContainer>
-            {/* <TopNavigation setTopNavigationState={setTopNavigationState} setModuleTab={props.setModuleTab} setTopNavigationMode={setTopNavigationMode}/> */}
             {topNavigationState === "myData" && (
               <ProjectStyle.Content>
                 <ProjectStyle.NavigationLinks>
@@ -265,7 +265,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                       open={drawerOpen}
                       onClose={toggleDrawer(false)}
                     >
-                      <SideNavigation setModuleTab={props.setModuleTab} />
+                      <SideNavigation  />
                     </DrawerContainer>
                   </Box>
                   <ProjectStyle.NavLink

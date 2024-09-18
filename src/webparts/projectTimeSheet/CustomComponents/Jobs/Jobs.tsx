@@ -223,7 +223,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
                       open={drawerOpenNavigation}
                       onClose={toggleDrawer(false)}
                     >
-                      <SideNavigation setModuleTab={props.setModuleTab} />
+                      <SideNavigation />
                     </DrawerContainer>
                   </Box>
                   <NavLink

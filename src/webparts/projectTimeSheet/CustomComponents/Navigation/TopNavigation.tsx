@@ -47,7 +47,6 @@ const DrawerHeader = styled(Box)({
 const TopNavigation = (props: {
   setTopNavigationState: React.Dispatch<React.SetStateAction<any>>;
   setTopNavigationMode: React.Dispatch<React.SetStateAction<any>>;
-  setModuleTab: React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const [activeTab, setActiveTab] = React.useState("myData");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -82,7 +81,7 @@ const TopNavigation = (props: {
             open={drawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <SideNavigation setModuleTab={props.setModuleTab} />
+            <SideNavigation  />
           </DrawerContainer>
         </Box>
         <Box display="flex" alignItems="center">

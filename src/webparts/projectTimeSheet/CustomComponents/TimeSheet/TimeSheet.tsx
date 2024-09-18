@@ -190,7 +190,7 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
                       open={drawerOpen}
                       onClose={toggleDrawer(false)}
                     >
-                      <SideNavigation setModuleTab={props.setModuleTab} />
+                      <SideNavigation  />
                     </DrawerContainer>
                   </Box>
                 <NavLink

@@ -637,7 +637,7 @@ const TimeLogs: React.FC<ITimeLogsProps> = (props) => {
                         open={drawerOpen}
                         onClose={toggleDrawer(false)}
                       >
-                        <SideNavigation setModuleTab={props.setModuleTab} />
+                        <SideNavigation  />
                       </DrawerContainer>
                     </Box>
                     <NavLink

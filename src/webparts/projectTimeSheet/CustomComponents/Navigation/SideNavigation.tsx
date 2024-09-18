@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Box, Button } from "@mui/material";
 import { styled } from "@mui/system";
+import { useNavigate } from 'react-router-dom';
 
 const SidebarContainer = styled("div")({
   borderRadius: "5px",
@@ -35,12 +36,19 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const SideNavigation = (props: { setModuleTab: React.Dispatch<React.SetStateAction<any>> }) => {
-  const [activeTab, setActiveTab] = React.useState("Projects");
 
+
+const SideNavigation = () => {
+  const [activeTab, setActiveTab] = React.useState("Projects");
+  const navigate = useNavigate();
+  
   const handleTabChange = (tab: string) => {
+    if(tab === "Jobs"){
+      tab = "Tasks";
+    }
     setActiveTab(tab);
-    props.setModuleTab(tab);
+    navigate(`/${tab}`);  
+  
   };
 
   return (

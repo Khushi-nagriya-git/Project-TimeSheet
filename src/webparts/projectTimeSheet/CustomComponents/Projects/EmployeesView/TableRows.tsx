@@ -18,6 +18,7 @@ import {
 } from "../../../../../index";
 import { Tooltip } from "@mui/material";
 import ProjectDashboard from "../ProjectDashboard/ProjectDashboard";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 const Row = (props: {
   row: ReturnType<any>;
@@ -204,7 +205,7 @@ const Row = (props: {
             </TableCell>
           )}
       </TableRow>
-      
+
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
           <Collapse in={open} timeout="auto" unmountOnExit>
@@ -430,7 +431,22 @@ const Row = (props: {
         </TableCell>
       </TableRow>
 
-      {isDashBoardOpen && <ProjectDashboard projectId={projectIdForDashBoard} ></ProjectDashboard>}
+      {isDashBoardOpen && (
+        <HashRouter>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProjectDashboard
+                  projectId={projectIdForDashBoard}
+                  isDashBoardOpen={isDashBoardOpen}
+                  handleClose={() => setIsDashBoardOpen(false)}
+                />
+              }
+            />
+          </Routes>
+        </HashRouter>
+      )}
     </React.Fragment>
   );
 };

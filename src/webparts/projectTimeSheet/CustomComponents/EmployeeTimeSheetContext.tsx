@@ -4,14 +4,14 @@ import { ProjectsData, projectsInitialState } from './Projects/IProjectStats';
 
 // Define the shape of the context value
 interface EmployeeTimeSheetContextType {
-  projectsData: ProjectsData[]; // Correct type for projectsData
-  setProjectsData: React.Dispatch<React.SetStateAction<ProjectsData[]>>; // Correct type for setProjectsData
+  projectsData: ProjectsData[];
+  setProjectsData: React.Dispatch<React.SetStateAction<ProjectsData[]>>;
 }
 
-// Create a default value (optional)
+// Default values for the context
 const defaultContextValue: EmployeeTimeSheetContextType = {
   projectsData: projectsInitialState.projectsData,
-  setProjectsData: () => {}, // Default to an empty function
+  setProjectsData: () => {},
 };
 
 // Create the context
@@ -19,7 +19,7 @@ const EmployeeTimeSheetContext = createContext<EmployeeTimeSheetContextType>(def
 
 // Create a provider component
 export const EmployeeTimeSheetProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [projectsData, setProjectsData] = useState<ProjectsData[]>(projectsInitialState.projectsData); // Initialize with the correct type
+  const [projectsData, setProjectsData] = useState<ProjectsData[]>(projectsInitialState.projectsData);
 
   return (
     <EmployeeTimeSheetContext.Provider value={{ projectsData, setProjectsData }}>
