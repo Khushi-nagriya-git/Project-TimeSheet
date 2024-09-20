@@ -18,6 +18,7 @@ import TimeSheet from "../CustomComponents/TimeSheet/TimeSheet";
 import { EmployeeTimeSheetProvider } from "../CustomComponents/EmployeeTimeSheetContext";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { useEmployeeTimeSheetContext } from "../CustomComponents/EmployeeTimeSheetContext";
+import ProjectDashboard from "../CustomComponents/Projects/ProjectDashboard/ProjectDashboard";
 
 const MainContainer = styled(Box)({
   display: "flex",
@@ -34,6 +35,9 @@ const ContentContainer = styled(Box)({
 const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
   props: IProjectTimeSheetProps
 ) => {
+
+  const { projectsData, setProjectsData } = useEmployeeTimeSheetContext();
+
   const [isUserReportingManager, setIsUserReportingManager] =
     useState<boolean>(false);
   const [isUserProjectManager, setIsUserProjectManager] =
@@ -50,6 +54,7 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
         props.spHttpClient,
         props.absoluteURL
       );
+      
       setLoggedInUserDetails(userData || {});
       userData.Groups?.forEach((group: { Title: string }) => {
         setIsDataAvailable(true);
@@ -112,6 +117,7 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                       />
                     }
                   />
+                  <Route  path="/Projects/:id" element={<ProjectDashboard  spHttpClient={props.spHttpClient}absoluteURL={props.absoluteURL} loggedInUserDetails={loggedInUserDetails} isUserAdmin={isUserAdmin} context={props.context}/>} />
                   <Route
                     path="/Tasks"
                     element={

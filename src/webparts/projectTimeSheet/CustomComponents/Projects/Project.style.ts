@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 const FullHeightGrid = styled(Grid)({
     height: "100%", 
     boxSizing: "border-box",
-    backgroundColor: "#F9F9F9",
+    // backgroundColor: "#F9F9F9",
   });
   
   const MainContainer = styled("div")({

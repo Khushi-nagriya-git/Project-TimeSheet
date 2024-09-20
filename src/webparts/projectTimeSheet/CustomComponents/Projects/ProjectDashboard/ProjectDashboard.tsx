@@ -2,39 +2,65 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { IProjectDashboardProps } from "./IProjectDashboardProps";
 import { useEmployeeTimeSheetContext } from "../../EmployeeTimeSheetContext";
-import Dialog from "@mui/material/Dialog/Dialog";
-import DialogTitle from "@mui/material/DialogTitle/DialogTitle";
-import IconButton from "@mui/material/IconButton";
-import { CloseIcon, DialogContent, DialogContentText } from "../../../../..";
+import { useParams } from "react-router-dom";
+import {
+  Box,
+  Label,
+  ProjectStyle,
+  ProjectsData,
+  getProjectListData,
+  projectsInitialState,
+  styled,
+} from "../../../../../index";
+import DashBoardHeader from "./DashBoardHeader";
+import DashBoardBody from "./DashBoardBody";
+
+const Content = styled("div")({
+  height: "calc(100vh - 143px)",
+  backgroundColor: "#ffffff",
+  boxSizing: "border-box",
+  padding:"10px"
+});
 
 
 const ProjectDashboard = (props: IProjectDashboardProps) => {
-  const { projectsData } = useEmployeeTimeSheetContext();
-  let project;
+  const { id } = useParams<{ id: string }>();
+
+  const { projectsData, setProjectsData } = useEmployeeTimeSheetContext();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await getProjectListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          setProjectsData,
+          props.loggedInUserDetails,
+          props.isUserAdmin
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        // setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  let project:any;
+  
   for (let i = 0; i < projectsData.length; i++) {
-    if (projectsData[i].ProjectId === props.projectId) {
+    if (projectsData[i].ProjectId === parseInt(id ? id : "", 10)) {
       project = projectsData[i];
     }
   }
 
   return (
     <React.Fragment>
-      <Dialog open={props.isDashBoardOpen} onClose={props.handleClose}>
-        <DialogTitle>
-          {"Project DashBoard"}
-          <IconButton aria-label="close" onClick={props.handleClose}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-
-        <DialogContent>
-          <DialogContentText>
-            {
-              "This project cannot be deleted as it contains associated tasks.Are you sure you want to delete this project?"
-            }
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
+        <Content >
+          <DashBoardHeader project={project} context={props.context}></DashBoardHeader>
+          <DashBoardBody project={project} context={props.context}></DashBoardBody>
+        </Content>
     </React.Fragment>
   );
 };

@@ -247,7 +247,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
           style={{ display: "flex", height: "100%", width: "100%" }}
         >
           <ProjectStyle.MainContainer>
-            {topNavigationState === "myData" && (
               <ProjectStyle.Content>
                 <ProjectStyle.NavigationLinks>
                   <Box display="flex" alignItems="center" marginRight="10px">
@@ -417,7 +416,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                   </>
                 )}
               </ProjectStyle.Content>
-            )}
           </ProjectStyle.MainContainer>
         </ProjectStyle.FullHeightGrid>
       </ProjectStyle.FullHeightGrid>

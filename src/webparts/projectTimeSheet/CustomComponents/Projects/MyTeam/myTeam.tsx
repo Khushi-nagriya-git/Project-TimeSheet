@@ -272,7 +272,7 @@ const MyTeam = (props: {
                     }
                     if (reportingManagerName !== undefined &&
                       reportingManagerName !== "") {
-                      title = "Reporting Manager ";
+                      title = "Reporting Manager";
                       name = reportingManagerName;
                     }
                   } else if (row.ProjectManager) {

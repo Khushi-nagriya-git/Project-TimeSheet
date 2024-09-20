@@ -19,6 +19,7 @@ import {
 import { Tooltip } from "@mui/material";
 import ProjectDashboard from "../ProjectDashboard/ProjectDashboard";
 import { HashRouter, Routes, Route } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const Row = (props: {
   row: ReturnType<any>;
@@ -63,12 +64,15 @@ const Row = (props: {
     return `${hours} Hrs ${mins} Mins`;
   };
 
+    const navigate = useNavigate();
   const isLongName = row.projectName.length > 30;
 
   const dashboardOpen = (projectId: number) => {
     setIsDashBoardOpen(true);
     setProjectIdForDashBoard(projectId);
+    navigate(`/Projects/${projectId}`);
   };
+
 
   return (
     <React.Fragment>
@@ -431,22 +435,6 @@ const Row = (props: {
         </TableCell>
       </TableRow>
 
-      {isDashBoardOpen && (
-        <HashRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProjectDashboard
-                  projectId={projectIdForDashBoard}
-                  isDashBoardOpen={isDashBoardOpen}
-                  handleClose={() => setIsDashBoardOpen(false)}
-                />
-              }
-            />
-          </Routes>
-        </HashRouter>
-      )}
     </React.Fragment>
   );
 };
