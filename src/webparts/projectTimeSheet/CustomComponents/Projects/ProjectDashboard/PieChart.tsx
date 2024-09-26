@@ -47,7 +47,8 @@ const PieChart = (props: { project: any; lockedHours:number}) => {
         callbacks: {
           label: (tooltipItem) => {
             const value = tooltipItem.raw as number; // Get the raw value
-            return `${tooltipItem.label}: ${convertMinutesToHoursAndMinutes(value)}`; // Convert to "Hrs Mins" format
+            if( tooltipItem.label === "Estimated") return `${tooltipItem.label}: ${value}`;
+            return `${tooltipItem.label}: ${convertMinutesToHoursAndMinutes(value)} Hrs`; // Convert to "Hrs Mins" format
           },
         },
       },

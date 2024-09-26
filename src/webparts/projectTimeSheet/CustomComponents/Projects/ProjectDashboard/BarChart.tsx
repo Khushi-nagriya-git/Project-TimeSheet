@@ -64,6 +64,7 @@ const BarCharts: React.FC<BarChartProps> = ({ data, label, status }) => {
         flexDirection: "column",
         justifyContent: "space-between", 
         padding: "10px",
+        boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)"
       }}
     >
       <div style={{ width: "100%",  height: "80%", padding: "10px 0px" }}>

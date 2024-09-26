@@ -255,6 +255,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <Box
@@ -282,6 +283,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <Box
@@ -309,6 +311,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <Box
@@ -336,6 +339,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
                   flexDirection: "column",
                   justifyContent: "center",
                   alignItems: "center",
+                  boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <Box
