@@ -76,6 +76,7 @@ export const getProjectListData = async (
         const data = await response.json();
         if (data.value.length > 0) {
           setProjectsData(data.value);
+          return data.value;
         }
       } else {
           console.log("Please enter the correct name of the list in the property pane.");

@@ -5,6 +5,8 @@
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "jsx": "react",
     "declaration": true,
     "sourceMap": true,
@@ -22,12 +24,13 @@
       "webpack-env"
     ],
     "lib": [
-      "es5",
+      "es2015",
       "dom",
       "es2015.collection",
       "es2015.promise"
     ]
   },
+ 
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"

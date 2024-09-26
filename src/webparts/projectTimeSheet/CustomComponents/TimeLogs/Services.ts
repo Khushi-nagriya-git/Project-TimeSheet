@@ -30,6 +30,10 @@ export const getTimeLogsListData = async (
         filterQuery = `(Author/EMail eq '${loggedInUserDetails.Email}') and (Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected')`;
         break;
 
+        case "dashBoard":
+        filterQuery = ''
+        break;  
+
       default:
         break;
     }

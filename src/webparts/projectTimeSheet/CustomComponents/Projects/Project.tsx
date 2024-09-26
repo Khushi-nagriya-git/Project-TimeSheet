@@ -51,11 +51,9 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [currentData, setCurrentData] = useState<CustomFormData>(
     initialState.formData
   );
-  const {projectsData, setProjectsData} = useEmployeeTimeSheetContext();
+  const {projectsData,jobsData,setJobsData, setProjectsData} = useEmployeeTimeSheetContext();
+
   
-  const [jobsData, setJobsData] = useState<JobsData[]>(
-    jobsInitialState.jobsData
-  );
   const [deleteSuccessfullyAlert, setDeleteSuccessfullyAlert] = useState(false);
   const [addSuccessFullyAlert, setAddSuccessFullyAlert] = useState(false);
   const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
@@ -76,8 +74,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [filteredProjects, setFilteredProjects] = useState<ProjectsData[]>(
     projectsInitialState.projectsData
   );
-  const [topNavigationState, setTopNavigationState] =
-    useState<string>("myData");
   const [topNavigationMode, setTopNavigationMode] =
     useState<string>("Employee");
   const [isJobAvailable, setIsJobAvailable] = useState<boolean>(false);

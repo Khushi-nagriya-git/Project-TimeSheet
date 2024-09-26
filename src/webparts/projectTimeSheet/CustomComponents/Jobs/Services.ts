@@ -23,8 +23,8 @@ export const getJobListData = async (
         SPHttpClient.configurations.v1
       );
     }else{
-      const projectIds = projectsData.map((project: any) => project.ProjectId);
-      const projectFilterQuery = projectIds.map((id: string) => `ProjectId eq '${id}'`).join(' or ');
+      const projectIds = projectsData?.map((project: any) => project.ProjectId);
+      const projectFilterQuery = projectIds?.map((id: string) => `ProjectId eq '${id}'`).join(' or ');
       response = await spHttpClient.get(
         `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,Author/EMail,Author/Title,loggedHours&$expand=AssignedToPeoplePicker,Author&$filter=${projectFilterQuery}`,
         SPHttpClient.configurations.v1
