@@ -422,68 +422,6 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
           </Box>
         </Box>
 
-        {/* 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-          }}
-        >
-          <PieChart project={project} lockedHours={lockedHours}></PieChart>
-
-          <DoughnutChart
-            data={[
-              inProgressTask + notStartedTask + (onHoldTask + completedTask),
-              inProgressTask,
-              notStartedTask,
-              onHoldTask,
-              completedTask,
-            ]}
-            centerValue={
-              inProgressTask + notStartedTask + (onHoldTask + completedTask)
-            }
-            label={"In-Progress Vs Completed Tasks"}
-            status={["In-Progress", "Completed", "Not Started", "On Hold"]}
-            type={"status chart"}
-          ></DoughnutChart>
-
-          <DoughnutChart
-            centerValue={billableTime + nonBillableTime}
-            data={[billableTime, nonBillableTime]}
-            label={"Billable Vs Non-Billable Hours"}
-            status={["Billable", "Non-Billable"]}
-            type={"Billable chart"}
-          ></DoughnutChart>
-        </Box>
-
-        <DashBoardTable
-          data={finalData}
-          context={props.context}
-          columnName={[
-            "Team Member",
-            "Total Task",
-            "Not Started",
-            "In progress",
-            "Completed",
-            "On Hold",
-            "Overdue Task",
-          ]}
-        ></DashBoardTable>
-
-        <DashBoardTable
-          data={finalData}
-          context={props.context}
-          columnName={[
-            "Team Member",
-            "Total Task",
-            "Not Started",
-            "In progress",
-            "Completed",
-            "On Hold",
-            "Overdue Task",
-          ]}
-        ></DashBoardTable> */}
       </Content>
     </React.Fragment>
   );

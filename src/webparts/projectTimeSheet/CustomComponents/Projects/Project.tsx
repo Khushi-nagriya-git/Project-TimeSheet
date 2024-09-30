@@ -6,9 +6,7 @@ import {
   FormComponent,
   initialState,
   CustomFormData,
-  JobsData,
   ProjectStyle,
-  jobsInitialState,
   DeleteDialogBoxProps,
   IProjectProps,
   addProjects,
@@ -19,7 +17,6 @@ import {
   ProjectsData,
   projectsInitialState,
   styled,
-  TopNavigation,
   Button,
   Grid,
   ProjectHeader,
@@ -294,11 +291,11 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                         variant="contained"
                         onClick={handleAddProject}
                         sx={{
-                          backgroundColor: "#1565c0",
+                          backgroundColor: "#023E8A",
                           borderRadius: "5px",
                           width: "120px",
                           height: "35px",
-                          fontSize: "12px",
+                          fontSize: "13px",
                           textTransform: "none",
                         }}
                       >

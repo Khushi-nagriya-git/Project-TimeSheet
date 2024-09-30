@@ -47,13 +47,13 @@ const Row = (props: {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
-        return "#FFB6C1";
+        return "#F72585";
       case "In Progress":
-        return "#007bff";
+        return "#0077B6";
       case "Completed":
-        return "#65B741";
+        return "#52B788";
       default:
-        return "#9D9D9D";
+        return "#5C6B73";
     }
   };
   const borderColor = getStatusColor(row.status);
@@ -81,6 +81,7 @@ const Row = (props: {
           "& > *": { borderBottom: "unset" },
           height: "50px",
           cursor: "pointer",
+          backgroundColor: "#fff"
         }}
       >
         <TableCell>
@@ -95,7 +96,7 @@ const Row = (props: {
         <TableCell
           component="th"
           scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" , }}
           onClick={() => dashboardOpen(row.projectId)}
         >
           {row.projectId}
@@ -165,11 +166,12 @@ const Row = (props: {
           </IconButton>
         </TableCell>
 
-        {props.topNavigationMode === "Employee" &&
+      
+            <TableCell align="left" sx={{ height: "10px" }}>
+            {props.topNavigationMode === "Employee" &&
           (props.isUserAdmin ||
             props.loggedInUserDetails.Email ===
               row.ReportingManagerPeoplePicker?.EMail) && (
-            <TableCell align="left" sx={{ height: "10px" }}>
               <Box display="flex" alignItems="left" justifyContent="left">
                 <IconButton
                   aria-label="edit"
@@ -206,8 +208,9 @@ const Row = (props: {
                   />
                 </IconButton>
               </Box>
+              )}
             </TableCell>
-          )}
+        
       </TableRow>
 
       <TableRow>
@@ -218,8 +221,9 @@ const Row = (props: {
                 variant="h6"
                 gutterBottom
                 component="div"
+                
                 sx={{
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#03045E" , fontSize:"18px", fontWeight:"600"
                 }}
               >
                 Project Tasks
@@ -228,8 +232,9 @@ const Row = (props: {
                 <TableHead>
                   <TableRow
                     sx={{
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#0077B6",
                       fontWeight: "600",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -238,7 +243,9 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "15%",
+                        backgroundColor: "#0077B6",
                         fontWeight: "600",
+                        color:"#fff",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -251,6 +258,8 @@ const Row = (props: {
                       sx={{
                         width: "15%",
                         fontWeight: "600",
+                        color:"#fff",
+                        backgroundColor: "#0077B6",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -261,8 +270,10 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
-                        width: "40%",
+                        width: "37%",
                         fontWeight: "600",
+                        backgroundColor: "#0077B6",
+                        color:"#fff",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -272,8 +283,10 @@ const Row = (props: {
                     <TableCell
                       align="left"
                       sx={{
-                        width: "10%",
+                        width: "13%",
                         fontWeight: "600",
+                        backgroundColor: "#0077B6",
+                        color:"#fff",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -284,7 +297,9 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "10%",
+                        backgroundColor: "#0077B6",
                         fontWeight: "600",
+                        color:"#fff",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -295,7 +310,9 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "10%",
+                        backgroundColor: "#0077B6",
                         fontWeight: "600",
+                        color:"#fff",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}

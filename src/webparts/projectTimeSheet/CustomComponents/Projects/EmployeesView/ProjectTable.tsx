@@ -274,7 +274,7 @@ const ProjectTable = (props: {
               }}
             >
               <TableHead>
-                <TableRow sx={{ height: "40px", background: "#f3f2f1" }}>
+                <TableRow sx={{ height: "40px", background: "#023E8A" }}>
                   <TableCell />
                   <TableCell
                     sx={{
@@ -283,9 +283,9 @@ const ProjectTable = (props: {
                       width: "13%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
-                      //color:"#323130",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -305,9 +305,9 @@ const ProjectTable = (props: {
                       width: "20%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
-                      //color:"#323130",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -322,9 +322,9 @@ const ProjectTable = (props: {
                       width: "23%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
-                      //color:"#323130",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -339,9 +339,9 @@ const ProjectTable = (props: {
                       width: "20%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
-                      //color:"#323130",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -356,9 +356,9 @@ const ProjectTable = (props: {
                       width: "10%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
-                      // color:"#323130",
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -373,8 +373,9 @@ const ProjectTable = (props: {
                       width: "24%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
+                      color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}

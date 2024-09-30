@@ -15,6 +15,7 @@ export interface IProjectTimeSheetWebPartProps {
   absoluteURL: any;
   spHttpClient: any;
   context:any;
+  title:any;
 }
 
 export default class ProjectTimeSheetWebPart extends BaseClientSideWebPart<IProjectTimeSheetWebPartProps> {
@@ -27,39 +28,11 @@ export default class ProjectTimeSheetWebPart extends BaseClientSideWebPart<IProj
         absoluteURL: this.context.pageContext.web.absoluteUrl,
         spHttpClient: this.context.spHttpClient,
         context: this.context,
+        title: this.properties.title
       }
     );
 
     ReactDom.render(element, this.domElement);
-  }
-
-
-
-  private _getEnvironmentMessage(): Promise<string> {
-    if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
-      return this.context.sdks.microsoftTeams.teamsJs.app.getContext()
-        .then(context => {
-          let environmentMessage: string = '';
-          switch (context.app.host.name) {
-            case 'Office': // running in Office
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOffice : strings.AppOfficeEnvironment;
-              break;
-            case 'Outlook': // running in Outlook
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentOutlook : strings.AppOutlookEnvironment;
-              break;
-            case 'Teams': // running in Teams
-            case 'TeamsModern':
-              environmentMessage = this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentTeams : strings.AppTeamsTabEnvironment;
-              break;
-            default:
-              environmentMessage = strings.UnknownEnvironment;
-          }
-
-          return environmentMessage;
-        });
-    }
-
-    return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
   }
 
 

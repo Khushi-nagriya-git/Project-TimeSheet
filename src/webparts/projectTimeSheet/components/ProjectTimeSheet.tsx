@@ -19,6 +19,7 @@ import { EmployeeTimeSheetProvider } from "../CustomComponents/EmployeeTimeSheet
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { useEmployeeTimeSheetContext } from "../CustomComponents/EmployeeTimeSheetContext";
 import ProjectDashboard from "../CustomComponents/Projects/ProjectDashboard/ProjectDashboard";
+import ConfigurationScreen from "../CustomComponents/ConfigurationScreen/ConfigurationScreen";
 
 const MainContainer = styled(Box)({
   display: "flex",
@@ -35,7 +36,6 @@ const ContentContainer = styled(Box)({
 const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
   props: IProjectTimeSheetProps
 ) => {
-
   const { projectsData, setProjectsData } = useEmployeeTimeSheetContext();
 
   const [isUserReportingManager, setIsUserReportingManager] =
@@ -54,7 +54,7 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
         props.spHttpClient,
         props.absoluteURL
       );
-      
+
       setLoggedInUserDetails(userData || {});
       userData.Groups?.forEach((group: { Title: string }) => {
         setIsDataAvailable(true);
@@ -92,16 +92,33 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
             }
           `}
           </style>
-          <AppHeader
-            userEmail={props.context.pageContext.user.email}
-            userName={props.context.pageContext.user.displayName}
-            siteURL={props.context.pageContext.web.absoluteUrl}
-          />
-          <MainContainer>
-            <ContentContainer>
-              <HashRouter>
+          <HashRouter>
+            <AppHeader
+              userEmail={props.context.pageContext.user.email}
+              userName={props.context.pageContext.user.displayName}
+              siteURL={props.context.pageContext.web.absoluteUrl}
+              title={props.title}
+            />
+            <MainContainer>
+              <ContentContainer>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route
+                    path="/ConfigurationScreen"
+                    element={
+                      <ConfigurationScreen
+                        spHttpClient={props.spHttpClient}
+                        absoluteURL={props.absoluteURL}
+                        context={props.context}
+                        title={props.title}
+                        loggedInUserDetails={loggedInUserDetails}
+                        isUserProjectTeam={isUserProjectTeam}
+                        isUserAdmin={isUserAdmin}
+                        isUserProjectManager={isUserProjectManager}
+                        isUserReportingManager={isUserReportingManager}
+                      />
+                    }
+                  />
                   <Route
                     path="/Projects"
                     element={
@@ -117,7 +134,18 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                       />
                     }
                   />
-                  <Route  path="/Projects/:id" element={<ProjectDashboard  spHttpClient={props.spHttpClient}absoluteURL={props.absoluteURL} loggedInUserDetails={loggedInUserDetails} isUserAdmin={isUserAdmin} context={props.context}/>} />
+                  <Route
+                    path="/Projects/:id"
+                    element={
+                      <ProjectDashboard
+                        spHttpClient={props.spHttpClient}
+                        absoluteURL={props.absoluteURL}
+                        loggedInUserDetails={loggedInUserDetails}
+                        isUserAdmin={isUserAdmin}
+                        context={props.context}
+                      />
+                    }
+                  />
                   <Route
                     path="/Tasks"
                     element={
@@ -164,9 +192,9 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                     }
                   />
                 </Routes>
-              </HashRouter>
-            </ContentContainer>
-          </MainContainer>
+              </ContentContainer>
+            </MainContainer>
+          </HashRouter>
         </div>
       )}
     </EmployeeTimeSheetProvider>

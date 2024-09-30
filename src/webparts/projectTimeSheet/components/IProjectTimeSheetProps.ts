@@ -3,4 +3,5 @@ export interface IProjectTimeSheetProps {
   spHttpClient: any;
   absoluteURL: any;
   context: WebPartContext;
+  title: any;
 }
