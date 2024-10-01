@@ -325,7 +325,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           aria-label="close"
           onClick={handleCancel}
           sx={{
-            color: "grey",
+            color: "white",
           }}
         >
           <CloseIcon />

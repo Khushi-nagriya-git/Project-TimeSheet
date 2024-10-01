@@ -4,6 +4,7 @@ import { Text } from "@fluentui/react/lib";
 let redirectURLOpen = "_self";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton/IconButton";
+import { useEffect } from "react";
 
 export default function AppHeader(props: {
   userEmail: string;
@@ -20,6 +21,7 @@ export default function AppHeader(props: {
       navigate("/ConfigurationScreen");
     }
   };
+
 
   return (
     <div className={styles.bt_ah_AppHeader}>
