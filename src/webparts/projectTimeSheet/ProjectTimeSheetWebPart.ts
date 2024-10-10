@@ -16,6 +16,7 @@ export interface IProjectTimeSheetWebPartProps {
   spHttpClient: any;
   context:any;
   title:any;
+  Attachment:any;
 }
 
 export default class ProjectTimeSheetWebPart extends BaseClientSideWebPart<IProjectTimeSheetWebPartProps> {
@@ -28,7 +29,8 @@ export default class ProjectTimeSheetWebPart extends BaseClientSideWebPart<IProj
         absoluteURL: this.context.pageContext.web.absoluteUrl,
         spHttpClient: this.context.spHttpClient,
         context: this.context,
-        title: this.properties.title
+        title: this.properties.title,
+        Attachment: this.properties.Attachment
       }
     );
 

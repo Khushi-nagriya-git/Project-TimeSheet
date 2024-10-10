@@ -278,7 +278,7 @@ const JobsTable = (props: {
               }}
             >
               <TableHead>
-                <TableRow sx={{ height: "40px", background: "#f3f2f1" }}>
+                <TableRow sx={{ height: "40px",  backgroundColor: "#023E8A" }}>
                   <TableCell />
 
                   <TableCell
@@ -288,7 +288,7 @@ const JobsTable = (props: {
                       width: "20%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -302,9 +302,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "20%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -318,9 +318,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "14%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -335,9 +335,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "14%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       //color:"#323130",
                       fontFamily:
@@ -353,9 +353,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "14%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       //color:"#323130",
                       fontFamily:
@@ -371,9 +371,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "14%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:
@@ -389,9 +389,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "5%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -407,9 +407,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "5%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -425,9 +425,9 @@ const JobsTable = (props: {
                       padding: "4px 16px",
                       fontWeight: "600",
                       width: "5%",
-                      position: "sticky",
+                      position: "sticky",color:"white",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",
                       zIndex: 1,
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",

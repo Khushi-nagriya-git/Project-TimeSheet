@@ -36,8 +36,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-
-
 const SideNavigation = () => {
   const [activeTab, setActiveTab] = React.useState("Projects");
   const navigate = useNavigate();
@@ -48,12 +46,10 @@ const SideNavigation = () => {
     }
     setActiveTab(tab);
     navigate(`/${tab}`);  
-  
   };
 
   return (
     <SidebarContainer>
-    
         <StyledButton
           className={activeTab === "TimeLogs" ? "active" : ""}
           onClick={() => handleTabChange("TimeLogs")}
@@ -139,8 +135,6 @@ const SideNavigation = () => {
           />
           Projects
         </StyledButton>
-      
-      
     </SidebarContainer>
   );
 };

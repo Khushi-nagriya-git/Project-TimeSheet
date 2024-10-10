@@ -104,7 +104,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "18%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       //color:"#323130",
                       fontFamily:
@@ -121,7 +121,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "18%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       //color:"#323130",
                       fontFamily:
@@ -139,7 +139,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "20%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       //color:"#323130",
                       fontFamily:
@@ -156,7 +156,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "10%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:
@@ -173,7 +173,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "10%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:
@@ -190,7 +190,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "10%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:
@@ -207,7 +207,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "3%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:
@@ -223,7 +223,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                       width: "10%",
                       position: "sticky",
                       top: 0,
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       zIndex: 1,
                       // color:"#323130",
                       fontFamily:

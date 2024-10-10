@@ -10,4 +10,6 @@ export interface IConfigurationScreenProps {
     isUserProjectManager:any;
     isUserReportingManager:any;
     title:any;
+    configurationListData:any;
+    configurationListDataLength:number;
 }

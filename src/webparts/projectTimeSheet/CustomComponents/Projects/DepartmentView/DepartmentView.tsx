@@ -71,13 +71,13 @@ const DepartmentView = (props: {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
-        return "#FFB6C1";
+        return "#F72585";
       case "In Progress":
-        return "#007bff";
+        return "#0077B6";
       case "Completed":
-        return "#65B741";
+        return "#52B788";
       default:
-        return "#9D9D9D";
+        return "#5C6B73";
     }
   };
 
@@ -96,9 +96,9 @@ const DepartmentView = (props: {
               <TableCell
                 sx={{
                   fontWeight: "600",
-                  backgroundColor: "#f3f2f1",
+                  backgroundColor: "#023E8A",
                   height: "20px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff",
                 }}
               >
                 Project Name
@@ -106,9 +106,9 @@ const DepartmentView = (props: {
               <TableCell
                 sx={{
                   fontWeight: "600",
-                  backgroundColor: "#f3f2f1",
+                  backgroundColor: "#023E8A",
                   height: "20px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff",
                 }}
               >
                 Department
@@ -116,9 +116,9 @@ const DepartmentView = (props: {
               <TableCell
                 sx={{
                   fontWeight: "600",
-                  backgroundColor: "#f3f2f1",
+                  backgroundColor: "#023E8A",
                   height: "20px",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff",
                 }}
               >
                 Status

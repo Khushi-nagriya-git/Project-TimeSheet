@@ -121,7 +121,7 @@ const TimeSheetTable = (props: {
                   <TableCell
                     sx={{
                       fontWeight: "600",
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       height: "20px",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -134,7 +134,7 @@ const TimeSheetTable = (props: {
                   <TableCell
                     sx={{
                       fontWeight: "600",
-                      backgroundColor: "#f3f2f1",
+                      backgroundColor: "#023E8A",color:"white",
                       height: "20px",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -148,7 +148,7 @@ const TimeSheetTable = (props: {
                   align="left"
                   sx={{
                     fontWeight: "600",
-                    backgroundColor: "#f3f2f1",
+                    backgroundColor: "#023E8A",color:"white",
                     height: "20px",
                     fontFamily:
                       "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -166,7 +166,7 @@ const TimeSheetTable = (props: {
                     onClick={() =>
                       handleRowClick(groupedTimeLogs[groupKey].logs)
                     }
-                    style={{ cursor: "pointer" }}
+                    style={{ cursor: "pointer" ,  backgroundColor: "#fff"}}
                   >
                     {props.myDataActiveLink === "TeamTimeSheet" && (
                       <TableCell>
@@ -174,6 +174,7 @@ const TimeSheetTable = (props: {
                           display="flex"
                           alignItems="left"
                           justifyContent="left"
+                          
                         >
                           <Avatar
                             alt={groupKey}

@@ -15,11 +15,12 @@ import {
 } from "../CustomComponents/Projects/IProjectStats";
 import { getLoggedInUserData } from "../CustomComponents/Projects/Services";
 import TimeSheet from "../CustomComponents/TimeSheet/TimeSheet";
-import { EmployeeTimeSheetProvider } from "../CustomComponents/EmployeeTimeSheetContext";
+import { EmployeeTimeSheetProvider } from "../EmployeeTimeSheetContext";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { useEmployeeTimeSheetContext } from "../CustomComponents/EmployeeTimeSheetContext";
+import { useEmployeeTimeSheetContext } from "../EmployeeTimeSheetContext";
 import ProjectDashboard from "../CustomComponents/Projects/ProjectDashboard/ProjectDashboard";
 import ConfigurationScreen from "../CustomComponents/ConfigurationScreen/ConfigurationScreen";
+import { getAllSiteUsers , getConfigurationListData} from "./Service";
 
 const MainContainer = styled(Box)({
   display: "flex",
@@ -33,10 +34,15 @@ const ContentContainer = styled(Box)({
   transition: "margin 0.3s",
 });
 
+interface ConfigurationData {
+  AttachmentFiles: any;
+  Permissions: string | { Admin: string[]; ReportingManager: string[] };
+  Title: string;
+}
+
 const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
   props: IProjectTimeSheetProps
 ) => {
-  const { projectsData, setProjectsData } = useEmployeeTimeSheetContext();
 
   const [isUserReportingManager, setIsUserReportingManager] =
     useState<boolean>(false);
@@ -47,37 +53,66 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
   const [loggedInUserDetails, setLoggedInUserDetails] =
     useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
   const [isDataAvailable, setIsDataAvailable] = useState<boolean>(false);
-
+  const [configurationListData, setConfigurationListData] = useState<ConfigurationData[]>([{ Permissions: '', Title: '' , AttachmentFiles: ''}]);
+  
   useEffect(() => {
     const fetchData = async () => {
+      const configurationData = await getConfigurationListData(props.spHttpClient , props.absoluteURL);
+      setConfigurationListData(configurationData);
       let userData: LoggedInUserDetails = await getLoggedInUserData(
         props.spHttpClient,
         props.absoluteURL
       );
 
       setLoggedInUserDetails(userData || {});
-      userData.Groups?.forEach((group: { Title: string }) => {
-        setIsDataAvailable(true);
-        switch (group.Title.trim()) {
-          case "PTReportingManager":
-            setIsUserReportingManager(true);
-            break;
-          case "PTProjectManager":
-            setIsUserProjectManager(true);
-            break;
-          case "PTUsers":
-            setIsUserProjectTeam(true);
-            break;
-          case "ProjectTimeSheetAdmin":
-            setUserAdmin(true);
-            break;
-          default:
-            break;
+      
+      let data=(JSON.parse(configurationData[0].Permissions));
+      let reportingMangerGroup = false;
+      let adminGroup = false;
+
+      const reportingManager = data?.ReportingManager?.includes(userData?.Email);
+
+      for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
+        const groupEmails = await getGroupMembers(data.ReportingManagerGroups[i].split(",")[0]);
+        if (groupEmails?.includes(userData?.Email)) {
+          reportingMangerGroup = true;
+          break; 
         }
-      });
+      }
+      if(reportingMangerGroup || reportingManager){
+        setIsUserReportingManager(true);
+      }
+
+      const admin = data?.Admin?.includes(userData?.Email);
+      for (let i = 0; i < data?.AdminGroup?.length; i++) {
+        const groupEmails = await getGroupMembers(data.AdminGroup[i].split(",")[0]);
+        if (groupEmails?.includes(userData?.Email)) {
+          adminGroup = true;
+          break; 
+        }
+      }
+
+     if(admin || adminGroup){
+      setUserAdmin(true);
+     }
+      setIsDataAvailable(true);
+    
     };
     fetchData();
   }, []);
+
+  const getGroupMembers = async (groupId: string) => {
+    const siteUrl = props.context.pageContext.site.absoluteUrl;
+    const response = await fetch(`${siteUrl}/_api/web/sitegroups(${groupId})/users`, {
+      headers: {
+        Accept: "application/json;odata=verbose",
+      },
+    });
+    const result = await response.json();
+    return result.d.results.map((user: any) => user.Email);
+  };
+  
+ 
 
   return (
     <EmployeeTimeSheetProvider>
@@ -97,7 +132,9 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
               userEmail={props.context.pageContext.user.email}
               userName={props.context.pageContext.user.displayName}
               siteURL={props.context.pageContext.web.absoluteUrl}
-              title={props.title}
+              title={configurationListData && configurationListData[0]?.Title ? configurationListData[0].Title : "Employee Timesheet"}
+              logo={configurationListData[0]?.AttachmentFiles}
+              absoluteURL = {props.absoluteURL}
             />
             <MainContainer>
               <ContentContainer>
@@ -110,7 +147,9 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                         spHttpClient={props.spHttpClient}
                         absoluteURL={props.absoluteURL}
                         context={props.context}
-                        title={props.title}
+                        title={props.title} 
+                        configurationListData={configurationListData}
+                        configurationListDataLength={configurationListData?.length ? configurationListData?.length : 0}
                         loggedInUserDetails={loggedInUserDetails}
                         isUserProjectTeam={isUserProjectTeam}
                         isUserAdmin={isUserAdmin}

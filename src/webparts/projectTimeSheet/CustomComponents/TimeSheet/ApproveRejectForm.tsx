@@ -520,7 +520,7 @@ const TimeSheetForm = ({
               <TableHead>
                 <TableRow
                   sx={{
-                    backgroundColor: "#f3f2f1",
+                    backgroundColor: "#023E8A",
                     fontWeight: "600",
                     fontFamily:
                       "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -548,7 +548,7 @@ const TimeSheetForm = ({
                       width: "14%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
                     }}
                     align="left"
                     sortDirection={orderBy === "ProjectName" ? order : false}
@@ -568,7 +568,7 @@ const TimeSheetForm = ({
                       width: "14%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
                     }}
                     sortDirection={orderBy === "JobName" ? order : false}
                   >
@@ -587,7 +587,7 @@ const TimeSheetForm = ({
                       width: "8%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
                     }}
                     sortDirection={orderBy === "Status" ? order : false}
                   >
@@ -604,7 +604,7 @@ const TimeSheetForm = ({
                     align="left"
                     sx={{
                       width: "8%",
-                      fontWeight: "600",
+                      fontWeight: "600",color:"#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -619,7 +619,7 @@ const TimeSheetForm = ({
                         width: "8%",
                         fontWeight: "600",
                         fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff",
                       }}
                     >
                       {formatDate(date)}

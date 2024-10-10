@@ -290,13 +290,7 @@ const ProjectTable = (props: {
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
                   >
-                    <TableSortLabel
-                      active={orderBy === "EmployeeName"}
-                      direction={orderBy === "EmployeeName" ? order : "asc"}
-                      onClick={() => handleRequestSort("ProjectId")}
-                    >
                       Project Id
-                    </TableSortLabel>
                   </TableCell>
                   <TableCell
                     sx={{

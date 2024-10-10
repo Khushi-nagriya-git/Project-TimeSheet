@@ -1,16 +1,17 @@
 import * as React from "react";
 import styles from "./AppHeader.module.scss";
 import { Text } from "@fluentui/react/lib";
-let redirectURLOpen = "_self";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton/IconButton";
-import { useEffect } from "react";
+
 
 export default function AppHeader(props: {
   userEmail: string;
   siteURL: string;
   userName: string;
   title: any;
+  logo: any;
+  absoluteURL: string;
 }) {
   const navigate = useNavigate();
 
@@ -21,13 +22,21 @@ export default function AppHeader(props: {
       navigate("/ConfigurationScreen");
     }
   };
-
-
+ 
+  let ServerRelativeUrl = props.logo[0]?.ServerRelativeUrl?props.logo[0].ServerRelativeUrl:"";
+  let baseURL = props.absoluteURL.split("sites")[0]?props.absoluteURL.split("sites")[0]:"";
+  let imageUrl = "";
+  if(ServerRelativeUrl!="" && baseURL!=""){
+    imageUrl = `${baseURL}${ServerRelativeUrl}`;
+  }else{
+    imageUrl = "";
+  }
+  
   return (
     <div className={styles.bt_ah_AppHeader}>
       <img
         className={styles.bt_ah_CompanyLogo}
-        src={require("../../assets/companyLogo.png")}
+        src={imageUrl != "" ? imageUrl : require("../../assets/companyLogo.png")}
         alt=""
       />
 

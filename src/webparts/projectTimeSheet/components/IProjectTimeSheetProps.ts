@@ -4,4 +4,5 @@ export interface IProjectTimeSheetProps {
   absoluteURL: any;
   context: WebPartContext;
   title: any;
+  Attachment: any;
 }

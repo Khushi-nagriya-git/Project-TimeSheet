@@ -37,9 +37,9 @@ const TimeLogRows = (props: {
   const getTaskTypeColor = (status: string) => {
     switch (status) {
       case "Non Billable":
-        return "#007bff";
+        return "#F72585";
       case "Billable":
-        return "#65B741";
+        return "#52B788";
       default:
         return "#9D9D9D";
     }
@@ -49,15 +49,15 @@ const TimeLogRows = (props: {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return "#9D9D9D";
+        return "#0077B6";
       case "Not Submitted":
         return "#007bff";
       case "Rejected":
-        return "#FFB6C1";
+        return "#F72585";
       case "Approved":
-        return "#65B741";
+        return "#52B788";
       default:
-        return "#9D9D9D";
+        return "#5C6B73";
     }
   };
   const borderColorStatus = getStatusColor(row.Status);
@@ -131,7 +131,7 @@ const isDescriptionLong = row.Description?.length > 25;
         <TableCell
           component="th"
           scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", backgroundColor:"#fff" }}
         >
           {isLongName ? (
             <Tooltip title={row.ProjectName}>
@@ -145,7 +145,7 @@ const isDescriptionLong = row.Description?.length > 25;
           align="left"
           sx={{
             height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
           }}
         >
           {isJobName ? (
@@ -161,7 +161,7 @@ const isDescriptionLong = row.Description?.length > 25;
           align="left"
           sx={{
             height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
           }}
         >
           {isDescriptionLong ? (
@@ -173,7 +173,7 @@ const isDescriptionLong = row.Description?.length > 25;
           )}
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
           <Box
             sx={{
               borderRadius: "20px",
@@ -183,6 +183,7 @@ const isDescriptionLong = row.Description?.length > 25;
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              
               fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
             }}
           >
@@ -190,7 +191,7 @@ const isDescriptionLong = row.Description?.length > 25;
           </Box>
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
           <Box
             sx={{
               borderRadius: "20px",
@@ -210,14 +211,14 @@ const isDescriptionLong = row.Description?.length > 25;
         <TableCell
           align="left"
           sx={{
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
           }}
         >
           {props.isRunning && timerTimeLogId === row.TimeLogsId
             ? formatTime(props.elapsedTime)
             : convertMinutesToHoursAndMinutes(row.LoggedTime)}
         </TableCell>
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
           {showButton &&
             (props.isRunning && timerTimeLogId === row.TimeLogsId ? (
               <IconButton
@@ -253,7 +254,7 @@ const isDescriptionLong = row.Description?.length > 25;
             ))}
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" , backgroundColor:"#fff" }}>
           <Box display="flex" alignItems="left" justifyContent="left">
             <IconButton
               aria-label="edit"

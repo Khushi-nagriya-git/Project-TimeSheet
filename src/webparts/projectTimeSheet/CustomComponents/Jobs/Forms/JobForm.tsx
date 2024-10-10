@@ -276,7 +276,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
     >
       <div
         style={{
-          backgroundColor: "#F3F2F1",
+          backgroundColor: "#023E8A",
           padding: "5px",
           marginBottom: "10px",
           width: "-webkit-fill-available",
@@ -288,14 +288,14 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
         }}
       >
         <Label
-          style={{ fontSize: "20px", fontWeight: "bold", marginLeft: "13px" }}
+          style={{ fontSize: "20px", fontWeight: "600", marginLeft: "13px", color:"#fff"}}
         >
           {props.mode === "edit" ? "Update Task" : "Add Task"}
         </Label>
         <IconButton
           aria-label="close"
           onClick={handleCancel}
-          sx={{ color: "grey" }}
+          sx={{ color: "white" }}
         >
           <CloseIcon />
         </IconButton>
@@ -473,7 +473,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
               type="submit"
               text={props.mode === "edit" ? "Update" : "Submit"}
               style={{
-                backgroundColor: "#1565C0",
+                backgroundColor: "#023E8A",
                 color: "#fff",
                 height: "35px",
                 borderRadius: "5px",

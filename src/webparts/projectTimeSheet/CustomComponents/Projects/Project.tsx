@@ -30,7 +30,7 @@ import { getDepartments } from "./Services";
 import { Drawer, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SideNavigation from "../Navigation/SideNavigation";
-import { useEmployeeTimeSheetContext } from '../EmployeeTimeSheetContext';
+import { useEmployeeTimeSheetContext } from '../../EmployeeTimeSheetContext';
 
 const DrawerContainer = styled(Drawer)({
   width: 500,

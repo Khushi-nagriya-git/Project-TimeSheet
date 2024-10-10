@@ -1,4 +1,4 @@
-import { JobAssginees } from './IJobsStats';
+import { JobAssginees } from "./IJobsStats";
 import { SPHttpClient } from "@microsoft/sp-http";
 import { JobFormData, initialState } from "../Jobs/Forms/IJobFormStats";
 
@@ -13,37 +13,40 @@ export const getJobListData = async (
   setJobsData: React.Dispatch<React.SetStateAction<any>>,
   loggedInUserDetails: any,
   projectsData: any,
-  isUserAdmin:any,
+  isUserAdmin: any
 ) => {
   try {
-    let response:any ;
-    if(isUserAdmin){
+    let response: any;
+    if (isUserAdmin) {
       response = await spHttpClient.get(
         `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,Author/EMail,Author/Title,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,loggedHours&$expand=AssignedToPeoplePicker,Author`,
         SPHttpClient.configurations.v1
       );
-    }else{
+    } else {
       const projectIds = projectsData?.map((project: any) => project.ProjectId);
-      const projectFilterQuery = projectIds?.map((id: string) => `ProjectId eq '${id}'`).join(' or ');
+      const projectFilterQuery = projectIds
+        ?.map((id: string) => `ProjectId eq '${id}'`)
+        .join(" or ");
       response = await spHttpClient.get(
         `${absoluteURL}/_api/web/lists/GetByTitle('Tasks')/items?$select=JobName,JobId,ProjectName,ProjectId,AssignedTo,AssignedToPeoplePicker/Title,AssignedToPeoplePicker/EMail,StartDate,EndDate,Description,JobStatus,BillableStatus,Attachments,EstimatedHours,Author/EMail,Author/Title,loggedHours&$expand=AssignedToPeoplePicker,Author&$filter=${projectFilterQuery}`,
         SPHttpClient.configurations.v1
       );
     }
-   
+
     if (response.ok) {
       const data = await response.json();
       if (data.value.length > 0) {
         setJobsData(data.value);
       }
     } else {
-      console.log("Please enter the correct name of the list in the property pane.");
+      console.log(
+        "Please enter the correct name of the list in the property pane."
+      );
     }
   } catch (error) {
     console.log("Error fetching data:", error);
   }
 };
-
 
 export const getLastJobId = async (
   absoluteURL: string,
@@ -106,11 +109,12 @@ export const addJobs = async (
       : data.jobStatus === "OnHold"
       ? "On Hold"
       : data.jobStatus;
-      const assignedToPeoplePickerIds = data.JobAssigness.map(
-        (person: { id: number }) => person.id
-      );
-    
-  const listItemData = { '__metadata': { 'type': "SP.Data.TasksListItem" },
+  const assignedToPeoplePickerIds = data.JobAssigness.map(
+    (person: { id: number }) => person.id
+  );
+
+  const listItemData = {
+    __metadata: { type: "SP.Data.TasksListItem" },
     JobName: data.jobName,
     JobId: newJobId,
     ProjectName: data.projectName,
@@ -118,13 +122,13 @@ export const addJobs = async (
     StartDate: data.startDate,
     EndDate: data.endDate,
     AssignedTo: JSON.stringify(data.JobAssigness),
-    AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
+    AssignedToPeoplePickerId: { results: assignedToPeoplePickerIds },
     Description: data.description,
     BillableStatus: data.billableStatus,
     JobStatus: status,
     EstimatedHours: final,
     loggedHours: data.loggedHours,
-   // Attachments: data.attachment,
+    // Attachments: data.attachment,
   };
 
   const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items`;
@@ -148,7 +152,12 @@ export const addJobs = async (
   const item: any = await response.json();
   const itemId = item.d?.ID || item.ID;
   if (data.attachment) {
-    const attachmentResponse = await handleUploadAttachment(itemId, data.attachment, absoluteURL, spHttpClient);
+    const attachmentResponse = await handleUploadAttachment(
+      itemId,
+      data.attachment,
+      absoluteURL,
+      spHttpClient
+    );
     if (!attachmentResponse.ok) {
       console.error("Error uploading attachment");
       return;
@@ -185,7 +194,7 @@ export const deleteJobs = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient,
   jobId: number,
-  setJobsData: React.Dispatch<React.SetStateAction<any>>,
+  setJobsData: React.Dispatch<React.SetStateAction<any>>
 ) => {
   try {
     const getResponse = await spHttpClient.get(
@@ -196,7 +205,9 @@ export const deleteJobs = async (
       const data = await getResponse.json();
       const items = data.value;
       if (items.length === 0) {
-        console.error("Item does not exist. It may have been deleted by another user.");
+        console.error(
+          "Item does not exist. It may have been deleted by another user."
+        );
         return;
       }
       const internalId = items[0].ID;
@@ -206,8 +217,8 @@ export const deleteJobs = async (
         {
           headers: {
             "X-HTTP-Method": "DELETE",
-            "IF-MATCH": "*"
-          }
+            "IF-MATCH": "*",
+          },
         }
       );
 
@@ -229,104 +240,113 @@ export async function updateJobRecords(
   absoluteURL: string,
   jobId: number,
   updateformData: any,
-  type:string,
+  type: string,
   setJobsData: React.Dispatch<React.SetStateAction<any>>,
-  setCurrentData:  React.Dispatch<React.SetStateAction<any>>,
-  loggedInUserDetails:any,
+  setCurrentData: React.Dispatch<React.SetStateAction<any>>,
+  loggedInUserDetails: any
 ) {
   let totalLockedTime = 0;
   let status =
-  updateformData.jobStatus === "NotStarted"
-    ? "Not Started"
-    : updateformData.jobStatus === "InProgress"
-    ? "In Progress"
-    : updateformData.jobStatus === "OnHold"
-    ? "On Hold"
-    : updateformData.jobStatus;
-    let listItemData;
-    const assignedToPeoplePickerIds = updateformData?.JobAssigness?.map(
-      (person: { id: number }) => person.id
-    );
-    let updatedJobAssgineesLoggedHours;
-    
-  try {
-      const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items?$filter=JobId eq ${jobId}`,
-          SPHttpClient.configurations.v1
-      );
-      if (response.ok) {
-          const data = await response.json(); 
-          if (data.value && data.value.length > 0) {
-              const itemToUpdate = data.value[0];
-              if(type === "loggedTimeUpdate"){
-                const JobAssginees = JSON.parse(data.value[0].AssignedTo);
-                
-                if (JobAssginees && JobAssginees.length  >= 0) {
-                  updatedJobAssgineesLoggedHours = JobAssginees.map((assignee: any) => {
-                    if (assignee.email === loggedInUserDetails.Email) {
-                      totalLockedTime += parseInt(updateformData); 
-                      return { ...assignee, loggedHours: updateformData };
-                    }
-                    totalLockedTime += assignee.loggedHours;
-                    return assignee;
-                  });
-                }
-              }
-              if (updateformData.JobAssigness?.length === 0) {
-                const jobAssignees = data.value[0]?.JobAssginees;
-                if (jobAssignees) {
-                    updateformData.JobAssigness = JSON.parse(jobAssignees);
-                }
-            }            
-              let final = 0;
-              updateformData.JobAssigness?.map((index: { estimatedHours: number; }) => {
-                final += convertToMinutes(index.estimatedHours);
-              });
-              if(type === "loggedTimeUpdate"){
+    updateformData.jobStatus === "NotStarted"
+      ? "Not Started"
+      : updateformData.jobStatus === "InProgress"
+      ? "In Progress"
+      : updateformData.jobStatus === "OnHold"
+      ? "On Hold"
+      : updateformData.jobStatus;
+  let listItemData;
+  const assignedToPeoplePickerIds = updateformData?.JobAssigness?.map(
+    (person: { id: number }) => person.id
+  );
+  let updatedJobAssgineesLoggedHours;
 
-                listItemData = {  '__metadata': { 'type': "SP.Data.TasksListItem" },
-                  loggedHours: totalLockedTime,
-                  AssignedTo: JSON.stringify(updatedJobAssgineesLoggedHours),
+  try {
+    const response = await spHttpClient.get(
+      `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items?$filter=JobId eq ${jobId}`,
+      SPHttpClient.configurations.v1
+    );
+    if (response.ok) {
+      const data = await response.json();
+      if (data.value && data.value.length > 0) {
+        const itemToUpdate = data.value[0];
+        if (type === "loggedTimeUpdate") {
+          const JobAssginees = JSON.parse(data.value[0].AssignedTo);
+
+          if (JobAssginees && JobAssginees.length >= 0) {
+            updatedJobAssgineesLoggedHours = JobAssginees.map(
+              (assignee: any) => {
+                if (assignee.email === loggedInUserDetails.Email) {
+                  totalLockedTime += parseInt(updateformData);
+                  return { ...assignee, loggedHours: updateformData };
                 }
-              }else{
-                 listItemData = {'__metadata': { 'type': "SP.Data.TasksListItem" },
-                  JobName: updateformData.jobName,
-                  ProjectName: updateformData.projectName,
-                  StartDate: updateformData.startDate,
-                  EndDate: updateformData.endDate,
-                  AssignedTo: JSON.stringify(updateformData.JobAssigness),
-                  AssignedToPeoplePickerId: {results: assignedToPeoplePickerIds}, 
-                  Description: updateformData.description,
-                  BillableStatus: updateformData.billableStatus,
-                  JobStatus: status,
-                  EstimatedHours:final,
-                };
+                totalLockedTime += assignee.loggedHours;
+                return assignee;
               }
-              const itemId = itemToUpdate.ID;
-              const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items(${itemId})`;
-              const updateResponse = await spHttpClient.post(updateEndpoint, SPHttpClient.configurations.v1, {
-                  headers: {
-                      Accept: "application/json;odata=verbose",
-                      "Content-type": "application/json;odata=verbose",
-                      "odata-version": "",
-                      "IF-MATCH": "*",
-                      "X-HTTP-Method": "MERGE",
-                  },
-                  body: JSON.stringify(listItemData),
-              });
-              if (updateResponse.ok) {
-                //await  getJobListData(absoluteURL, spHttpClient, setJobsData);
-                setCurrentData(initialState.jobFormData);
-              } else {
-                  console.log("Error updating item:", updateResponse.statusText);
-              }
-          } else {
-              console.log("No item found with the specified EmployeeID.");
+            );
           }
+        }
+        if (updateformData.JobAssigness?.length === 0) {
+          const jobAssignees = data.value[0]?.JobAssginees;
+          if (jobAssignees) {
+            updateformData.JobAssigness = JSON.parse(jobAssignees);
+          }
+        }
+        let final = 0;
+        updateformData.JobAssigness?.map(
+          (index: { estimatedHours: number }) => {
+            final += convertToMinutes(index.estimatedHours);
+          }
+        );
+        if (type === "loggedTimeUpdate") {
+          listItemData = {
+            __metadata: { type: "SP.Data.TasksListItem" },
+            loggedHours: totalLockedTime,
+            AssignedTo: JSON.stringify(updatedJobAssgineesLoggedHours),
+          };
+        } else {
+          listItemData = {
+            __metadata: { type: "SP.Data.TasksListItem" },
+            JobName: updateformData.jobName,
+            ProjectName: updateformData.projectName,
+            StartDate: updateformData.startDate,
+            EndDate: updateformData.endDate,
+            AssignedTo: JSON.stringify(updateformData.JobAssigness),
+            AssignedToPeoplePickerId: { results: assignedToPeoplePickerIds },
+            Description: updateformData.description,
+            BillableStatus: updateformData.billableStatus,
+            JobStatus: status,
+            EstimatedHours: final,
+          };
+        }
+        const itemId = itemToUpdate.ID;
+        const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Tasks')/items(${itemId})`;
+        const updateResponse = await spHttpClient.post(
+          updateEndpoint,
+          SPHttpClient.configurations.v1,
+          {
+            headers: {
+              Accept: "application/json;odata=verbose",
+              "Content-type": "application/json;odata=verbose",
+              "odata-version": "",
+              "IF-MATCH": "*",
+              "X-HTTP-Method": "MERGE",
+            },
+            body: JSON.stringify(listItemData),
+          }
+        );
+        if (updateResponse.ok) {
+          //await  getJobListData(absoluteURL, spHttpClient, setJobsData);
+          setCurrentData(initialState.jobFormData);
+        } else {
+          console.log("Error updating item:", updateResponse.statusText);
+        }
       } else {
-          console.log("Error fetching item:", response.statusText);
+        console.log("No item found with the specified EmployeeID.");
       }
+    } else {
+      console.log("Error fetching item:", response.statusText);
+    }
   } catch (error) {
-      console.log("Error fetching item:", error);
+    console.log("Error fetching item:", error);
   }
 }

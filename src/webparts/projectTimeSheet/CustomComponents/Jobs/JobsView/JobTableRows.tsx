@@ -25,19 +25,18 @@ const Row = (props: {
   loggedInUserDetails: any;
   handleDeleteIconClick: any;
 }) => {
-  const { row, projectProps, handleEditIconClick, handleDeleteIconClick } =
-    props;
+  const { row, projectProps, handleEditIconClick, handleDeleteIconClick } = props;
   const [open, setOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
-        return "#FFB6C1";
+        return "#F72585";
       case "In Progress":
-        return "#007bff";
+        return "#0077B6";
       case "Completed":
-        return "#65B741";
+        return "#52B788";
       default:
-        return "#9D9D9D";
+        return "#5C6B73";
     }
   };
   const borderColor = getStatusColor(row.status);
@@ -52,7 +51,7 @@ const Row = (props: {
   const isProjectName = row.projectName?.length > 20;
   return (
     <React.Fragment>
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px" , backgroundColor: "#fff"}}>
 
       <TableCell>
           <IconButton
@@ -67,9 +66,9 @@ const Row = (props: {
         <TableCell
           component="th"
           scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" ,color:"black"}}
         >
-          <Box display="flex" alignItems="center">
+          <Box display="flex" alignItems="center"  >
             {isLongName ? (
               <Tooltip title={row.jobName}>
                 <span>{row.jobName.substring(0, 20)}...</span>
@@ -82,7 +81,7 @@ const Row = (props: {
         <TableCell
           component="th"
           scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" }}
+          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" , color:"black" }}
         >
           <Box display="flex" alignItems="center">
           {isProjectName ? (
@@ -100,7 +99,7 @@ const Row = (props: {
           align="left"
           sx={{
             height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"black"
           }}
         >
           {row.startDate.split("T")[0]}
@@ -110,7 +109,7 @@ const Row = (props: {
           align="left"
           sx={{
             height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"black"
           }}
         >
           {row.endDate.split("T")[0]}
@@ -120,19 +119,19 @@ const Row = (props: {
           align="left"
           sx={{
             height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"black"
           }}
         >
           {convertMinutesToHoursAndMinutes(row.estimatedHours)}
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" ,color:"black"}}>
           {convertMinutesToHoursAndMinutes(
             row.loggedHours ? row.loggedHours : 0
           )}
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" }}>
+        <TableCell align="left" sx={{ height: "10px" , color:"black"}}>
           <Box
             sx={{
               borderRadius: "20px",
@@ -152,7 +151,7 @@ const Row = (props: {
         <TableCell align="left" sx={{ height: "10px" }}>
           <IconButton aria-label="users" size="small">
             <img
-              src={require("../../../assets/user.png")}
+              src={require("../../../assets/group.png")}
               alt="Assignees"
               style={{ width: "27px", height: "27px", cursor: "pointer" }}
               onClick={() => setOpen(!open)}
@@ -167,7 +166,7 @@ const Row = (props: {
                 onClick={() => handleEditIconClick(row.jobId)}
               >
                 <img
-                  src={require("../../../assets/edit.png")}
+                  src={require("../../../assets/pencil.png")}
                   alt="Edit"
                   style={{
                     width: "21px",
@@ -186,7 +185,7 @@ const Row = (props: {
                   onClick={() => handleDeleteIconClick(row.jobId)}
                 >
                   <img
-                    src={require("../../../assets/delete.png")}
+                    src={require("../../../assets/bin.png")}
                     alt="Delete"
                     style={{
                       width: "21px",
@@ -221,7 +220,7 @@ const Row = (props: {
                   <TableRow
                     sx={{
                       backgroundColor: "#f3f2f1",
-                      fontWeight: "600",
+                      fontWeight: "600",color:"white",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -230,7 +229,7 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "20%",
-                        fontWeight: "600",
+                        fontWeight: "600",backgroundColor: "#0077B6",color:"white",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -241,7 +240,7 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "20%",
-                        fontWeight: "600",
+                        fontWeight: "600",backgroundColor: "#0077B6",color:"white",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -252,7 +251,7 @@ const Row = (props: {
                       align="left"
                       sx={{
                         width: "20%",
-                        fontWeight: "600",
+                        fontWeight: "600",backgroundColor: "#0077B6",color:"white",
                         fontFamily:
                           "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                       }}
@@ -282,6 +281,7 @@ const Row = (props: {
                         sx={{
                           fontFamily:
                             "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                            color:"black"
                         }}
                       >
                         <Box
@@ -298,14 +298,14 @@ const Row = (props: {
                               width: "25px",
                             }}
                           />
-                          <Box sx={{ mt: 0.5 }}>{historyRow.name}</Box>
+                          <Box sx={{ mt: 0.5 ,color:"black"}}>{historyRow.name}</Box>
                         </Box>
                       </TableCell>
                       <TableCell
                         align="left"
                         sx={{
                           fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"black"
                         }}
                       >
                         {convertMinutesToHoursAndMinutes(
@@ -316,7 +316,7 @@ const Row = (props: {
                         align="left"
                         sx={{
                           fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"black"
                         }}
                       >
                         {convertMinutesToHoursAndMinutes(

@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { ReactNode, createContext, useContext, useState } from 'react';
-import { LoggedInUserDetails, ProjectsData, projectsInitialState } from './Projects/IProjectStats';
-import { JobsData, jobsInitialState } from './Jobs/IJobsStats';
-import { TimeLogsData } from './TimeLogs/ITimeLogsStats';
+import { LoggedInUserDetails, ProjectsData, projectsInitialState } from './CustomComponents/Projects/IProjectStats';
+import { JobsData, jobsInitialState } from './CustomComponents/Jobs/IJobsStats';
+import { TimeLogsData } from './CustomComponents/TimeLogs/ITimeLogsStats';
 
 // Define the shape of the context value
 interface EmployeeTimeSheetContextType {
@@ -22,6 +22,8 @@ interface EmployeeTimeSheetContextType {
   setJobsData:  React.Dispatch<React.SetStateAction<JobsData[]>>;
   timeLogsData:TimeLogsData[],
   setTimeLogsData:  React.Dispatch<React.SetStateAction<[]>>;
+  siteUsers : [],
+  setSiteUsers :  React.Dispatch<React.SetStateAction<[]>>;
  
 }
 
@@ -35,6 +37,8 @@ const defaultContextValue: EmployeeTimeSheetContextType = {
   loggedInUserDetails:'',
   jobsData:jobsInitialState.jobsData,
   timeLogsData:[],
+  siteUsers:[],
+  setSiteUsers:() => {},
   setTimeLogsData:() => {},
   setJobsData:() => {},
   setLoggedInUserDetails:() => {},
@@ -62,10 +66,12 @@ const [jobsData, setJobsData] = useState<JobsData[]>(
 );
 const [timeLogsData, setTimeLogsData] = useState<TimeLogsData[]>([]);
 const [isUserProjectTeam, setIsUserProjectTeam] = useState<boolean>(false);
-const [loggedInUserDetails, setLoggedInUserDetails] =
-  useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
+const [loggedInUserDetails, setLoggedInUserDetails] = useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
+const [siteUsers , setSiteUsers] = useState<[]>([]);
+
+
   return (
-    <EmployeeTimeSheetContext.Provider value={{ projectsData,jobsData,setJobsData,timeLogsData,setTimeLogsData, setProjectsData, isUserAdmin,  setUserAdmin, isUserProjectTeam, setIsUserProjectTeam, loggedInUserDetails, setLoggedInUserDetails, isUserReportingManager, setIsUserReportingManager, isUserProjectManager, setIsUserProjectManager, }}>
+    <EmployeeTimeSheetContext.Provider value={{ projectsData,jobsData,setJobsData,timeLogsData,setTimeLogsData, setProjectsData, setSiteUsers,siteUsers,isUserAdmin,  setUserAdmin, isUserProjectTeam, setIsUserProjectTeam, loggedInUserDetails, setLoggedInUserDetails, isUserReportingManager, setIsUserReportingManager, isUserProjectManager, setIsUserProjectManager, }}>
       {children}
     </EmployeeTimeSheetContext.Provider>
   );

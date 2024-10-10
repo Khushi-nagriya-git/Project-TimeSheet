@@ -158,9 +158,9 @@ const Row = (props: {
         <TableCell align="left" sx={{ height: "10px" }}>
           <IconButton aria-label="Detail Logs" size="small">
             <img
-              src={require("../../../assets/jobgray.png")}
+              src={require("../../../assets/checklist.png")}
               alt="Tasks"
-              style={{ width: "21px", height: "21px", cursor: "pointer" }}
+              style={{ width: "24px", height: "24px", cursor: "pointer" }}
               onClick={() => setOpen(!open)}
             />
           </IconButton>
@@ -179,7 +179,7 @@ const Row = (props: {
                   onClick={() => handleEditIconClick(row.projectId)}
                 >
                   <img
-                    src={require("../../../assets/edit.png")}
+                    src={require("../../../assets/pencil.png")}
                     alt="Edit"
                     style={{
                       width: "21px",
@@ -197,7 +197,7 @@ const Row = (props: {
                   onClick={() => handleDeleteIconClick(row.projectId)}
                 >
                   <img
-                    src={require("../../../assets/delete.png")}
+                    src={require("../../../assets/bin.png")}
                     alt="Delete"
                     style={{
                       width: "21px",
