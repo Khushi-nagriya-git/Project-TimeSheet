@@ -19,10 +19,10 @@ interface JobsHeaderProps {
   projectsData: any;
   jobsData: any;
   onJobsAssigneesChange: any;
-  isUserAdmin:any;
-  isUserProjectTeam:any;
-  isUserReportingManager:any;
-  isUserProjectManager:any
+  isUserAdmin: any;
+  isUserProjectTeam: any;
+  isUserReportingManager: any;
+  isUserProjectManager: any;
 }
 
 const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
@@ -33,7 +33,8 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
   setSearchQuery,
   isUserProjectTeam,
   isUserProjectManager,
-  isUserReportingManager,isUserAdmin,
+  isUserReportingManager,
+  isUserAdmin,
   searchQuery,
   setFilteredJobs,
   onJobsAssigneesChange,
@@ -89,7 +90,7 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
       onJobStatusChange(selectedValues);
     }
   };
-  
+
   const handleAssigneesChange = (
     event: React.FormEvent<HTMLDivElement>,
     option?: IDropdownOption
@@ -122,13 +123,15 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
             onChange={handleJobsChange}
             multiSelect
             options={projectsData
-              .sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)) // Sort alphabetically by ProjectName
+              .sort((a: any, b: any) =>
+                a.ProjectName.localeCompare(b.ProjectName)
+              ) // Sort alphabetically by ProjectName
               .map((project: any) => ({
                 key: project.ProjectName,
                 text: project.ProjectName,
                 selected: selectedProjects.indexOf(project.ProjectName) > -1,
                 checkbox: true,
-              }))}            
+              }))}
             styles={{
               root: {
                 width: 200,
@@ -160,12 +163,14 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
             selectedKeys={selectedStatus}
             onChange={handleStatusChange}
             multiSelect
-            options={statusOptions.sort((a, b) => a.localeCompare(b)).map((status) => ({
-              key: status,
-              text: status,
-              selected: selectedStatus.indexOf(status) > -1,
-              checkbox: true,
-            }))}
+            options={statusOptions
+              .sort((a, b) => a.localeCompare(b))
+              .map((status) => ({
+                key: status,
+                text: status,
+                selected: selectedStatus.indexOf(status) > -1,
+                checkbox: true,
+              }))}
             styles={{
               root: {
                 width: 200,
@@ -190,45 +195,45 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
           />
         </Grid>
 
-       
-          {(isUserAdmin || isUserReportingManager || isUserProjectManager) && (
-             <Grid item>
-              <Label style={{ fontWeight: "600" }}>Assignees</Label>
-              <Dropdown
-                placeholder="All"
-                selectedKeys={selectedAssignees}
-                onChange={handleAssigneesChange}
-                multiSelect
-                options={assignees.sort((a: any, b: any) => a.name.localeCompare(b.name)).map((assignee: any) => ({
+        {(isUserAdmin || isUserReportingManager || isUserProjectManager) && (
+          <Grid item>
+            <Label style={{ fontWeight: "600" }}>Assignees</Label>
+            <Dropdown
+              placeholder="All"
+              selectedKeys={selectedAssignees}
+              onChange={handleAssigneesChange}
+              multiSelect
+              options={assignees
+                .sort((a: any, b: any) => a.name.localeCompare(b.name))
+                .map((assignee: any) => ({
                   key: assignee.id,
                   text: assignee.name,
                   selected: selectedAssignees.indexOf(assignee.name) > -1,
                 }))}
-                styles={{
-                  root: {
-                    width: 200,
-                    height: 60,
-                    marginBottom: 5,
-                    borderWidth: 2,
-                  },
-                  title: {
-                    textAlign: "left",
-                    lineHeight: "25px",
-                  },
-                  dropdownItemsWrapper: {
-                    maxHeight: 200,
-                  },
-                  dropdownItem: {
-                    height: 35,
-                    borderRadius: 5,
-                    width: 200,
-                    backgroundColor: "#ffffff",
-                  },
-                }}
-              />
-                 </Grid>
-          )}
-   
+              styles={{
+                root: {
+                  width: 200,
+                  height: 60,
+                  marginBottom: 5,
+                  borderWidth: 2,
+                },
+                title: {
+                  textAlign: "left",
+                  lineHeight: "25px",
+                },
+                dropdownItemsWrapper: {
+                  maxHeight: 200,
+                },
+                dropdownItem: {
+                  height: 35,
+                  borderRadius: 5,
+                  width: 200,
+                  backgroundColor: "#ffffff",
+                },
+              }}
+            />
+          </Grid>
+        )}
 
         <Grid
           item
@@ -266,12 +271,12 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
           />
 
           <IconButton
-            iconProps={{ iconName: "ArrowUpRightMirrored8" }}
+            aria-label="Reset"
             onClick={resetFilters}
             styles={{
               root: {
                 height: 31,
-                width: 31, // Adjusted width for the IconButton
+                width: 31,
                 marginLeft: 10,
                 border: "1px solid rgba(0, 0, 0, 0.4)",
                 backgroundColor: "#ffffff",
@@ -279,7 +284,13 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
                 marginTop: 8,
               },
             }}
-          />
+          >
+            <img
+              src={require("../../../assets/return.png")}
+              alt="Tasks"
+              style={{ width: "22px", height: "22px", cursor: "pointer" }}
+            />
+          </IconButton>
         </Grid>
       </Grid>
     </div>

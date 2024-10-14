@@ -377,7 +377,7 @@ useEffect(() => {
           <Button
             onClick={props.handleStartStop}
             style={{
-              backgroundColor: props.isRunning ? "red" : "#1565c0",
+              backgroundColor: props.isRunning ? "#D00000" : "#023E8A",
               color: "white",
               width: "90px",
               textAlign: "center",

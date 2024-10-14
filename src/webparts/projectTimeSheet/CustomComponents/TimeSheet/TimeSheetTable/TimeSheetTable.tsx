@@ -112,7 +112,7 @@ const TimeSheetTable = (props: {
 
   return (
     <>
-      <Box sx={{ height: "285px", marginTop: "10px", overflow: "auto" }}>
+      <Box sx={{ height: "calc(100vh - 250px)", marginTop: "10px", overflow: "auto" }}>
         <TableContainer>
           <Table size="small" stickyHeader aria-label="sticky table">
             <TableHead>

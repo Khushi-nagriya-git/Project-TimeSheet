@@ -27,7 +27,7 @@ import { TextField } from "@fluentui/react";
 import { updateRecords } from "../TimeLogs/Services";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
 import { useEffect, useState } from "react";
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 
 const TimeSheetForm = ({
   open,
@@ -321,14 +321,14 @@ const TimeSheetForm = ({
   });
 
   const resetFilters = () => {
-    setTaskTypeFilter('')
-    setStatusFilter('')
-    setProjectFilter('')
+    setTaskTypeFilter("");
+    setStatusFilter("");
+    setProjectFilter("");
   };
 
   return (
     <Dialog open={open} onClose={onClose} fullScreen>
-      <DialogTitle>
+      <DialogTitle sx={{ backgroundColor: "#0077B6", color: "white" }}>
         Time Sheet Details - {selectedData[0].Author.Title}
         <IconButton
           aria-label="close"
@@ -337,8 +337,7 @@ const TimeSheetForm = ({
             position: "absolute",
             right: 8,
             top: 8,
-            border: "1px solid grey",
-            color: (theme) => theme.palette.grey[500],
+            color: (theme) => "#fff",
           }}
         >
           <CloseIcon />
@@ -456,17 +455,24 @@ const TimeSheetForm = ({
               </Grid>
 
               <Grid item>
-                <IconButton   aria-label="reset"
-              size="small" onClick={resetFilters}>
-                <img
-                    src={require("../../assets/reload.png")}
-                    alt="Calendar"
-                    style={{
-                      width: "25px",
-                      height: "25px",
-                      marginLeft: "5px",
-                      marginBottom:"3px"
-                    }}
+                <IconButton
+                  aria-label="Reset"
+                  onClick={resetFilters}
+                  style={{
+                    height: 31,
+                    width: 31,
+                    marginLeft: 5,
+                    border: "1px solid rgba(0, 0, 0, 0.4)",
+                    borderRadius:"0px",
+                    backgroundColor: "#ffffff",
+                    marginBottom: 10,
+                    marginTop: 8,
+                  }}
+                >
+                  <img
+                    src={require("../../assets/return.png")}
+                    alt="return"
+                    style={{ width: "22px", height: "22px", cursor: "pointer" }}
                   />
                 </IconButton>
               </Grid>
@@ -548,13 +554,15 @@ const TimeSheetForm = ({
                       width: "14%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      color: "#fff",
                     }}
                     align="left"
                     sortDirection={orderBy === "ProjectName" ? order : false}
                   >
                     <TableSortLabel
                       active={orderBy === "ProjectName"}
+                      sx={{ color: "#fff" }}
                       direction={orderBy === "ProjectName" ? order : "asc"}
                       onClick={() => handleRequestSort("ProjectName")}
                     >
@@ -568,7 +576,8 @@ const TimeSheetForm = ({
                       width: "14%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      color: "#fff",
                     }}
                     sortDirection={orderBy === "JobName" ? order : false}
                   >
@@ -587,7 +596,8 @@ const TimeSheetForm = ({
                       width: "8%",
                       fontWeight: "600",
                       fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff"
+                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                      color: "#fff",
                     }}
                     sortDirection={orderBy === "Status" ? order : false}
                   >
@@ -604,7 +614,8 @@ const TimeSheetForm = ({
                     align="left"
                     sx={{
                       width: "8%",
-                      fontWeight: "600",color:"#fff",
+                      fontWeight: "600",
+                      color: "#fff",
                       fontFamily:
                         "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
                     }}
@@ -619,7 +630,8 @@ const TimeSheetForm = ({
                         width: "8%",
                         fontWeight: "600",
                         fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#fff",
+                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+                        color: "#fff",
                       }}
                     >
                       {formatDate(date)}

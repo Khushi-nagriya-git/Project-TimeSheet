@@ -30,11 +30,11 @@ const Row = (props: {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
-        return "#F72585";
+        return "#FF5C5C";
       case "In Progress":
         return "#0077B6";
       case "Completed":
-        return "#52B788";
+        return "#41856A";
       default:
         return "#5C6B73";
     }
@@ -185,11 +185,11 @@ const Row = (props: {
                   onClick={() => handleDeleteIconClick(row.jobId)}
                 >
                   <img
-                    src={require("../../../assets/bin.png")}
+                    src={require("../../../assets/delete.png")}
                     alt="Delete"
                     style={{
-                      width: "21px",
-                      height: "21px",
+                      width: "23px",
+                      height: "23px",
                       cursor: "pointer",
                       marginLeft: "5px",
                     }}

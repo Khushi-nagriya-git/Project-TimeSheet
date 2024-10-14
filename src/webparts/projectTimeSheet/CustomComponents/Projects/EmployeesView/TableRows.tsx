@@ -17,8 +17,6 @@ import {
   KeyboardArrowUpIcon,
 } from "../../../../../index";
 import { Tooltip } from "@mui/material";
-import ProjectDashboard from "../ProjectDashboard/ProjectDashboard";
-import { HashRouter, Routes, Route } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 
 const Row = (props: {
@@ -47,11 +45,11 @@ const Row = (props: {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
-        return "#F72585";
+        return "#FF5C5C";
       case "In Progress":
         return "#0077B6";
       case "Completed":
-        return "#52B788";
+        return "#41856A";
       default:
         return "#5C6B73";
     }
@@ -158,15 +156,14 @@ const Row = (props: {
         <TableCell align="left" sx={{ height: "10px" }}>
           <IconButton aria-label="Detail Logs" size="small">
             <img
-              src={require("../../../assets/checklist.png")}
+              src={require("../../../assets/job.png")}
               alt="Tasks"
-              style={{ width: "24px", height: "24px", cursor: "pointer" }}
+              style={{ width: "26px", height: "26px", cursor: "pointer" }}
               onClick={() => setOpen(!open)}
             />
           </IconButton>
         </TableCell>
 
-      
             <TableCell align="left" sx={{ height: "10px" }}>
             {props.topNavigationMode === "Employee" &&
           (props.isUserAdmin ||
@@ -197,11 +194,11 @@ const Row = (props: {
                   onClick={() => handleDeleteIconClick(row.projectId)}
                 >
                   <img
-                    src={require("../../../assets/bin.png")}
+                    src={require("../../../assets/delete.png")}
                     alt="Delete"
                     style={{
-                      width: "21px",
-                      height: "21px",
+                      width: "23px",
+                      height: "23px",
                       cursor: "pointer",
                       marginLeft: "5px",
                     }}

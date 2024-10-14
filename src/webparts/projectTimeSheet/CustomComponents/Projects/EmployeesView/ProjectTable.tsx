@@ -262,7 +262,7 @@ const ProjectTable = (props: {
   }
 
   return (
-    <div style={{ overflowY: "auto", height: "calc(100vh - 250px)", marginTop: "-15px" }}>
+    <div style={{ overflowY: "auto", height: "calc(100vh - 300px)", marginTop: "-15px" }}>
       <Grid item xs={12}>
         <div style={{ height: "100%", overflow: "auto" }}>
           <TableContainer>

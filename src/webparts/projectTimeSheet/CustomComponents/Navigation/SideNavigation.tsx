@@ -6,13 +6,11 @@ import { useNavigate } from 'react-router-dom';
 const SidebarContainer = styled("div")({
   borderRadius: "5px",
   marginTop: "10px",
-  // marginLeft: "10px",
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",
   justifyContent: "flex-start",
   padding: "15px",
-  //width: "100%",
   height: "100%",
 });
 

@@ -39,7 +39,7 @@ const TimeLogRows = (props: {
       case "Non Billable":
         return "#F72585";
       case "Billable":
-        return "#52B788";
+        return "#41856A";
       default:
         return "#9D9D9D";
     }
@@ -55,7 +55,7 @@ const TimeLogRows = (props: {
       case "Rejected":
         return "#F72585";
       case "Approved":
-        return "#52B788";
+        return "#41856A";
       default:
         return "#5C6B73";
     }
@@ -263,7 +263,7 @@ const isDescriptionLong = row.Description?.length > 25;
               disabled={isPending || props.isRunning}
             >
               <img
-                src={require("../../../assets/edit.png")}
+                src={require("../../../assets/pencil.png")}
                 alt="Edit"
                 style={{
                   width: "21px",
@@ -284,8 +284,8 @@ const isDescriptionLong = row.Description?.length > 25;
                 src={require("../../../assets/delete.png")}
                 alt="Delete"
                 style={{
-                  width: "21px",
-                  height: "21px",
+                  width: "23px",
+                  height: "23px",
                   cursor: "pointer",
                   marginLeft: "5px",
                 }}
