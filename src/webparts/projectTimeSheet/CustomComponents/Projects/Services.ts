@@ -33,11 +33,13 @@ export const getLoggedInUserData = async (spHttpClient: SPHttpClient, absoluteUR
 export const getDepartments = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient,
-  setDepartmentNames: React.Dispatch<React.SetStateAction<any>>
+  setDepartmentNames: React.Dispatch<React.SetStateAction<any>>,
+  type:string
 ) => {
   try {
+    const filterCondition = type === "projects" ? "&$filter=isActive eq 1" : "";
       const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/GetByTitle('Departments')/items?$select=DepartmentName`,
+          `${absoluteURL}/_api/web/lists/GetByTitle('Departments')/items?$select=DepartmentName,ID,isActive&$orderby=ID desc${filterCondition}`,
           SPHttpClient.configurations.v1
       );
       if (response.ok) {
@@ -150,7 +152,7 @@ export const addProjects = async (
   });
   if (!response.ok) {
     console.error("Error adding Project records");
-    return;
+    return ;
   }
 
   const item: any = await response.json();

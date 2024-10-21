@@ -44,9 +44,7 @@ const ProjectTable = (props: {
   setPeoplePickerDefaultTeam: React.Dispatch<React.SetStateAction<any>>;
   setFilteredProjects: React.Dispatch<React.SetStateAction<any>>;
 }) => {
-  const [orderBy, setOrderBy] = useState("ProjectName");
-  const [order, setOrder] = useState<"asc" | "desc">("asc");
-
+ 
   useEffect(() => {
     let filteredProjects = props.projectsData;
     if (props.selectedProjectName.length > 0) {
@@ -97,11 +95,6 @@ const ProjectTable = (props: {
     props.searchQuery,
   ]);
 
-  const handleRequestSort = (property: any) => {
-    const isAsc = orderBy === property && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(property);
-  };
 
   const handleDeleteIconClick = async (projectId: number) => {
     let jobCount = 0;
@@ -382,7 +375,7 @@ const ProjectTable = (props: {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {props.filteredProjects.length > 0 ? (
+                {props.filteredProjects.length > 0 && props.filteredProjects[0].ProjectName != '' ? (
                   props.filteredProjects.map((row: any) => {
                     let projectManagerName: any = "-";
                     let projectManagerEmail: any = "";

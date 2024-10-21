@@ -41,7 +41,7 @@ export const getTimeLogsListData = async (
 
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Time Logs')/items?$select=TimelogsId,Author/EMail,Author/Title,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc${
+      `${absoluteURL}/_api/web/lists/GetByTitle('TimeLogs')/items?$select=TimelogsId,Author/EMail,Author/Title,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc${
         filterQuery ? `&$filter=${filterQuery}` : ""
       }&$expand=Author`,
       SPHttpClient.configurations.v1
@@ -67,7 +67,7 @@ export const getLastItemId = async (
   absoluteURL: string,
   spHttpClient: SPHttpClient
 ): Promise<number> => {
-  const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$orderby=ID desc&$top=1`;
+  const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$orderby=ID desc&$top=1`;
   const response = await spHttpClient.get(
     requestURL,
     SPHttpClient.configurations.v1,
@@ -122,7 +122,7 @@ export const addTimeLogs = async (
     EstimatedHours: estimatedTime,
   };
 
-  const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items`;
+  const requestURL = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items`;
   const response = await spHttpClient.post(
     requestURL,
     SPHttpClient.configurations.v1,
@@ -165,7 +165,7 @@ export async function updateRecords(
     if (updateType === "updateTimeLogStatusforApproval") {
       const updatePromises = updateddata.map(async (timeLog: any) => {
         const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
+          `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
           SPHttpClient.configurations.v1
         );
         if (response.ok) {
@@ -176,7 +176,7 @@ export async function updateRecords(
             const listItemData = {
               Status: timeLog.Status,
             };
-            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
             const updateResponse = await spHttpClient.post(
               updateEndpoint,
               SPHttpClient.configurations.v1,
@@ -210,7 +210,7 @@ export async function updateRecords(
       const updatePromises = updateddata.map(async (timeLog: any) => {
         // Fetch the existing item data for each time log
         const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
+          `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
           SPHttpClient.configurations.v1
         );
 
@@ -222,7 +222,7 @@ export async function updateRecords(
             const listItemData = {
               Status: timeLog.Status,
             };
-            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
             const updateResponse = await spHttpClient.post(
               updateEndpoint,
               SPHttpClient.configurations.v1,
@@ -259,7 +259,7 @@ export async function updateRecords(
       const updatePromises = updateddata.map(async (timeLog: any) => {
         // Fetch the existing item data for each time log
         const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
+          `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
           SPHttpClient.configurations.v1
         );
 
@@ -271,7 +271,7 @@ export async function updateRecords(
             const listItemData = {
               Status: timeLog.Status,
             };
-            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+            const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
             const updateResponse = await spHttpClient.post(
               updateEndpoint,
               SPHttpClient.configurations.v1,
@@ -305,7 +305,7 @@ export async function updateRecords(
     } else {
       // Single item update for other types
       const response = await spHttpClient.get(
-        `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timerTimeLogId}`,
+        `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timerTimeLogId}`,
         SPHttpClient.configurations.v1
       );
 
@@ -329,7 +329,7 @@ export async function updateRecords(
                   EstimatedHours: updateddata.EstimatedHours,
                 };
 
-          const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${itemId})`;
+          const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
           const updateResponse = await spHttpClient.post(
             updateEndpoint,
             SPHttpClient.configurations.v1,
@@ -369,7 +369,7 @@ export const deleteTimelog = async (
   try {
     // First, get the internal ID based on the ProjectId
     const getResponse = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items?$filter=TimelogsId eq ${timelogId}`,
+      `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timelogId}`,
       SPHttpClient.configurations.v1
     );
 
@@ -386,7 +386,7 @@ export const deleteTimelog = async (
       const internalId = items[0].ID;
       // Then, delete the item using the internal ID
       const deleteResponse = await spHttpClient.post(
-        `${absoluteURL}/_api/web/lists/getbytitle('Time Logs')/items(${internalId})`,
+        `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${internalId})`,
         SPHttpClient.configurations.v1,
         {
           headers: {

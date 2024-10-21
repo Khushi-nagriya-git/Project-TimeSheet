@@ -385,7 +385,6 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               selectedKey={selectedDepartment}
               onChange={handleChangeDepartmentDropDown}
               options={departments}
-              required
               style={{ width: "320px" }}
             />
             <Dropdown

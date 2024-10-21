@@ -235,7 +235,7 @@ const MyTeam = (props: {
                 },
               }} />
           </Grid>
-        </Grid><Box sx={{ height: "255px", overflowY: "scroll", marginTop: "-23px" }}>
+        </Grid><Box sx={{ height: "calc(100vh - 300px)" ,  overflowY: "scroll", marginTop: "-23px" }}>
             {filteredProjects.length === 0 ? (
               <Box sx={{ textAlign: "center", padding: "20px", fontWeight: "600" }}>
                 No employee found

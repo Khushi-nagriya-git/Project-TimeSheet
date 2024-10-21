@@ -29,6 +29,7 @@ const GeneralSettings = (props: {
   spHttpClient: any;
   configurationListDataLength: number;
   configurationListData: any;
+  setReload:React.Dispatch<React.SetStateAction<any>>;
 }) => {
   const [formData, setFormData] = useState<FormData>({
     Admin: [],
@@ -41,8 +42,7 @@ const GeneralSettings = (props: {
 
   const [loading, setLoading] = useState(true);
   const [applicationTitle, setApplicationTitle] = useState<string>(
-    props.configurationListData[0].Title
-      ? props.configurationListData[0].Title
+    props.configurationListData? props.configurationListData[0].Title
       : ""
   );
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
@@ -57,38 +57,40 @@ const GeneralSettings = (props: {
   useEffect(() => {
     const handleFetchGroupUsers = async () => {
       try {
-        let data = JSON.parse(props.configurationListData[0].Permissions);
+        if(props.configurationListData){
+          let data = JSON.parse(props.configurationListData[0].Permissions);
 
-        for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
-          reportingManagerData.push(
-            data.ReportingManagerGroups[i].split(",")[1]
-          );
+          for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
+            reportingManagerData.push(
+              data.ReportingManagerGroups[i].split(",")[1]
+            );
+          }
+          for (let i = 0; i < data?.ReportingManager?.length; i++) {
+            reportingManagerData.push(data.ReportingManager[i]);
+          }
+          setReportingManagerUsers(reportingManagerData);
+  
+          for (let i = 0; i < data?.AdminGroup?.length; i++) {
+            adminData.push(data.AdminGroup[i].split(",")[1]);
+          }
+          for (let i = 0; i < data?.Admin?.length; i++) {
+            adminData.push(data.Admin[i]);
+          }
+          setAdminUsers(adminData);
+          setFormData({
+            ReportingManager: data.ReportingManager,
+            ReportingManagerGroups: data.ReportingManagerGroups,
+            AdminGroup: data.AdminGroup,
+            Admin: data.Admin,
+            Title: applicationTitle,
+            Attachment: "",
+          });
+  
         }
-        for (let i = 0; i < data?.ReportingManager?.length; i++) {
-          reportingManagerData.push(data.ReportingManager[i]);
-        }
-        setReportingManagerUsers(reportingManagerData);
-
-        for (let i = 0; i < data?.AdminGroup?.length; i++) {
-          adminData.push(data.AdminGroup[i].split(",")[1]);
-        }
-        for (let i = 0; i < data?.Admin?.length; i++) {
-          adminData.push(data.Admin[i]);
-        }
-        setAdminUsers(adminData);
-
-        setFormData({
-          ReportingManager: data.ReportingManager,
-          ReportingManagerGroups: data.ReportingManagerGroups,
-          AdminGroup: data.AdminGroup,
-          Admin: data.Admin,
-          Title: applicationTitle,
-          Attachment: "",
-        });
-
         setDefaultAttachment(
           props.configurationListData[0].AttachmentFiles[0].ServerRelativeUrl
         );
+
       } catch (error) {
         console.error("Error fetching group users", error);
       } finally {
@@ -130,6 +132,7 @@ const GeneralSettings = (props: {
       if (response === true) {
         await getConfigurationListData(props.spHttpClient, props.absoluteURL);
         setAlert(true);
+        props.setReload("true");
       }
     }
     if (props.configurationListDataLength === 0) {
@@ -142,6 +145,7 @@ const GeneralSettings = (props: {
       if (response === true) {
         await getConfigurationListData(props.spHttpClient, props.absoluteURL);
         setAlert(true);
+        props.setReload("true");
       }
     }
   };
@@ -362,11 +366,11 @@ const GeneralSettings = (props: {
                     style={{ width: "100px", height: "auto", marginTop: "0px" }}
                   />
                 )}
-                {props.configurationListData[0].Attachment &&
+                {props.configurationListData? props.configurationListData[0].Attachment : {} &&
                   !defaultAttachment && (
                     <div style={{ marginTop: "10px" }}>
                       <img
-                        src={props.configurationListData[0].Attachment}
+                        src={props.configurationListData?props.configurationListData[0].Attachment:''}
                         alt=""
                         style={{
                           width: "70px",

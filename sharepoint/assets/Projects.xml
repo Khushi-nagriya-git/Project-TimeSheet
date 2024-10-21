@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<List xmlns:ows="Microsoft SharePoint" Title="Projects" FolderCreation="FALSE"
+  Direction="$Resources:Direction;" Url="Lists/Projects" BaseType="0"
+  xmlns="http://schemas.microsoft.com/sharepoint/">
+  <MetaData>
+    <ContentTypes>
+
+      <ContentType ID="0x0100aa25bf204aa7495080dd6e908a868b85" Name="ListFieldsContentType">
+        <FieldRefs>
+          <FieldRef ID="{43eeae20-ebf5-46d5-9ed7-73bc469b7aca}" Name="ProjectId" />
+          <FieldRef ID="{54ae6d5c-445c-4eb4-b8b1-6e34519a8ea8}" Name="ProjectName" />
+          <FieldRef ID="{cfdaabd3-141b-4ce4-9d76-cc5889661ced}" Name="ClientName" />
+          <FieldRef ID="{93c3f6c6-37e0-4a36-9ff9-f85f6532825b}" Name="ProjectCost" />
+          <FieldRef ID="{6df68532-44cf-45cb-8c06-e4df27a01607}" Name="ProjectManager" />
+          <FieldRef ID="{09ba06dc-ed97-422d-949a-9d9bd94880da}" Name="ProjectTeam" />
+          <FieldRef ID="{ef13434c-a229-4e26-885a-773322a9e77f}" Name="ReportingManager" />
+          <FieldRef ID="{ef913de7-f91b-4850-a62f-7563d9f60009}" Name="DepartmentsORTeam" />
+          <FieldRef ID="{d35714d1-103f-4164-bb31-c61933086ace}" Name="ProjectStatus" />
+          <FieldRef ID="{d7434e7b-2388-456b-9d3d-358ca077d799}" Name="Description" />
+          <FieldRef ID="{d6df8efb-2cc7-42b2-a7f4-73c548f56025}" Name="ProjectType" />
+          <FieldRef ID="{4210beb2-f2d4-4677-8218-cc5aa04ab81e}" Name="ProjectManagerPeoplePicker" />
+          <FieldRef ID="{dddbf5f4-3ac6-4448-8062-43cc1be6c0a4}" Name="ProjectTeamPeoplePicker" />
+          <FieldRef ID="{20f21f4d-1c0a-43c1-b78a-316adbd74313}" Name="ReportingManagerPeoplePicker" />
+          <FieldRef ID="{6e161d73-fab9-4af0-9ec7-4e102eea4bbd}" Name="ProjectHours" />
+
+        </FieldRefs>
+      </ContentType>
+      <ContentTypeRef ID="0x01">
+        <Folder TargetName="Item" />
+      </ContentTypeRef>
+      <ContentTypeRef ID="0x0120" />
+    </ContentTypes>
+
+   <Fields>
+
+    <Field Name="ProjectId" ID="{43eeae20-ebf5-46d5-9ed7-73bc469b7aca}"
+        DisplayName="ProjectId" Type="Number" Required="TRUE" />
+
+    <Field Name="ProjectName" ID="{54ae6d5c-445c-4eb4-b8b1-6e34519a8ea8}"
+        DisplayName="Project Name" Type="Text" Required="TRUE" />
+
+    <Field Name="ClientName" ID="{cfdaabd3-141b-4ce4-9d76-cc5889661ced}"
+        DisplayName="Client Name" Type="Text" Required="FALSE" />
+
+    <Field Name="ProjectCost" ID="{93c3f6c6-37e0-4a36-9ff9-f85f6532825b}"
+        DisplayName="Project Cost" Type="Number" Required="FALSE" />
+
+    <Field Name="ProjectManager" ID="{6df68532-44cf-45cb-8c06-e4df27a01607}"
+        DisplayName="Project Manager" Type="Note" NumLines="1000" Required="FALSE" />
+
+    <Field Name="ProjectTeam" ID="{09ba06dc-ed97-422d-949a-9d9bd94880da}"
+        DisplayName="Project Team" Type="Note" NumLines="1000" Required="FALSE" />
+
+    <Field Name="ReportingManager" ID="{ef13434c-a229-4e26-885a-773322a9e77f}"
+        DisplayName="Reporting Manager" Type="Note" NumLines="1000" Required="FALSE" />
+
+    <Field Name="DepartmentsORTeam" ID="{ef913de7-f91b-4850-a62f-7563d9f60009}"
+        DisplayName="DepartmentsORTeam" Type="Note" NumLines="1000" Required="FALSE" />
+
+    <Field Name="ProjectStatus" ID="{d35714d1-103f-4164-bb31-c61933086ace}"
+        DisplayName="Project Status" Type="Choice" Group="SPFx Columns" Required="FALSE"  >
+     <CHOICES>
+        <CHOICE>Not Started</CHOICE>
+        <CHOICE>Completed</CHOICE>
+        <CHOICE>In Progress</CHOICE>
+        <CHOICE>On Hold</CHOICE>
+        </CHOICES>
+    </Field>
+
+    <Field Name="Description" ID="{d7434e7b-2388-456b-9d3d-358ca077d799}"
+        DisplayName="Description" Type="Note" NumLines="1000" Required="FALSE" />
+
+    <Field Name="ProjectType" ID="{d6df8efb-2cc7-42b2-a7f4-73c548f56025}"
+         DisplayName="Project Type" Type="Choice" Required="FALSE" Group="SPFx Columns"  >
+     <CHOICES>
+        <CHOICE>Fixed Cost</CHOICE>
+        <CHOICE>Resource Based</CHOICE>
+        </CHOICES>
+    </Field>
+
+    <Field Name="ProjectManagerPeoplePicker" ID="{4210beb2-f2d4-4677-8218-cc5aa04ab81e}"
+        DisplayName="ProjectManagerPeoplePicker" List="UserInfo" Type="User" UserSelectionMode="PeopleOnly"
+        UserSelectionScope="0" Required="FALSE" Multiselect="FALSE"/>
+
+    <Field Name="ProjectTeamPeoplePicker" ID="{dddbf5f4-3ac6-4448-8062-43cc1be6c0a4}"
+        DisplayName="ProjectTeamPeoplePicker" List="UserInfo" Type="User" UserSelectionMode="PeopleOnly"
+        UserSelectionScope="0" Required="FALSE" Multiselect="TRUE"/>
+
+    <Field Name="ReportingManagerPeoplePicker" ID="{20f21f4d-1c0a-43c1-b78a-316adbd74313}"
+        DisplayName="ReportingManagerPeoplePicker" List="UserInfo" Type="User" UserSelectionMode="PeopleOnly"
+        UserSelectionScope="0" Required="FALSE" Multiselect="FALSE"/>
+
+    <Field Name="ProjectHours" ID="{6e161d73-fab9-4af0-9ec7-4e102eea4bbd}"
+        DisplayName="Project Hours" Type="Number" Required="FALSE" />
+
+</Fields>
+
+
+    <Views>
+
+
+      <View BaseViewID="0" Type="HTML" MobileView="TRUE" TabularView="FALSE">
+        <Toolbar Type="Standard" />
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <ViewFields>
+
+          <FieldRef Name="LinkTitleNoMenu"></FieldRef>
+        </ViewFields>
+        <Query>
+          <OrderBy>
+
+            <FieldRef Name="Modified" Ascending="FALSE"></FieldRef>
+          </OrderBy>
+        </Query>
+        <ParameterBindings>
+          <ParameterBinding Name="AddNewAnnouncement" Location="Resource(wss,addnewitem)" />
+          <ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" />
+          <ParameterBinding Name="NoAnnouncementsHowTo"
+            Location="Resource(wss,noXinviewofY_ONET_HOME)" />
+        </ParameterBindings>
+      </View>
+      <View BaseViewID="1" Type="HTML" WebPartZoneID="Main"
+        DisplayName="$Resources:core,objectiv_schema_mwsidcamlidC24;" DefaultView="TRUE"
+        MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx"
+        ImageUrl="/_layouts/15/images/generic.png?rev=23" Url="AllItems.aspx">
+        <Toolbar Type="Standard" />
+        <XslLink Default="TRUE">main.xsl</XslLink>
+        <JSLink>clienttemplates.js</JSLink>
+        <RowLimit Paged="TRUE">30</RowLimit>
+        <ViewFields>
+
+          <FieldRef Name="ProjectId" />
+          <FieldRef Name="ProjectName" />
+          <FieldRef Name="ClientName" />
+          <FieldRef Name="ProjectCost" />
+          <FieldRef Name="ProjectHours" />
+          <FieldRef Name="DepartmentsORTeam" />
+          <FieldRef Name="ProjectStatus" />
+          <FieldRef Name="ProjectType" />
+          <FieldRef Name="Description" />
+          <FieldRef Name="ProjectManager" />
+          <FieldRef Name="ProjectTeam" />
+          <FieldRef Name="ReportingManager" />
+          <FieldRef Name="ProjectManagerPeoplePicker" />
+          <FieldRef Name="ProjectTeamPeoplePicker" />
+          <FieldRef Name="ReportingManagerPeoplePicker" />
+          
+        </ViewFields>
+        <Query>
+          <OrderBy>
+
+            <FieldRef Name="ID"></FieldRef>
+          </OrderBy>
+        </Query>
+        <ParameterBindings>
+          <ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" />
+          <ParameterBinding Name="NoAnnouncementsHowTo"
+            Location="Resource(wss,noXinviewofY_DEFAULT)" />
+        </ParameterBindings>
+      </View>
+    </Views>
+    <Forms>
+      <Form Type="DisplayForm" Url="DispForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="EditForm" Url="EditForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+      <Form Type="NewForm" Url="NewForm.aspx" SetupPath="pages\form.aspx" WebPartZoneID="Main" />
+    </Forms>
+  </MetaData>
+</List>

@@ -12,4 +12,5 @@ export interface IConfigurationScreenProps {
     title:any;
     configurationListData:any;
     configurationListDataLength:number;
+    setReload:React.Dispatch<React.SetStateAction<any>>;
 }

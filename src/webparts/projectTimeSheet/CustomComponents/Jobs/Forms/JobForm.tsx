@@ -13,7 +13,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Box } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import { IJobFormProps } from "./IJobFormProps";
-import { JobAssginees, JobFormData, initialState } from "./IJobFormStats";
+import { JobFormData, initialState } from "./IJobFormStats";
 
 const drawerStyle = {
   width: "700px",
@@ -37,7 +37,6 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
     [key: string]: number;
   }>({});
   const [showEstimatedHour, setShowEstimatedHour] = useState(false);
-
 
   const Projects: IDropdownOption[] = props.projectsData.map(
     (project: any) => ({ key: project.ProjectId, text: project.ProjectName })
@@ -106,8 +105,7 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
 
         // Set the selected team member IDs
         setSelectedTeamMemberIds(memberIds);
-
-        setShowEstimatedHour(true);
+        if(props.initialData.billableStatus === "billable")setShowEstimatedHour(true);
       }
     }
   }, [props.mode, props.initialData]);
@@ -152,7 +150,6 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
           if (selectedMember) {
             selectedTeamMembers.push(selectedMember);
             updatedSelectedTeamMemberIds.push(selectedMember.id);
-  
             updatedJobAssignees.push({
               name: selectedMember.name?selectedMember.name:selectedMember.text,
               email: selectedMember.email ? selectedMember.email : selectedMember.secondaryText,
@@ -258,8 +255,17 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
             : {
                 [name]: option?.key || option?.text,
               };
-              formData.JobAssigness=[];
-              setShowEstimatedHour(false); 
+              if(name === "billableStatus"){
+                if ((option?.key === "Billable" || option?.key === "billable") || 
+                (option?.text === "Billable" || option?.text === "billable")) {
+                setShowEstimatedHour(true);
+                } else {
+              setShowEstimatedHour(false);
+              for(let i=0;i<formData.JobAssigness.length;i++){
+                formData.JobAssigness[i].estimatedHours = 0;
+              }
+              }
+              }     
         return {
           ...prevData,
           ...update,

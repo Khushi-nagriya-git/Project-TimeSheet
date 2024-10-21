@@ -73,7 +73,7 @@ const ConfigurationScreen: React.FC<IConfigurationScreenProps> = (
               }}
             >
               {tab === "General Settings" && (
-                <GeneralSettings absoluteURL={props.absoluteURL} configurationListData={props.configurationListData} spHttpClient={props.spHttpClient} context={props.context} configurationListDataLength ={props.configurationListDataLength} title={props.title} ></GeneralSettings>
+                <GeneralSettings absoluteURL={props.absoluteURL} setReload = {props.setReload} configurationListData={props.configurationListData} spHttpClient={props.spHttpClient} context={props.context} configurationListDataLength ={props.configurationListDataLength} title={props.title} ></GeneralSettings>
               )}
               {tab === "Departments" && <DepartmentSetting absoluteURL={props.absoluteURL} spHttpClient={props.spHttpClient}></DepartmentSetting>}
             </Box>

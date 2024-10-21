@@ -23,7 +23,10 @@ export default function AppHeader(props: {
     }
   };
  
-  let ServerRelativeUrl = props.logo[0]?.ServerRelativeUrl?props.logo[0].ServerRelativeUrl:"";
+  let ServerRelativeUrl = props.logo && props.logo.length > 0 && props.logo[0].ServerRelativeUrl 
+    ? props.logo[0].ServerRelativeUrl 
+    : '';
+
   let baseURL = props.absoluteURL.split("sites")[0]?props.absoluteURL.split("sites")[0]:"";
   let imageUrl = "";
   if(ServerRelativeUrl!="" && baseURL!=""){

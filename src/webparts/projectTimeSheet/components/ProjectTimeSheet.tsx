@@ -54,7 +54,8 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
     useState<LoggedInUserDetails>(projectsInitialState.loggedInUserDetails);
   const [isDataAvailable, setIsDataAvailable] = useState<boolean>(false);
   const [configurationListData, setConfigurationListData] = useState<ConfigurationData[]>([{ Permissions: '', Title: '' , AttachmentFiles: ''}]);
-  
+  const [reload , setReload] = useState('false');
+
   useEffect(() => {
     const fetchData = async () => {
       const configurationData = await getConfigurationListData(props.spHttpClient , props.absoluteURL);
@@ -65,11 +66,13 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
       );
 
       setLoggedInUserDetails(userData || {});
-      
-      let data=(JSON.parse(configurationData[0].Permissions));
       let reportingMangerGroup = false;
       let adminGroup = false;
 
+
+      if(configurationData){
+        let data=(JSON.parse(configurationData? configurationData[0]?.Permissions : ''));
+        
       const reportingManager = data?.ReportingManager?.includes(userData?.Email);
 
       for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
@@ -91,15 +94,61 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
           break; 
         }
       }
-
      if(admin || adminGroup){
       setUserAdmin(true);
      }
+      }
       setIsDataAvailable(true);
-    
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const configurationData = await getConfigurationListData(props.spHttpClient , props.absoluteURL);
+      setConfigurationListData(configurationData);
+      let userData: LoggedInUserDetails = await getLoggedInUserData(
+        props.spHttpClient,
+        props.absoluteURL
+      );
+
+      setLoggedInUserDetails(userData || {});
+      let reportingMangerGroup = false;
+      let adminGroup = false;
+
+
+      if(configurationData){
+        let data=(JSON.parse(configurationData? configurationData[0]?.Permissions : ''));
+        
+      const reportingManager = data?.ReportingManager?.includes(userData?.Email);
+
+      for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
+        const groupEmails = await getGroupMembers(data.ReportingManagerGroups[i].split(",")[0]);
+        if (groupEmails?.includes(userData?.Email)) {
+          reportingMangerGroup = true;
+          break; 
+        }
+      }
+      if(reportingMangerGroup || reportingManager){
+        setIsUserReportingManager(true);
+      }
+
+      const admin = data?.Admin?.includes(userData?.Email);
+      for (let i = 0; i < data?.AdminGroup?.length; i++) {
+        const groupEmails = await getGroupMembers(data.AdminGroup[i].split(",")[0]);
+        if (groupEmails?.includes(userData?.Email)) {
+          adminGroup = true;
+          break; 
+        }
+      }
+     if(admin || adminGroup){
+      setUserAdmin(true);
+     }
+      }
+      setIsDataAvailable(true);
+    };
+    fetchData();
+  }, [reload]);
 
   const getGroupMembers = async (groupId: string) => {
     const siteUrl = props.context.pageContext.site.absoluteUrl;
@@ -111,8 +160,6 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
     const result = await response.json();
     return result.d.results.map((user: any) => user.Email);
   };
-  
- 
 
   return (
     <EmployeeTimeSheetProvider>
@@ -133,7 +180,7 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
               userName={props.context.pageContext.user.displayName}
               siteURL={props.context.pageContext.web.absoluteUrl}
               title={configurationListData && configurationListData[0]?.Title ? configurationListData[0].Title : "Employee Timesheet"}
-              logo={configurationListData[0]?.AttachmentFiles}
+              logo={configurationListData && configurationListData[0]?.AttachmentFiles ? configurationListData[0]?.AttachmentFiles : {}}
               absoluteURL = {props.absoluteURL}
             />
             <MainContainer>
@@ -154,6 +201,7 @@ const ProjectTimeSheet: React.FC<IProjectTimeSheetProps> = (
                         isUserProjectTeam={isUserProjectTeam}
                         isUserAdmin={isUserAdmin}
                         isUserProjectManager={isUserProjectManager}
+                        setReload={setReload}
                         isUserReportingManager={isUserReportingManager}
                       />
                     }
