@@ -6,7 +6,7 @@ import {  initialState, CustomFormData, ProjectManager,} from "./webparts/projec
 import { JobsData, jobsInitialState,} from "./webparts/projectTimeSheet/CustomComponents/Jobs/IJobsStats";
 import DeleteDialogBoxProps from "./webparts/projectTimeSheet/CustomComponents/Projects/DialogBoxs/DeleteDialogBox";
 import { IProjectProps } from "./webparts/projectTimeSheet/CustomComponents/Projects/IProjectProps";
-import { addProjects, getProjectListData, deleteProject, updateUserRecords, getDepartments} from "./webparts/projectTimeSheet/CustomComponents/Projects/Services";
+import { addProjects, getProjectListData, deleteProject, updateUserRecords,} from "./webparts/projectTimeSheet/CustomComponents/Projects/Services";
 import { getJobListData ,convertToMinutes} from "./webparts/projectTimeSheet/CustomComponents/Jobs/Services";
 import { ProjectsData, projectsInitialState,} from "./webparts/projectTimeSheet/CustomComponents/Projects/IProjectStats";
 import Row from "./webparts/projectTimeSheet/CustomComponents/Projects/EmployeesView/TableRows";
@@ -37,9 +37,5 @@ import TableSortLabel from "@mui/material/TableSortLabel/TableSortLabel";
 import ProjectStyle from "./webparts/projectTimeSheet/CustomComponents/Projects/Project.style";
 import departmentView from "./webparts/projectTimeSheet/CustomComponents/Projects/DepartmentView/DepartmentView.module.scss";
 import dialogBox from "./webparts/projectTimeSheet/CustomComponents/Projects/DialogBoxs/DialogBox.module.scss";
-import MenuIcon from "@mui/icons-material/Menu";
-import SideNavigation from "../src/webparts/projectTimeSheet/CustomComponents/Navigation/SideNavigation";
-import { useEmployeeTimeSheetContext } from "../src/webparts/projectTimeSheet/EmployeeTimeSheetContext";
-import CircularProgress from "@mui/material/CircularProgress";
 
-export { React, SPHttpClient, useState,Collapse,CircularProgress,useEmployeeTimeSheetContext, SideNavigation,useEffect, MenuIcon,KeyboardArrowDownIcon,getDepartments, KeyboardArrowUpIcon, FormComponent, initialState,Table,TableBody,TableCell,TableContainer,DialogActions,TableHead,TableRow,dialogBox,TableSortLabel,Typography,Dialog,CustomFormData, FormEvent, convertToMinutes, Row, DialogContentText, JobsData, Stack, DefaultButton, PrimaryButton, DialogContent, PeoplePicker, IconButton,ProjectStyle, DialogTitle, Drawer, departmentView, IFormProps, PrincipalType, Modal,TextField, jobsInitialState, DeleteDialogBoxProps, IProjectProps, addProjects, getProjectListData,  deleteProject, updateUserRecords, getJobListData, ProjectsData, projectsInitialState, styled, ProjectManager, TopNavigation, Button, Grid, CloseIcon, ProjectHeader, ProjectTable, Alert, DepartmentView, MyTeam, Dropdown, SearchBox,Label, IDropdownOption, Box, Avatar, createContext, useContext, ReactNode };
+export { React, SPHttpClient, useState,Collapse, useEffect, KeyboardArrowDownIcon, KeyboardArrowUpIcon, FormComponent, initialState,Table,TableBody,TableCell,TableContainer,DialogActions,TableHead,TableRow,dialogBox,TableSortLabel,Typography,Dialog,CustomFormData, FormEvent, convertToMinutes, Row, DialogContentText, JobsData, Stack, DefaultButton, PrimaryButton, DialogContent, PeoplePicker, IconButton,ProjectStyle, DialogTitle, Drawer, departmentView, IFormProps, PrincipalType, Modal,TextField, jobsInitialState, DeleteDialogBoxProps, IProjectProps, addProjects, getProjectListData,  deleteProject, updateUserRecords, getJobListData, ProjectsData, projectsInitialState, styled, ProjectManager, TopNavigation, Button, Grid, CloseIcon, ProjectHeader, ProjectTable, Alert, DepartmentView, MyTeam, Dropdown, SearchBox,Label, IDropdownOption, Box, Avatar, createContext, useContext, ReactNode };

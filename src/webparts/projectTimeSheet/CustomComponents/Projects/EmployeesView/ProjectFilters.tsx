@@ -3,9 +3,7 @@ import {
   useState,
   Grid,
   Dropdown,
-  IDropdownOption,
-  SearchBox,
-  Label,
+IDropdownOption, SearchBox, Label,
 } from "../../../../../index";
 import { IconButton } from "@fluentui/react";
 
