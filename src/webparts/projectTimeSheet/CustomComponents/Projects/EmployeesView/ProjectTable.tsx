@@ -1,49 +1,6 @@
-import {
-  React,
-  Box,
-  Row,
-  TableSortLabel,
-  TableCell,
-  TableBody,
-  useState,
-  Table,
-  TableContainer,
-  TableRow,
-  TableHead,
-  useEffect,
-  Grid,
-} from "../../../../../index";
+import { React, Box, Row, TableCell, TableBody, Table, TableContainer, TableRow, TableHead, useEffect, Grid,} from "../../../../../index";
 
-const ProjectTable = (props: {
-  projectsData: any;
-  projectProps: any;
-  jobsData: any;
-  selectedProjectName: any;
-  selectedStatusName: any;
-  searchQuery: any;
-  filteredProjects: any;
-  topNavigationMode: any;
-  selectedDepartmentName: any;
-  isUserReportingManager: any;
-  isUserProjectManager: any;
-  isUserAdmin: any;
-  loggedInUserDetails: any;
-  isUserProjectTeam: any;
-  setIsJobAvailable: React.Dispatch<React.SetStateAction<any>>;
-  setAddFormOpen: React.Dispatch<React.SetStateAction<any>>;
-  setDeletedProjectId: React.Dispatch<React.SetStateAction<any>>;
-  setIsOpen: React.Dispatch<React.SetStateAction<any>>;
-  setMode: React.Dispatch<React.SetStateAction<any>>;
-  setEditProjectId: React.Dispatch<React.SetStateAction<any>>;
-  setDeleteAlert: React.Dispatch<React.SetStateAction<any>>;
-  setCurrentData: React.Dispatch<React.SetStateAction<any>>;
-  setPeoplePickerDefaultManager: React.Dispatch<React.SetStateAction<any>>;
-  setPeoplePickerDefaultReportingManager: React.Dispatch<
-    React.SetStateAction<any>
-  >;
-  setPeoplePickerDefaultTeam: React.Dispatch<React.SetStateAction<any>>;
-  setFilteredProjects: React.Dispatch<React.SetStateAction<any>>;
-}) => {
+const ProjectTable = (props: { projectsData: any; projectProps: any; jobsData: any; selectedProjectName: any; selectedStatusName: any; searchQuery: any; filteredProjects: any; topNavigationMode: any; selectedDepartmentName: any; isUserReportingManager: any;  isUserProjectManager: any; isUserAdmin: any; loggedInUserDetails: any; isUserProjectTeam: any; setIsJobAvailable: React.Dispatch<React.SetStateAction<any>>; setAddFormOpen: React.Dispatch<React.SetStateAction<any>>; setDeletedProjectId: React.Dispatch<React.SetStateAction<any>>; setIsOpen: React.Dispatch<React.SetStateAction<any>>; setMode: React.Dispatch<React.SetStateAction<any>>; setEditProjectId: React.Dispatch<React.SetStateAction<any>>; setDeleteAlert: React.Dispatch<React.SetStateAction<any>>; setCurrentData: React.Dispatch<React.SetStateAction<any>>; setPeoplePickerDefaultManager: React.Dispatch<React.SetStateAction<any>>; setPeoplePickerDefaultReportingManager: React.Dispatch< React.SetStateAction<any> >; setPeoplePickerDefaultTeam: React.Dispatch<React.SetStateAction<any>>;setFilteredProjects: React.Dispatch<React.SetStateAction<any>>;}) => {
  
   useEffect(() => {
     let filteredProjects = props.projectsData;
@@ -115,8 +72,12 @@ const ProjectTable = (props: {
     }
   };
 
-  const handleEditIconClick = async (projectId: number) => {
-    props.setMode("edit");
+  const handleEditIconClick = async (projectId: number , mode:string) => {
+    if(mode === "Edit"){
+      props.setMode("edit");
+    }else{
+      props.setMode("View");
+    }
     props.setEditProjectId(projectId);
     const project = props.projectsData.find(
       (proj: any) => proj.ProjectId === projectId
@@ -138,7 +99,6 @@ const ProjectTable = (props: {
     );
 
     props.setPeoplePickerDefaultReportingManager(reportingManagerEmail);
-
     props.setPeoplePickerDefaultTeam(emails.length > 0 ? emails : []);
 
     props.setCurrentData({
@@ -152,7 +112,7 @@ const ProjectTable = (props: {
       projectManager: projectManager,
       projectStatus: project.ProjectStatus,
       projectCost: project.ProjectCost,
-      attachment: project.Attachment,
+      attachment: project.AttachmentFiles && project.AttachmentFiles.length > 0 ? project.AttachmentFiles : null,
       description: project.Description,
     });
     props.setAddFormOpen(true);
@@ -376,7 +336,7 @@ const ProjectTable = (props: {
               </TableHead>
               <TableBody>
                 {props.filteredProjects.length > 0 && props.filteredProjects[0].ProjectName != '' ? (
-                  props.filteredProjects.map((row: any) => {
+                  props.filteredProjects.sort((a: any, b: any) => b.ProjectId - a.ProjectId).map((row: any) => {
                     let projectManagerName: any = "-";
                     let projectManagerEmail: any = "";
                     try {

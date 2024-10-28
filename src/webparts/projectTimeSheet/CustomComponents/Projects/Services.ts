@@ -30,12 +30,7 @@ export const getLoggedInUserData = async (spHttpClient: SPHttpClient, absoluteUR
 }
 };
 
-export const getDepartments = async (
-  absoluteURL: string,
-  spHttpClient: SPHttpClient,
-  setDepartmentNames: React.Dispatch<React.SetStateAction<any>>,
-  type:string
-) => {
+export const getDepartments = async ( absoluteURL: string,spHttpClient: SPHttpClient,setDepartmentNames: React.Dispatch<React.SetStateAction<any>>,type:string) => {
   try {
     const filterCondition = type === "projects" ? "&$filter=isActive eq 1" : "";
       const response = await spHttpClient.get(
@@ -55,14 +50,7 @@ export const getDepartments = async (
   }
 };
 
-export const getProjectListData = async (
-  absoluteURL: string,
-  spHttpClient: SPHttpClient,
-  setProjectsData: React.Dispatch<React.SetStateAction<any>>,
-  loggedInUserDetails:any,
-  isUserAdmin:any
-) => {
-
+export const getProjectListData = async (  absoluteURL: string,spHttpClient: SPHttpClient,setProjectsData: React.Dispatch<React.SetStateAction<any>>,loggedInUserDetails:any, isUserAdmin:any) => {
   let filterQuery = "";
   if(isUserAdmin){
     filterQuery = ""; 
@@ -71,7 +59,7 @@ export const getProjectListData = async (
   }
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectHours,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/Id,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker,AttachmentFiles&$filter=${filterQuery}`,
+      `${absoluteURL}/_api/web/lists/GetByTitle('Projects')/items?$select=ProjectName,ProjectId,ProjectType,ClientName,ProjectHours,ProjectCost,ReportingManager,ProjectManager,ProjectTeam,DepartmentsORTeam,Description,Attachments,ProjectStatus,ProjectManagerPeoplePicker/Title,ProjectManagerPeoplePicker/EMail,ProjectTeamPeoplePicker/Title,ProjectTeamPeoplePicker/EMail,ReportingManagerPeoplePicker/Title,ReportingManagerPeoplePicker/Id,ReportingManagerPeoplePicker/EMail&$expand=ProjectManagerPeoplePicker,ProjectTeamPeoplePicker,ReportingManagerPeoplePicker,AttachmentFiles&$filter=${filterQuery}&$orderby=ID desc`,
        SPHttpClient.configurations.v1
     );
       if (response.ok) {
@@ -110,13 +98,8 @@ export const getLastItemId = async (absoluteURL: string, spHttpClient: SPHttpCli
   return id;
 };
 
-export const addProjects = async (
-  data: CustomFormData,
-  absoluteURL: string,
-  spHttpClient: SPHttpClient
-) => {
+export const addProjects = async ( data: CustomFormData, absoluteURL: string, spHttpClient: SPHttpClient) => {
   const newProjectId = await getLastItemId(absoluteURL, spHttpClient);
-
   const ProjectTeamPeoplePickerIds = 
   Array.isArray(data.ProjectTeamPeoplePicker) && data.ProjectTeamPeoplePicker.length > 0
     ? data.ProjectTeamPeoplePicker.map((person: { id: number }) => person?.id)
@@ -152,27 +135,24 @@ export const addProjects = async (
   });
   if (!response.ok) {
     console.error("Error adding Project records");
-    return ;
+    return false ;
   }
 
   const item: any = await response.json();
   const itemId = item.d?.ID || item.ID;
   if (data.attachment) {
-    const attachmentResponse = await handleUploadAttachment(itemId, data.attachment, absoluteURL, spHttpClient);
-    if (!attachmentResponse.ok) {
-      console.error("Error uploading attachment");
-      return;
+    for(let i=0;i<data.attachment.length;i++){
+      const attachmentResponse = await handleUploadAttachment(itemId, data.attachment[i], absoluteURL, spHttpClient);
+      if (!attachmentResponse.ok) {
+        console.error("Error uploading attachment");
+        return;
+      }
     }
+  
   }
-
 };
 
-export const handleUploadAttachment = async (
-  itemId: number,
-  file: File,
-  absoluteURL: string,
-  spHttpClient: SPHttpClient
-) => {
+export const handleUploadAttachment = async ( itemId: number, file: File, absoluteURL: string, spHttpClient: SPHttpClient) => {
   const attachmentURL = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})/AttachmentFiles/add(FileName='${file.name}')`;
   const options: ISPHttpClientOptions = {
     body: file,
@@ -185,31 +165,21 @@ export const handleUploadAttachment = async (
   return spHttpClient.post(attachmentURL, SPHttpClient.configurations.v1, options);
 };
 
-export const deleteProject = async (
-  absoluteURL: string,
-  spHttpClient: SPHttpClient,
-  projectId: number,
-  setProjectsData: React.Dispatch<React.SetStateAction<any>>,
-) => {
-  
+export const deleteProject = async ( absoluteURL: string, spHttpClient: SPHttpClient, projectId: number, setProjectsData: React.Dispatch<React.SetStateAction<any>>,) => {
   try {
     // First, get the internal ID based on the ProjectId
     const getResponse = await spHttpClient.get(
       `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items?$filter=ProjectId eq ${projectId}`,
       SPHttpClient.configurations.v1
     );
-
     if (getResponse.ok) {
       const data = await getResponse.json();
       const items = data.value;
-      
       if (items.length === 0) {
         console.error("Item does not exist. It may have been deleted by another user.");
         return;
       }
-
       const internalId = items[0].ID;
-      
       // Then, delete the item using the internal ID
       const deleteResponse = await spHttpClient.post(
         `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${internalId})`,
@@ -221,7 +191,6 @@ export const deleteProject = async (
           }
         }
       );
-
       if (deleteResponse.ok) {
         // Refresh project data after deletion
       } else {
@@ -235,15 +204,7 @@ export const deleteProject = async (
   }
 };
 
-export async function updateUserRecords(
-  spHttpClient: SPHttpClient,
-  absoluteURL: string,
-  projectId: number,
-  updateformData: CustomFormData,
-  setProjectsData: React.Dispatch<React.SetStateAction<any>>,
-  setCurrentData:  React.Dispatch<React.SetStateAction<any>>,
-) {
-  
+export async function updateUserRecords( spHttpClient: SPHttpClient, absoluteURL: string, projectId: number, updateformData: CustomFormData, setProjectsData: React.Dispatch<React.SetStateAction<any>>,setCurrentData:  React.Dispatch<React.SetStateAction<any>>,) {
   try {
       const response = await spHttpClient.get(
           `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items?$filter=ProjectId eq ${projectId}`,

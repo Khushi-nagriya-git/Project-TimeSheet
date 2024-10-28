@@ -1,47 +1,11 @@
 import IconButton from "@mui/material/IconButton";
-import {
-  React,
-  useState,
-  Box,
-  Table,
-  convertToMinutes,
-  TableBody,
-  IProjectProps,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  Avatar,
-  Collapse,
-  KeyboardArrowDownIcon,
-  KeyboardArrowUpIcon,
-} from "../../../../../index";
+import { React, useState, Box, Table, TableBody, IProjectProps, TableCell, TableHead, TableRow, Typography, Avatar, Collapse, KeyboardArrowDownIcon, KeyboardArrowUpIcon,} from "../../../../../index";
 import { Tooltip } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 
-const Row = (props: {
-  row: ReturnType<any>;
-  projectProps: IProjectProps;
-  handleDeleteIconClick: any;
-  handleEditIconClick: any;
-  topNavigationMode: any;
-  isUserReportingManager: any;
-  isUserProjectManager: any;
-  isUserAdmin: any;
-  isUserProjectTeam: any;
-  loggedInUserDetails: any;
-}) => {
-  const {
-    row,
-    projectProps,
-    handleDeleteIconClick,
-    handleEditIconClick,
-    loggedInUserDetails,
-    topNavigationMode,
-  } = props;
+const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDeleteIconClick: any; handleEditIconClick: any; topNavigationMode: any; isUserReportingManager: any; isUserProjectManager: any; isUserAdmin: any; isUserProjectTeam: any; loggedInUserDetails: any;}) => {
+  const { row, projectProps, handleDeleteIconClick, handleEditIconClick, loggedInUserDetails, topNavigationMode, } = props;
   const [open, setOpen] = useState(false);
-  const [projectIdForDashBoard, setProjectIdForDashBoard] = useState(0);
-  const [isDashBoardOpen, setIsDashBoardOpen] = useState(false);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Not Started":
@@ -66,11 +30,8 @@ const Row = (props: {
   const isLongName = row.projectName.length > 30;
 
   const dashboardOpen = (projectId: number) => {
-    setIsDashBoardOpen(true);
-    setProjectIdForDashBoard(projectId);
     navigate(`/Projects/${projectId}`);
   };
-
 
   return (
     <React.Fragment>
@@ -124,11 +85,7 @@ const Row = (props: {
           onClick={() => dashboardOpen(row.projectId)}
         >
           <Box display="flex" alignItems="left" justifyContent="left">
-            <Avatar
-              alt={row.projectManager}
-              src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${row.projectManagerEmail}&Size=S`}
-              style={{ marginRight: 8, height: "30px", width: "30px" }}
-            />
+            <Avatar alt={row.projectManager} src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${row.projectManagerEmail}&Size=S`} style={{ marginRight: 8, height: "30px", width: "30px" }} />
             <Box sx={{ mt: 0.5 }}>{row.projectManager}</Box>
           </Box>
         </TableCell>
@@ -173,7 +130,7 @@ const Row = (props: {
                 <IconButton
                   aria-label="edit"
                   size="small"
-                  onClick={() => handleEditIconClick(row.projectId)}
+                  onClick={() => handleEditIconClick(row.projectId , "Edit")}
                 >
                   <img
                     src={require("../../../assets/pencil.png")}
@@ -204,7 +161,24 @@ const Row = (props: {
                     }}
                   />
                 </IconButton>
+                <IconButton
+                  aria-label="View"
+                  size="small"
+                  onClick={() => handleEditIconClick(row.projectId ,"View")}
+                >
+                  <img
+                    src={require("../../../assets/show.png")}
+                    alt="View"
+                    style={{
+                      width: "23px",
+                      height: "23px",
+                      cursor: "pointer",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </IconButton>
               </Box>
+              
               )}
             </TableCell>
         

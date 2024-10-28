@@ -1,5 +1,4 @@
 import * as React from "react";
-import styles from "./ProjectTimeSheet.module.scss";
 import type { IProjectTimeSheetProps } from "./IProjectTimeSheetProps";
 import Project from "../CustomComponents/Projects/Project";
 import Jobs from "../CustomComponents/Jobs/Jobs";
@@ -9,15 +8,11 @@ import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import TimeLogs from "../CustomComponents/TimeLogs/TimeLogs";
-import {
-  LoggedInUserDetails,
-  projectsInitialState,
-} from "../CustomComponents/Projects/IProjectStats";
+import {LoggedInUserDetails,projectsInitialState,} from "../CustomComponents/Projects/IProjectStats";
 import { getLoggedInUserData } from "../CustomComponents/Projects/Services";
 import TimeSheet from "../CustomComponents/TimeSheet/TimeSheet";
 import { EmployeeTimeSheetProvider } from "../EmployeeTimeSheetContext";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { useEmployeeTimeSheetContext } from "../EmployeeTimeSheetContext";
 import ProjectDashboard from "../CustomComponents/Projects/ProjectDashboard/ProjectDashboard";
 import ConfigurationScreen from "../CustomComponents/ConfigurationScreen/ConfigurationScreen";
 import { getAllSiteUsers , getConfigurationListData} from "./Service";

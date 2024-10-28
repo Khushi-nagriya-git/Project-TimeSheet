@@ -1,17 +1,7 @@
 import * as React from "react";
 import { Box, TextField, useEffect, useState } from "../../../..";
 import { Label } from "@fluentui/react-components";
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import {Alert, Button,  CircularProgress, Table,  TableBody,  TableCell, TableContainer,  TableHead, TableRow,} from "@mui/material";
 import { SPHttpClient } from "../../../../index";
 import { getDepartments } from "../Projects/Services";
 import { Switch } from "@mui/material";
@@ -222,7 +212,7 @@ const DepartmentSetting = (props: {
             }}
             onClick={addDepartment}
           >
-            Submit
+            Save
           </Button>
 
           {alert && (

@@ -174,7 +174,7 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               selectedKeys={selectedDepartment}
               onChange={handleDepartmentChange}
               multiSelect
-              options={departmentNames?.map((departments: any) => ({
+              options={departmentNames?.sort((a: any, b: any) => a.DepartmentName.localeCompare(b.DepartmentName)).map((departments: any) => ({
                 key: departments.DepartmentName,
                 text: departments.DepartmentName,
                 selected: selectedDepartment.indexOf(status) > -1,

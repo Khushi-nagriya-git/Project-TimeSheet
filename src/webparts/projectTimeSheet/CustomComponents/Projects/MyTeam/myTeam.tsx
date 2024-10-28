@@ -174,7 +174,7 @@ const MyTeam = (props: {
               placeholder="All"
               selectedKey={selectedProject}
               onChange={handleProjectChange}
-              options={projectsData.map((project: any) => ({
+              options={projectsData .sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)).map((project: any) => ({
                 key: project.ProjectName,
                 text: project.ProjectName,
                 selected: selectedProject === project.ProjectName,

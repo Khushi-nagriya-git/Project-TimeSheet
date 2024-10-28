@@ -1,31 +1,5 @@
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  React,
-  useState,
-  useEffect,
-  FormComponent,
-  initialState,
-  CustomFormData,
-  ProjectStyle,
-  DeleteDialogBoxProps,
-  IProjectProps,
-  addProjects,
-  getProjectListData,
-  deleteProject,
-  updateUserRecords,
-  getJobListData,
-  ProjectsData,
-  projectsInitialState,
-  styled,
-  Button,
-  Grid,
-  ProjectHeader,
-  ProjectTable,
-  Alert,
-  DepartmentView,
-  MyTeam,
-  Box,
-} from "../../../../index";
+import { React, useState, useEffect, FormComponent, initialState, CustomFormData, ProjectStyle, DeleteDialogBoxProps,IProjectProps, addProjects,getProjectListData,deleteProject,updateUserRecords, getJobListData, ProjectsData, projectsInitialState, styled,Button,Grid,ProjectHeader, ProjectTable,Alert,DepartmentView,MyTeam,Box,} from "../../../../index";
 import { getDepartments } from "./Services";
 import { Drawer, IconButton } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -36,7 +10,6 @@ const DrawerContainer = styled(Drawer)({
   width: 500,
   flexShrink: 0,
 });
-
 const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [myDataActiveLink, setMyDataActiveLink] = useState<string>("Employee");
@@ -45,40 +18,26 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [deletedProjectId, setDeletedProjectId] = useState<number>(0);
   const [editProjectId, setEditProjectId] = useState<number>(0);
-  const [currentData, setCurrentData] = useState<CustomFormData>(
-    initialState.formData
-  );
+  const [currentData, setCurrentData] = useState<CustomFormData>(initialState.formData);
   const {projectsData,jobsData,setJobsData, setProjectsData} = useEmployeeTimeSheetContext();
-
-  
   const [deleteSuccessfullyAlert, setDeleteSuccessfullyAlert] = useState(false);
   const [addSuccessFullyAlert, setAddSuccessFullyAlert] = useState(false);
   const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
   const [alert, setAlert] = useState(false);
   const [selectedProjectName, setSelectedProjectName] = useState<string[]>([]);
-  const [selectedDepartmentName, setSelectedDepartmentName] = useState<
-    string[]
-  >([]);
+  const [selectedDepartmentName, setSelectedDepartmentName] = useState<string[]>([]);
   const [selectedStatusName, setSelectedStatusName] = useState<string[]>([]);
-  const [peoplePickerDefaultManager, setPeoplePickerDefaultManager] =
-    useState("");
-  const [
-    peoplePickerDefaultReportingManager,
-    setPeoplePickerDefaultReportingManager,
-  ] = useState("");
+  const [peoplePickerDefaultManager, setPeoplePickerDefaultManager] =useState("");
+  const [peoplePickerDefaultReportingManager,setPeoplePickerDefaultReportingManager ] = useState("");
   const [peoplePickerDefaultTeam, setPeoplePickerDefaultTeam] = useState("");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredProjects, setFilteredProjects] = useState<ProjectsData[]>(
-    projectsInitialState.projectsData
-  );
-  const [topNavigationMode, setTopNavigationMode] =
-    useState<string>("Employee");
+  const [filteredProjects, setFilteredProjects] = useState<ProjectsData[]>(projectsInitialState.projectsData);
+  const [topNavigationMode, setTopNavigationMode] = useState<string>("Employee");
   const [isJobAvailable, setIsJobAvailable] = useState<boolean>(false);
   const [departmentNames, setDepartmentNames] = useState();
   const [loading, setLoading] = useState(true);
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpen(open);
-  };
+  const toggleDrawer = (open: boolean) => () => { setDrawerOpen(open);};
+
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -156,13 +115,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
       setAddFormOpen(false);
       setAlert(true);
       setAddSuccessFullyAlert(true);
-      await getProjectListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setProjectsData,
-        props.loggedInUserDetails,
-        props.isUserAdmin
-      );
     } else if (mode === "edit") {
       await updateUserRecords(
         props.spHttpClient,
@@ -305,6 +257,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                     )}
                   </Grid>
                 </ProjectStyle.NavigationLinks>
+                
                 {myDataActiveLink === "Employee" && (
                   <>
                     {loading && (
@@ -316,57 +269,13 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
                           height: "100%",
                         }}
                       >
-                        <CircularProgress />
+                        <CircularProgress/>
                       </Box>
                     )}
                     {!loading && (
                       <>
-                        <ProjectHeader
-                          projectsData={projectsData}
-                          onProjectFilterChange={onProjectFilterChange}
-                          onDepartmentFilterChange={onDepartmentFilterChange}
-                          onProjectStatusChange={onProjectStatusChange}
-                          setSearchQuery={setSearchQuery}
-                          searchQuery={searchQuery}
-                          myDataActiveLink={myDataActiveLink}
-                          setFilteredProjects={setFilteredProjects}
-                          filteredProjects={filteredProjects}
-                          departmentNames={departmentNames}
-                        ></ProjectHeader>
-                        <ProjectTable
-                          projectsData={projectsData}
-                          selectedProjectName={selectedProjectName}
-                          selectedDepartmentName={selectedDepartmentName}
-                          selectedStatusName={selectedStatusName}
-                          projectProps={props}
-                          jobsData={jobsData}
-                          setIsOpen={setIsOpen}
-                          setDeletedProjectId={setDeletedProjectId}
-                          setEditProjectId={setEditProjectId}
-                          setDeleteAlert={setDeleteAlert}
-                          setMode={setMode}
-                          setAddFormOpen={setAddFormOpen}
-                          setCurrentData={setCurrentData}
-                          setPeoplePickerDefaultManager={
-                            setPeoplePickerDefaultManager
-                          }
-                          setPeoplePickerDefaultReportingManager={
-                            setPeoplePickerDefaultReportingManager
-                          }
-                          setPeoplePickerDefaultTeam={
-                            setPeoplePickerDefaultTeam
-                          }
-                          searchQuery={searchQuery}
-                          setFilteredProjects={setFilteredProjects}
-                          filteredProjects={filteredProjects}
-                          topNavigationMode={topNavigationMode}
-                          setIsJobAvailable={setIsJobAvailable}
-                          isUserReportingManager={props.isUserReportingManager}
-                          isUserProjectManager={props.isUserProjectManager}
-                          isUserAdmin={props.isUserAdmin}
-                          isUserProjectTeam={props.isUserProjectTeam}
-                          loggedInUserDetails={props.loggedInUserDetails}
-                        ></ProjectTable>
+                        <ProjectHeader projectsData={projectsData}onProjectFilterChange={onProjectFilterChange} onDepartmentFilterChange={onDepartmentFilterChange} onProjectStatusChange={onProjectStatusChange} setSearchQuery={setSearchQuery} searchQuery={searchQuery} myDataActiveLink={myDataActiveLink} setFilteredProjects={setFilteredProjects} filteredProjects={filteredProjects} departmentNames={departmentNames} ></ProjectHeader>
+                        <ProjectTable projectsData={projectsData} selectedProjectName={selectedProjectName} selectedDepartmentName={selectedDepartmentName} selectedStatusName={selectedStatusName} projectProps={props} jobsData={jobsData} setIsOpen={setIsOpen} setDeletedProjectId={setDeletedProjectId}setEditProjectId={setEditProjectId}setDeleteAlert={setDeleteAlert} setMode={setMode} setAddFormOpen={setAddFormOpen}   setCurrentData={setCurrentData} setPeoplePickerDefaultManager={ setPeoplePickerDefaultManager } setPeoplePickerDefaultReportingManager={ setPeoplePickerDefaultReportingManager }setPeoplePickerDefaultTeam={ setPeoplePickerDefaultTeam } searchQuery={searchQuery} setFilteredProjects={setFilteredProjects}  filteredProjects={filteredProjects} topNavigationMode={topNavigationMode}setIsJobAvailable={setIsJobAvailable} isUserReportingManager={props.isUserReportingManager} isUserProjectManager={props.isUserProjectManager} isUserAdmin={props.isUserAdmin} isUserProjectTeam={props.isUserProjectTeam} loggedInUserDetails={props.loggedInUserDetails} ></ProjectTable>
                       </>
                     )}
                   </>

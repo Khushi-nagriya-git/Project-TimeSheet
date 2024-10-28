@@ -42,7 +42,6 @@ export default function AppHeader(props: {
         src={imageUrl != "" ? imageUrl : require("../../assets/companyLogo.png")}
         alt=""
       />
-
       <Text block className={styles.bt_ah_HeaderText}>
         {props.title}
       </Text>

@@ -21,6 +21,7 @@ export interface CustomFormData {
     ReportingManagerPeoplePicker:any;
     ProjectTeamPeoplePicker:any;
     ProjectManagerPeoplePicker:any;
+    Attachments:any;
 }
 
 const initialFormData: CustomFormData = {
@@ -39,7 +40,8 @@ const initialFormData: CustomFormData = {
     projectStatus:"Not Started",
     ReportingManagerPeoplePicker:'',
     ProjectManagerPeoplePicker:'',
-    ProjectTeamPeoplePicker:''
+    ProjectTeamPeoplePicker:'',
+    Attachments:''
 };
 
 export const initialState = {

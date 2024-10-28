@@ -18,12 +18,10 @@ $Font: "Poppins", sans-serif;
 
 .bt_ah_CompanyLogo {
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   width: 200px;
   margin: 0 0 0 20px;
 }
-
-
 
 .bt_ah_HeaderText {
   width: 100%;

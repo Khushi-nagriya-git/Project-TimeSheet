@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Box,
-  PeoplePicker,
-  PrincipalType,
-  TextField,
-  useEffect,
-  useState,
-} from "../../../..";
+import {  Box,  PeoplePicker, PrincipalType, TextField, useEffect, useState } from "../../../..";
 import { Label } from "@fluentui/react-components";
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import { Alert, Button, CircularProgress } from "@mui/material";
@@ -198,14 +191,14 @@ const GeneralSettings = (props: {
         if (
           fileType !== "image" ||
           img.width > 500 ||
-          img.height > 500 ||
+          img.height > 300 ||
           img.width < 150 ||
           img.height < 150
         ) {
           setAttachmentError(
-            "Please upload an image of size between 150px and 500px."
+            "Please upload an image with a width between 150px and 500px, and a height between 200px and 300px ."
           );
-        } else {
+        } else { 
           setAttachmentError("");
           setFormData({
             ...formData,
@@ -399,7 +392,7 @@ const GeneralSettings = (props: {
               }}
               onClick={handleSubmitSave}
             >
-              Submit
+              Save
             </Button>
           </Box>
         )}

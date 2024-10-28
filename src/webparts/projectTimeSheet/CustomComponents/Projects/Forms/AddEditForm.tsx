@@ -1,27 +1,5 @@
-import {
-  React,
-  useState,
-  useEffect,
-  FormEvent,
-  Box,
-  Drawer,
-  CloseIcon,
-  PeoplePicker,
-  PrincipalType,
-  IFormProps,
-  IconButton,
-  CustomFormData,
-  ProjectManager,
-  initialState,
-  Stack,
-  TextField,
-  Dropdown,
-  Label,
-  IDropdownOption,
-  Modal,
-  DefaultButton,
-  PrimaryButton,
-} from "../../../../../index";
+import Tooltip from "@mui/material/Tooltip";
+import { React, useState,  useEffect,  FormEvent,  Box,  Drawer,  CloseIcon,  PeoplePicker, PrincipalType, IFormProps, IconButton, CustomFormData, ProjectManager, initialState, TextField, Dropdown, Label, IDropdownOption, DefaultButton,  PrimaryButton,} from "../../../../../index";
 
 const drawerStyle = {
   width: "700px",
@@ -39,18 +17,14 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   const { setAddFormOpen } = props;
   const [selectedOptionKey, setSelectedOptionKey] = useState<any>("");
   const [selectedDepartment, setSelectedDepartment] = useState<any>("");
-  const [statusSelectedOptionKey, setStatusSelectedOptionKey] =
-    useState<any>("");
-  const [formData, setFormData] = useState<CustomFormData>(
-    initialState.formData
-  );
+  const [statusSelectedOptionKey, setStatusSelectedOptionKey] = useState<any>("notStarted");
+  const [formData, setFormData] = useState<CustomFormData>( initialState.formData);
+  const [reportingManagerRequiredMessageShow , setReportingManagerRequiredMessageShow] = useState<boolean>(false);
+  const [projectManagerRequiredMessageShow , setProjectManagerRequiredMessageShow] = useState<boolean>(false);
+  const [projectTeamMessageShow , setProjectTeamMessageShow] = useState<boolean>(false);
   const [showCostFields, setShowCostFields] = useState(false);
-  const [showCostFieldsForProjectTeam, setShowCostFieldsForProjectTeam] =
-    useState(false);
-  const options: IDropdownOption[] = [
-    { key: "fixedCost", text: "Fixed Cost" },
-    { key: "resourceBased", text: "Resource Based" },
-  ];
+  const [showCostFieldsForProjectTeam, setShowCostFieldsForProjectTeam] =useState(false);
+  const options: IDropdownOption[] = [ { key: "fixedCost", text: "Fixed Cost" }, { key: "resourceBased", text: "Resource Based" },];
 
   const projectStatus: IDropdownOption[] = [
     { key: "notStarted", text: "Not Started" },
@@ -67,7 +41,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   );
 
   useEffect(() => {
-    if (props.mode === "edit" && props.initialData) {
+    if (props.mode === "edit" || props.mode === "View" && props.initialData) {
       setFormData(props.initialData);
       formData.projectTeam = props.initialData.projectTeam;
       formData.projectManager = props.initialData.projectManager;
@@ -100,7 +74,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       const updatedProjectManagers = formData.projectManager.map((manager) => ({
         ...manager,
         cost:
-          props.mode === "edit" &&
+          props.mode === "edit" || props.mode === "View" &&
           props.initialData.projectType === "Resource Based"
             ? manager.cost
             : 0,
@@ -115,7 +89,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       const updatedProjectTeam = formData.projectTeam.map((teamMember) => ({
         ...teamMember,
         cost:
-          props.mode === "edit" &&
+          props.mode === "edit" || props.mode === "View" &&
           props.initialData.projectType === "Resource Based"
             ? teamMember.cost
             : 0,
@@ -127,10 +101,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     }
   }, [showCostFields, showCostFieldsForProjectTeam]);
 
-  const handleChange = (
-    ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
-    newValue?: string
-  ) => {
+  const handleChange = ( ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
     const { name, value } = ev.currentTarget;
     if (name === "projectHours" && Number(value) < 0) {
       return;
@@ -145,10 +116,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     });
   };
 
-  const handleChangeDropDown = (
-    ev: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+  const handleChangeDropDown = (   ev: React.FormEvent<HTMLDivElement>,   option?: IDropdownOption ) => {
     const selectedValue = option?.text as string;
     setSelectedOptionKey(option?.key);
     if (selectedValue === "Resource Based") {
@@ -166,10 +134,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     });
   };
 
-  const handleChangeDepartmentDropDown = (
-    ev: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+  const handleChangeDepartmentDropDown = (  ev: React.FormEvent<HTMLDivElement>,  option?: IDropdownOption ) => {
     const selectedValue = option?.text as string;
     setSelectedDepartment(option?.key);
 
@@ -179,10 +144,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     });
   };
 
-  const handleChangeStatusDropDown = (
-    ev: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+  const handleChangeStatusDropDown = ( ev: React.FormEvent<HTMLDivElement>, option?: IDropdownOption ) => {
     const selectedValue = option?.text as string;
     setStatusSelectedOptionKey(option?.key);
     setFormData({
@@ -193,17 +155,31 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!formData.ReportingManager || formData.ReportingManagerPeoplePicker === '') {
+      setReportingManagerRequiredMessageShow(true); 
+      return; 
+    }
+    if (!formData.projectManager || formData.ProjectManagerPeoplePicker === '') {
+      setProjectManagerRequiredMessageShow(true); 
+      return; 
+    }
+    if(!formData.projectTeam || formData.ProjectTeamPeoplePicker === ''){
+      setProjectTeamMessageShow(true);
+      return;
+    }
     props.onSubmit(formData);
   };
 
   const getPeoplePickerReportingManager = (items: any[]) => {
     if (items && items.length > 0) {
+      setReportingManagerRequiredMessageShow(false);
       setFormData({
         ...formData,
         ReportingManager: items[0],
         ReportingManagerPeoplePicker: items,
       });
     } else {
+      setReportingManagerRequiredMessageShow(true);
       setFormData({
         ...formData,
         ReportingManager: [],
@@ -214,6 +190,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
   const getPeoplePickerProjectManager = (items: any[]) => {
     if (items && items.length > 0) {
+      setProjectManagerRequiredMessageShow(false);
       const updatedProjectManagers: ProjectManager[] = items.map((item) => ({
         name: item.text,
         email: item.loginName.split("|")[2],
@@ -226,6 +203,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
         ProjectManagerPeoplePicker: items,
       });
     } else {
+      setProjectManagerRequiredMessageShow(true);
       setFormData({
         ...formData,
         projectManager: [],
@@ -237,6 +215,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
   const getPeoplePickerProjectTeam = (items: any[]) => {
     if (items && items.length > 0) {
+      setProjectTeamMessageShow(false);
       const updatedProjectTeam: ProjectManager[] = items.map((item) => ({
         name: item.text,
         cost: 0,
@@ -249,11 +228,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
         ProjectTeamPeoplePicker: items,
       });
     } else {
+      setProjectTeamMessageShow(true);
       setFormData({
         ...formData,
         projectTeam: [],
         ProjectTeamPeoplePicker: [],
       });
+
       setShowCostFieldsForProjectTeam(false);
     }
   };
@@ -282,12 +263,13 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
   const handleChangeAttachment = (ev: React.FormEvent<HTMLInputElement>) => {
     const target = ev.currentTarget as HTMLInputElement & { files: FileList };
-    const selectedFile = target.files[0];
+    const filesArray = Array.from(target.files || []);
     setFormData({
       ...formData,
-      attachment: selectedFile,
+      attachment: filesArray,
     });
   };
+  
 
   const handleCancel = () => {
     setAddFormOpen(false);
@@ -314,6 +296,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           alignItems: "center",
           position: "fixed",
           zIndex: 999,
+          
         }}
       >
         <Label
@@ -333,15 +316,10 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       </div>
 
       <Box
-        sx={{
-          ...drawerStyle,
-          overflowY: "auto",
-          marginTop: "60px", // height of the fixed header
-          marginBottom: "60px", // height of the fixed footer
-        }}
-      >
+        sx={{ ...drawerStyle,  overflowY: "auto", marginTop: "60px",  marginBottom: "60px",  }} >
         <form onSubmit={handleSubmit}>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <Box sx={{pointerEvents: props.mode === "View" ? "none" : "auto", }}>
+          <div style={{ display: "flex", gap: "10px" , }}>
             <TextField
               label="Project Name"
               name="projectName"
@@ -361,7 +339,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           </div>
           <div style={{ display: "flex", gap: "10px" }}>
             <TextField
-              label="Project Cost"
+              label="Project Cost($)"
               type="number"
               name="projectCost"
               value={formData.projectCost?.toString()}
@@ -417,7 +395,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 showtooltip={true}
                 ensureUser={true}
                 defaultSelectedUsers={
-                  props.mode === "edit"
+                  props.mode === "edit" || props.mode === "View" 
                     ? [props.peoplePickerDefaultReportingManager]
                     : [""]
                 }
@@ -426,8 +404,12 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 principalTypes={[PrincipalType.User]}
                 groupName=""
               />
+                {reportingManagerRequiredMessageShow && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                Reporting Manager is required.
+              </span>
+              )}
             </div>
-           
           </div>
 
           <div style={{ display: "flex", gap: "10px" }}>
@@ -443,7 +425,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 showtooltip={true}
                 ensureUser={true}
                 defaultSelectedUsers={
-                  props.mode === "edit"
+                  props.mode === "edit" || props.mode === "View" 
                     ? [props.peoplePickerDefaultManager]
                     : [""]
                 }
@@ -452,11 +434,16 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 principalTypes={[PrincipalType.User]}
                 groupName=""
               />
+               {projectManagerRequiredMessageShow && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                Project Manager is required.
+              </span>
+              )}
               {showCostFields &&
                 formData?.projectManager?.map((manager, index) => (
                   <TextField
                     key={index}
-                    label={`RPH for ${manager.name}`}
+                    label={`RPH for ${manager.name} ($)`}
                     type="number"
                     value={manager.cost.toString()}
                     onChange={(e, newValue) =>
@@ -479,7 +466,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                   showtooltip={true}
                   ensureUser={true}
                   defaultSelectedUsers={
-                    props.mode === "edit" ? props.peoplePickerDefaultTeam : ""
+                    props.mode === "edit" || props.mode === "View"  ? props.peoplePickerDefaultTeam : ""
                   }
                   onChange={getPeoplePickerProjectTeam}
                   resolveDelay={300}
@@ -487,11 +474,16 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                   groupName=""
                 />
               </div>
+              {projectTeamMessageShow && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                Project Team is required.
+              </span>
+              )}
               {showCostFieldsForProjectTeam &&
                 formData.projectTeam.map((manager, index) => (
                   <TextField
                     key={index}
-                    label={`RPH for ${manager.name}`}
+                    label={`RPH for ${manager.name}($)`}
                     type="number"
                     value={manager.cost.toString()}
                     onChange={(e, newValue) =>
@@ -530,52 +522,84 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           <input
             type="file"
             name="attachment"
+            multiple
             id="attachment"
             onChange={handleChangeAttachment}
             style={{ display: "block" , marginTop:"10px"}}
           />
-          </div>
-          </div>
-          <div
-            style={{
-              padding: "5px",
-              width: "100%",
-              display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              position: "fixed",
-              bottom: 0,
-              zIndex: 999,
-              gap: "10px",
-            }}
-          >
-            <PrimaryButton
-              type="submit"
-              text={props.mode === "edit" ? "Update" : "Submit"}
-              style={{
-                backgroundColor: "#023E8A",
-                color: "#fff",
-                height: "35px",
-                borderRadius: "5px",
-                marginBottom: "5px",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              }}
-            />
+        <ul>
+  {props.initialData.attachment && props.initialData.attachment.length > 0 ? (
+    props.initialData.attachment.map((file: { ServerRelativeUrl: string, FileName: string }, index: number) => {
+      const truncatedFileName = file.FileName.length > 35 
+        ? file.FileName.slice(0, 35) + '...' 
+        : file.FileName;
 
-            <DefaultButton
-              onClick={handleCancel}
-              text="Cancel"
-              style={{
-                color: "rgb(50, 49, 48)",
-                backgroundColor: "white",
-                height: "35px",
-                border: "1px solid grey",
-                borderRadius: "5px",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-                marginBottom: "5px",
-              }}
-            />
+      return (
+        <li key={index}>
+          <Tooltip title={file.FileName} arrow>
+            <a 
+              href={file.ServerRelativeUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ cursor: 'pointer' }}
+            >
+              {truncatedFileName}
+            </a>
+          </Tooltip>
+        </li>
+      );
+    })
+  ) : (
+    <li>No attachments available</li>
+  )}
+</ul>
           </div>
+          </div>
+
+          {props.mode !== "View" &&  (
+             <div
+             style={{
+               padding: "5px",
+               width: "100%",
+               display: "flex",
+               justifyContent: "flex-start",
+               alignItems: "center",
+               position: "fixed",
+               bottom: 0,
+               zIndex: 999,
+               gap: "10px",
+             }}
+           >
+             <PrimaryButton
+               type="submit"
+               text={props.mode === "edit" ? "Update" : "Submit"}
+               style={{
+                 backgroundColor: "#023E8A",
+                 color: "#fff",
+                 height: "35px",
+                 borderRadius: "5px",
+                 marginBottom: "5px",
+                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+               }}
+             />
+             <DefaultButton
+               onClick={handleCancel}
+               text="Cancel"
+               style={{
+                 color: "rgb(50, 49, 48)",
+                 backgroundColor: "white",
+                 height: "35px",
+                 border: "1px solid grey",
+                 borderRadius: "5px",
+                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+                 marginBottom: "5px",
+               }}
+             />
+           </div>
+          )}
+         
+
+          </Box>
         </form>
       </Box>
     </Drawer>

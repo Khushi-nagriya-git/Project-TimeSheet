@@ -61,10 +61,10 @@ const JobForm: React.FC<IJobFormProps> = (props) => {
 
         // Parse and map ReportingManager data
         const reportingManager = JSON.parse(project.ReportingManager)[0];
-        if (!optionsMap.has(reportingManager.id)) {
-          optionsMap.set(reportingManager.id, {
-            key: reportingManager.id,
-            text: reportingManager.text, // Ensure this is the correct property
+        if (!optionsMap.has(reportingManager?.id)) {
+          optionsMap.set(reportingManager?.id, {
+            key: reportingManager?.id,
+            text: reportingManager?.text, // Ensure this is the correct property
           });
         }
 
