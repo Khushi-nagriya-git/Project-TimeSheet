@@ -148,12 +148,13 @@ export const addProjects = async ( data: CustomFormData, absoluteURL: string, sp
         return;
       }
     }
-  
   }
 };
 
-export const handleUploadAttachment = async ( itemId: number, file: File, absoluteURL: string, spHttpClient: SPHttpClient) => {
-  const attachmentURL = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})/AttachmentFiles/add(FileName='${file.name}')`;
+export const handleUploadAttachment = async ( itemId: number, file: any, absoluteURL: string, spHttpClient: SPHttpClient) => {
+  let name = file.name? file.name : file.FileName;
+  name = file.FileName? file.FileName : file.name
+  const attachmentURL = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})/AttachmentFiles/add(FileName='${name}')`;
   const options: ISPHttpClientOptions = {
     body: file,
     headers: {
@@ -165,44 +166,61 @@ export const handleUploadAttachment = async ( itemId: number, file: File, absolu
   return spHttpClient.post(attachmentURL, SPHttpClient.configurations.v1, options);
 };
 
-export const deleteProject = async ( absoluteURL: string, spHttpClient: SPHttpClient, projectId: number, setProjectsData: React.Dispatch<React.SetStateAction<any>>,) => {
+const getAttachments = async (absoluteURL: string, itemId: number, spHttpClient: any) => {
+  const getAttachmentsEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})/AttachmentFiles`;
   try {
-    // First, get the internal ID based on the ProjectId
-    const getResponse = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items?$filter=ProjectId eq ${projectId}`,
-      SPHttpClient.configurations.v1
-    );
-    if (getResponse.ok) {
-      const data = await getResponse.json();
-      const items = data.value;
-      if (items.length === 0) {
-        console.error("Item does not exist. It may have been deleted by another user.");
-        return;
+      const response = await spHttpClient.get(getAttachmentsEndpoint, SPHttpClient.configurations.v1);
+      if (!response.ok) {
+          throw new Error(`Failed to fetch attachments: ${response.statusText}`);
       }
-      const internalId = items[0].ID;
-      // Then, delete the item using the internal ID
-      const deleteResponse = await spHttpClient.post(
-        `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${internalId})`,
-        SPHttpClient.configurations.v1,
-        {
-          headers: {
-            "X-HTTP-Method": "DELETE",
-            "IF-MATCH": "*"
-          }
-        }
-      );
-      if (deleteResponse.ok) {
-        // Refresh project data after deletion
-      } else {
-        console.error("Failed to delete project. Status:", deleteResponse.status);
-      }
-    } else {
-      console.error("Failed to fetch item. Status:", getResponse.status);
-    }
+      const data = await response.json();
+      return data.value; 
   } catch (error) {
-    console.error("Error deleting project:", error);
+      console.error('Error fetching attachments:', error); // Log error for debugging
+      return []; // Return empty array in case of error
   }
 };
+
+const deleteAllAttachments = async (absoluteURL: string, itemId: number, spHttpClient: any) => {
+  try {
+    const attachments = await getAttachments(absoluteURL, itemId, spHttpClient);
+    if (attachments.length === 0) {
+      console.warn(`No attachments found for item ID: ${itemId}`);
+      return true; 
+    }
+
+    for (let i=0;i<attachments.length;i++) {
+      const deleteEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${itemId})/AttachmentFiles('${encodeURIComponent(attachments[i].FileName)}')`;
+      try {
+        const response = await spHttpClient.fetch(deleteEndpoint, SPHttpClient.configurations.v1, {
+          method: "POST", // Required to trigger SharePoint's POST-based DELETE
+          headers: {
+            "Accept": "application/json;odata=verbose",
+            "X-HTTP-Method": "DELETE", // Using SharePoint-specific header for deletion
+            "IF-MATCH": "*", // Match any etag
+          },
+        });
+
+        if (response.ok) {
+          throw new Error(`Failed to delete attachment ${attachments[i].FileName}: ${response.statusText}`);
+        }
+
+        console.log(`Successfully deleted attachment: ${attachments[i].FileName}`); // Log successful deletion
+      } catch (error) {
+        console.error(`Error deleting attachment ${attachments[i].FileName}:`, error); // Log error for debugging
+        return false; // Return false if any attachment fails to delete
+      }
+    }
+
+    return true; // Return true if all attachments are deleted successfully
+  } catch (error) {
+    console.error(`Error fetching or deleting attachments for item ${itemId}:`, error);
+    return false;
+  }
+};
+
+
+
 
 export async function updateUserRecords( spHttpClient: SPHttpClient, absoluteURL: string, projectId: number, updateformData: CustomFormData, setProjectsData: React.Dispatch<React.SetStateAction<any>>,setCurrentData:  React.Dispatch<React.SetStateAction<any>>,) {
   try {
@@ -262,6 +280,16 @@ export async function updateUserRecords( spHttpClient: SPHttpClient, absoluteURL
                   body: JSON.stringify(listItemData),
               });
               if (updateResponse.ok) {
+               let reponse = await deleteAllAttachments(absoluteURL, itemId, spHttpClient)
+                if (updateformData.attachment) {
+                  for(let i=0;i<updateformData.attachment.length;i++){
+                    const attachmentResponse = await handleUploadAttachment(itemId, updateformData.attachment[i], absoluteURL, spHttpClient);
+                    if (!attachmentResponse.ok) {
+                      console.error("Error uploading attachment");
+                      return;
+                    }
+                  }
+                }
                 setCurrentData(initialState.formData);
               } else {
                   console.log("Error updating item:", updateResponse.statusText);
@@ -276,3 +304,42 @@ export async function updateUserRecords( spHttpClient: SPHttpClient, absoluteURL
       console.log("Error fetching item:", error);
   }
 }
+
+export const deleteProject = async ( absoluteURL: string, spHttpClient: SPHttpClient, projectId: number, setProjectsData: React.Dispatch<React.SetStateAction<any>>,) => {
+  try {
+    // First, get the internal ID based on the ProjectId
+    const getResponse = await spHttpClient.get(
+      `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items?$filter=ProjectId eq ${projectId}`,
+      SPHttpClient.configurations.v1
+    );
+    if (getResponse.ok) {
+      const data = await getResponse.json();
+      const items = data.value;
+      if (items.length === 0) {
+        console.error("Item does not exist. It may have been deleted by another user.");
+        return;
+      }
+      const internalId = items[0].ID;
+      // Then, delete the item using the internal ID
+      const deleteResponse = await spHttpClient.post(
+        `${absoluteURL}/_api/web/lists/getbytitle('Projects')/items(${internalId})`,
+        SPHttpClient.configurations.v1,
+        {
+          headers: {
+            "X-HTTP-Method": "DELETE",
+            "IF-MATCH": "*"
+          }
+        }
+      );
+      if (deleteResponse.ok) {
+        // Refresh project data after deletion
+      } else {
+        console.error("Failed to delete project. Status:", deleteResponse.status);
+      }
+    } else {
+      console.error("Failed to fetch item. Status:", getResponse.status);
+    }
+  } catch (error) {
+    console.error("Error deleting project:", error);
+  }
+};

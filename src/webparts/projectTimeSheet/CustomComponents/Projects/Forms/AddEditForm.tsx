@@ -1,5 +1,6 @@
 import Tooltip from "@mui/material/Tooltip";
 import { React, useState,  useEffect,  FormEvent,  Box,  Drawer,  CloseIcon,  PeoplePicker, PrincipalType, IFormProps, IconButton, CustomFormData, ProjectManager, initialState, TextField, Dropdown, Label, IDropdownOption, DefaultButton,  PrimaryButton,} from "../../../../../index";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const drawerStyle = {
   width: "700px",
@@ -23,6 +24,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   const [projectManagerRequiredMessageShow , setProjectManagerRequiredMessageShow] = useState<boolean>(false);
   const [projectTeamMessageShow , setProjectTeamMessageShow] = useState<boolean>(false);
   const [showCostFields, setShowCostFields] = useState(false);
+  const [attachments, setAttachments] = useState(props.initialData.attachment || []);
   const [showCostFieldsForProjectTeam, setShowCostFieldsForProjectTeam] =useState(false);
   const options: IDropdownOption[] = [ { key: "fixedCost", text: "Fixed Cost" }, { key: "resourceBased", text: "Resource Based" },];
 
@@ -168,6 +170,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       return;
     }
     props.onSubmit(formData);
+    setAttachments([]);
   };
 
   const getPeoplePickerReportingManager = (items: any[]) => {
@@ -264,17 +267,30 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   const handleChangeAttachment = (ev: React.FormEvent<HTMLInputElement>) => {
     const target = ev.currentTarget as HTMLInputElement & { files: FileList };
     const filesArray = Array.from(target.files || []);
+    const updatedAttachments = [...attachments, ...filesArray];
+    setAttachments(updatedAttachments);
     setFormData({
       ...formData,
-      attachment: filesArray,
+      attachment: updatedAttachments,
     });
   };
   
 
+  // Handle removing an attachment
+  const handleDeleteAttachment = (index: number) => {
+    const updatedAttachments = attachments.filter((_: any, i: number) => i !== index);
+    setAttachments(updatedAttachments);
+    setFormData({
+      ...formData,
+      attachment: updatedAttachments,
+    });
+  };
+
   const handleCancel = () => {
     setAddFormOpen(false);
+    setAttachments([])
     props.initialData({});
-    setFormData( initialState.formData);
+    setFormData(initialState.formData);
     setShowCostFields(false);
   };
 
@@ -302,7 +318,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
         <Label
           style={{ fontSize: "20px", fontWeight: "600", marginLeft: "13px", color:"#fff"}}
         >
-          {props.mode === "edit" ? "Edit Project" : "Add Project"}
+          {props.mode === "edit" ? "Edit Project" : props.mode === "View" ? "View Project details" : "Add Project"}
         </Label>
         <IconButton
           aria-label="close"
@@ -318,8 +334,8 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
       <Box
         sx={{ ...drawerStyle,  overflowY: "auto", marginTop: "60px",  marginBottom: "60px",  }} >
         <form onSubmit={handleSubmit}>
-          <Box sx={{pointerEvents: props.mode === "View" ? "none" : "auto", }}>
-          <div style={{ display: "flex", gap: "10px" , }}>
+        
+          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
             <TextField
               label="Project Name"
               name="projectName"
@@ -337,7 +353,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
               
             />
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto",  }}>
             <TextField
               label="Project Cost($)"
               type="number"
@@ -357,7 +373,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
           <Dropdown
               label="Department"
               selectedKey={selectedDepartment}
@@ -375,7 +391,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
 
           
           </div>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
           <Dropdown
               label="Project Status"
               selectedKey={statusSelectedOptionKey}
@@ -412,7 +428,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
           <div style={{ width: "321px" }}>
               <Label style={{ fontWeight: "600" }}>
                 Project Manager
@@ -495,15 +511,15 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
-          <TextField
+          <div style={{ display: "flex", gap: "10px" ,  }}>
+            <TextField
               label="Description"
               multiline
               autoAdjustHeight={false}
               name="description"
               value={formData.description}
               onChange={handleChange}
-              style={{ width: "320px", height: "20px" }}
+              style={{ width: "320px", height: "20px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}
               styles={{
                 fieldGroup: {
                   height: "100%",
@@ -517,43 +533,49 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
                 },
               }}
             />
-            <div>
-          <Label style={{ fontWeight: "600" }}>Attachment</Label>
-          <input
-            type="file"
-            name="attachment"
-            multiple
-            id="attachment"
-            onChange={handleChangeAttachment}
-            style={{ display: "block" , marginTop:"10px"}}
-          />
-        <ul>
-  {props.initialData.attachment && props.initialData.attachment.length > 0 ? (
-    props.initialData.attachment.map((file: { ServerRelativeUrl: string, FileName: string }, index: number) => {
-      const truncatedFileName = file.FileName.length > 35 
-        ? file.FileName.slice(0, 35) + '...' 
-        : file.FileName;
+          <div>
+    <Label style={{ fontWeight: '600' }}>Attachment</Label>
+    <input
+      type="file"
+      name="attachment"
+      multiple
+      id="attachment"
+      onChange={handleChangeAttachment}
+      style={{ display: 'block', marginTop: '10px',pointerEvents: props.mode === "View" ? "none" : "auto", }}
+    />
+    <ul>
+      {attachments && attachments.length > 0 ? (
+        attachments.map((file: { ServerRelativeUrl?: string; FileName?: string; name?: string }, index: number) => {
+          const fileName = file.FileName || file.name || 'Unnamed file';
+          const truncatedFileName = fileName.length > 30
+            ? fileName.slice(0, 30) + '...'
+            : fileName;
 
-      return (
-        <li key={index}>
-          <Tooltip title={file.FileName} arrow>
-            <a 
-              href={file.ServerRelativeUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ cursor: 'pointer' }}
-            >
-              {truncatedFileName}
-            </a>
-          </Tooltip>
-        </li>
-      );
-    })
-  ) : (
-    <li>No attachments available</li>
-  )}
-</ul>
-          </div>
+          return (
+            <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+              <Tooltip title={file.FileName} arrow>
+                <a
+                  href={file.ServerRelativeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ cursor: 'pointer', marginRight: '10px' }}
+                >
+                  {truncatedFileName}
+                </a>
+              </Tooltip>
+              {props.mode !== "View" && (
+                <IconButton style={{ marginLeft: '5px' }} onClick={() => handleDeleteAttachment(index)} aria-label="delete" size="small">
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              )}
+            </li>
+          );
+        })
+      ) : (
+        <li>No attachments available</li>
+      )}
+    </ul>
+  </div>
           </div>
 
           {props.mode !== "View" &&  (
@@ -597,9 +619,6 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
              />
            </div>
           )}
-         
-
-          </Box>
         </form>
       </Box>
     </Drawer>

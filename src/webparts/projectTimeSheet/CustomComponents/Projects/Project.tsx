@@ -124,6 +124,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
         setProjectsData,
         setCurrentData
       );
+       setAddFormOpen(false);
       await getProjectListData(
         props.absoluteURL,
         props.spHttpClient,
@@ -131,7 +132,6 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
         props.loggedInUserDetails,
         props.isUserAdmin
       );
-      setAddFormOpen(false);
       setAlert(true);
       setEditSuccessFullyAlert(true);
       setCurrentData(initialState.formData);

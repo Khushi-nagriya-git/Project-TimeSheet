@@ -13,6 +13,7 @@ const DepartmentSetting = (props: {
   const [departmentName, setDepartment] = useState("");
   const [alert, setAlert] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
   const [departmentListData, setDepartmentListData] = useState([]);
   let count = 0;
 
@@ -51,6 +52,10 @@ const DepartmentSetting = (props: {
   };
 
   const addDepartment = async () => {
+    if (!departmentName.trim()) {
+      setErrorMessage('Please enter a department name'); 
+      return;
+    }
     const listItemData = {
       __metadata: { type: "SP.Data.DepartmentsListItem" },
       DepartmentName: departmentName,
@@ -80,6 +85,7 @@ const DepartmentSetting = (props: {
         setDepartmentListData,
         "DepartmentScreen"
       );
+      setErrorMessage('');
       setAlert(true);
       setDepartment("");
     }
@@ -194,6 +200,8 @@ const DepartmentSetting = (props: {
               name="departmentName"
               value={departmentName}
               onChange={handleChange}
+              required
+              errorMessage={errorMessage}
               style={{ width: "765px" }}
             />
           </div>
