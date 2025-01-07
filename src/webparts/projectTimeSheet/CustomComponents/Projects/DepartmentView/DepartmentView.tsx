@@ -5,24 +5,15 @@ const DepartmentView = (props: { projectsData: any; projectProps: any; selectedP
   useEffect(() => {
     let filteredProjects = props.projectsData;
     if (props.selectedProjectName.length > 0) {
-      filteredProjects = filteredProjects.filter(
-        (project: { ProjectName: string }) =>
-        props.selectedProjectName.includes(project.ProjectName)
-      );
+      filteredProjects = filteredProjects.filter((project: { ProjectName: string }) =>props.selectedProjectName.includes(project.ProjectName) );
     }
 
     if (props.selectedStatusName.length > 0) {
-      filteredProjects = filteredProjects.filter(
-        (project: { ProjectStatus: string }) =>
-        props.selectedStatusName.includes(project.ProjectStatus)
-      );
+      filteredProjects = filteredProjects.filter( (project: { ProjectStatus: string }) => props.selectedStatusName.includes(project.ProjectStatus));
     }
 
     if (props.selectedDepartmentName.length > 0) {
-      filteredProjects = filteredProjects.filter(
-        (project: { DepartmentsORTeam: string }) =>
-        props.selectedDepartmentName.includes(project.DepartmentsORTeam)
-      );
+      filteredProjects = filteredProjects.filter( (project: { DepartmentsORTeam: string }) => props.selectedDepartmentName.includes(project.DepartmentsORTeam) );
     }
 
     if (props.searchQuery.trim() !== "") {
@@ -49,14 +40,14 @@ const DepartmentView = (props: { projectsData: any; projectProps: any; selectedP
   };
 
   return (
-    <Box sx={{height: "calc(100vh - 300px)", marginTop: "-15px", overflow: "auto", }}>
+    <Box className={departmentView.MainBox}>
       <TableContainer>
         <Table size="small" stickyHeader aria-label="sticky table">
           <TableHead className={departmentView.tableHeadcss}>
             <TableRow>
-              <TableCell sx={{ fontWeight: "600",backgroundColor: "#023E8A", height: "20px",fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff", }} > Project Name </TableCell>
-              <TableCell sx={{  fontWeight: "600", backgroundColor: "#023E8A", height: "20px",fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff", }} > Department </TableCell>
-              <TableCell sx={{ fontWeight: "600", backgroundColor: "#023E8A", height: "20px", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",  color:"#fff", }}> Status </TableCell>
+              <TableCell className={departmentView.HeaderCell}> Project Name </TableCell>
+              <TableCell className={departmentView.HeaderCell}> Department </TableCell>
+              <TableCell className={departmentView.HeaderCell}> Status </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -68,14 +59,14 @@ const DepartmentView = (props: { projectsData: any; projectProps: any; selectedP
                   <TableRow key={project.ProjectId}>
                     <TableCell>{project.ProjectName}</TableCell>
                     <TableCell>{project.DepartmentsORTeam}</TableCell>
-                    <TableCell align="left" sx={{ height: "10px" }}> <Box sx={{borderRadius: "20px", border: `2px solid ${borderColor}`, height: "22px", width: "100px", display: "flex",alignItems: "center",justifyContent: "center", fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",}} > {project.ProjectStatus}</Box> </TableCell>
+                    <TableCell align="left" sx={{ height: "10px" }}> <Box className={departmentView.StatusColumn} sx={{ border: `2px solid ${borderColor}`}} > {project.ProjectStatus}</Box> </TableCell>
                   </TableRow>
                 );
               })
             ) : (
               <TableRow>
                 <TableCell colSpan={9}>
-                  <Box sx={{ textAlign: "center", fontWeight: "600", fontFamily:  "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} > No data found </Box>
+                  <Box className={departmentView.noDataFound}> No data found </Box>
                 </TableCell>
               </TableRow>
             )}

@@ -3,7 +3,7 @@
   "solution": {
     "name": "project-time-sheet-client-side-solution",
     "id": "f76875c2-1f69-45a6-92cb-2371973c4a92",
-    "version": "1.0.0.0",
+    "version": "1.0.0.5",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,11 +30,7 @@
         "title": "project-time-sheet Feature",
         "description": "The feature that activates elements of the project-time-sheet solution.",
         "id": "6d032cf1-4fdb-4a67-b307-3fe596781912",
-        "version": "1.0.0.0",
-        "assets": {
-          "elementManifests": ["elements.xml"],
-          "elementFiles": [ "Projects.xml" , "Task.xml" , "Configurations.xml" , "TimeLogs.xml" , "Departments.xml"]
-        }
+        "version": "1.0.0.5"
       }
     ]
   },

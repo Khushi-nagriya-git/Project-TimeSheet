@@ -1,0 +1,141 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.SearchBOx {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ResetIcon {
+  width: 22px !important;
+  height: 22px !important;
+  cursor: pointer !important;
+}
+
+.fontWeight {
+  font-weight: 600 !important;
+}
+
+.fontFamily {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.projectTableBox {
+  overflow-y: auto !important;
+  height: calc(100vh - 300px) !important;
+  margin-top: -15px !important;
+}
+
+.ProjectTableInnerBox {
+  height: 100% !important;
+  overflow: auto !important;
+}
+
+.ProjectTableRow {
+  height: 40px !important;
+  background: #023e8a !important;
+}
+
+.ProjectTableCells {
+  padding: 4px 16px !important;
+  font-weight: 600 !important;
+  position: sticky !important;
+  top: 0 !important;
+  background-color: #023e8a !important;
+  z-index: 1 !important;
+  color: #fff !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.noDataMessage {
+  text-align: center !important;
+  font-weight: 600 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.TableRowHeader {
+  height: 50px !important;
+  cursor: pointer !important;
+  background-color: #fff !important;
+}
+
+.ParentTableCell {
+  height: 10px !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.AvatarBox {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+.Avatar {
+  margin-right: 8px !important;
+  height: 30px !important;
+  width: 30px !important;
+}
+
+.StatusBox {
+  border-radius: 20px !important;
+  height: 22px !important;
+  width: 100px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.taskIcon {
+  width: 26px !important;
+  height: 26px !important;
+  cursor: pointer !important;
+}
+
+.editIcon {
+  width: 21px !important;
+  height: 21px !important;
+  cursor: pointer !important;
+  align-items: left !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.deleteIcon {
+  width: 23px !important;
+  height: 23px !important;
+  cursor: pointer !important;
+  margin-left: 5px !important;
+}
+
+.IconBox {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+.ChildTableHeader {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  color: #03045e !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.ChildTableRow {
+  background-color: #0077b6 !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.ChildTableCell {
+  background-color: #0077b6 !important;
+  font-weight: 600 !important;
+  color: #fff !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.ChildTableAvatar {
+  margin-right: 8px !important;
+  height: 25px !important;
+  width: 25px !important;
+}

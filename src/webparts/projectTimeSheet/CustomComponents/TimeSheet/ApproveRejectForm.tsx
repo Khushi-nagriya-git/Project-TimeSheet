@@ -1,94 +1,46 @@
 import * as React from "react";
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Grid,
-  IconButton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Tooltip,
-} from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Grid, IconButton, Table,TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Tooltip,} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { Label } from "@fluentui/react/lib/Label";
 import { Dropdown } from "@fluentui/react/lib/components/Dropdown";
-import { TextField } from "@fluentui/react";
 import { updateRecords } from "../TimeLogs/Services";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
-import { useEffect, useState } from "react";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import formStyle from "./TimeSheet.module.scss";
+import styles from "./TimeSheet.module.scss";
 
-const TimeSheetForm = ({
-  open,
-  onClose,
-  selectedData,
-  absoluteURL,
-  spHttpClient,
-  setUpdateStatus,
-  updateStatus,
-  TableType,
-  handleTabChange,
-  setApprovedAlert,
-  setAlert,
-  setRejectAlert,
-  setSelected,
-  selected,
-}: {
-  open: boolean;
-  onClose: () => void;
-  handleTabChange: (tab: string) => Promise<void>;
-  selectedData: any[];
-  absoluteURL: any;
-  spHttpClient: any;
-  selected: any;
-  setSelected: React.Dispatch<React.SetStateAction<any>>;
-  setUpdateStatus: React.Dispatch<React.SetStateAction<any>>;
-  setApprovedAlert: React.Dispatch<React.SetStateAction<any>>;
-  setRejectAlert: React.Dispatch<React.SetStateAction<any>>;
-  setAlert: React.Dispatch<React.SetStateAction<any>>;
-  updateStatus: any;
-  TableType: any;
-}) => {
+const TimeSheetForm = ({ open, onClose, selectedData, absoluteURL, spHttpClient, setUpdateStatus, updateStatus, TableType, handleTabChange, setApprovedAlert,setAlert, setRejectAlert, setSelected, selected,allTimeLogsData, startDateOfWeek, projectsData}: { open: boolean;  onClose: () => void; handleTabChange: (tab: string) => Promise<void>; selectedData: any[]; absoluteURL: any; spHttpClient: any; selected: any; projectsData:any; setSelected: React.Dispatch<React.SetStateAction<any>>; setUpdateStatus: React.Dispatch<React.SetStateAction<any>>; setApprovedAlert: React.Dispatch<React.SetStateAction<any>>;allTimeLogsData:any; setRejectAlert: React.Dispatch<React.SetStateAction<any>>; setAlert: React.Dispatch<React.SetStateAction<any>>; updateStatus: any; TableType: any; startDateOfWeek:any}) => {
+ 
   const [currentWeek, setCurrentWeek] = React.useState(new Date());
   const TaskTypeOptions = ["Billable", "Non Billable"];
   const statusOptions = ["Pending", "Approved", "Rejected"];
   const [order, setOrder] = React.useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = React.useState<string>("ProjectName");
-  const [projectFilter, setProjectFilter] = React.useState<string | undefined>(
-    undefined
-  );
-  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(
-    undefined
-  );
-  const [taskTypeFilter, setTaskTypeFilter] = React.useState<
-    string | undefined
-  >(undefined);
+  const [projectFilter, setProjectFilter] = React.useState<string | undefined>( undefined  );
+  const [statusFilter, setStatusFilter] = React.useState<string | undefined>(  undefined );
+  const [taskTypeFilter, setTaskTypeFilter] = React.useState<   string | undefined >(undefined);
+  let weekDates: any[] = [];
+  let weekColumns: any[] = [];
+  let groupedData;
 
   if (!selectedData || selectedData.length === 0) return null;
 
-  const convertMinutesToHoursAndMinutes = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours} H ${mins} M`;
-  };
-
   const getStartOfWeek = (date: Date) => {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
+    const day = date.getDay(); 
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); 
+    const startOfWeek = new Date(date);
+    startOfWeek.setDate(diff);  
+    return startOfWeek; 
   };
-
+  
+  const getWeekColumns = (startDate: any) => {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i); 
+      return d;
+    });
+  };
+  
   const getWeekDates = (date: Date) => {
     const startOfWeek = getStartOfWeek(new Date(date));
     return Array.from({ length: 7 }, (_, i) => {
@@ -96,6 +48,76 @@ const TimeSheetForm = ({
       d.setDate(d.getDate() + i);
       return d;
     });
+  };
+
+  if(TableType === "TeamTimeSheet"){
+    weekDates = getWeekDates(currentWeek);  
+  }else{
+    weekColumns = getWeekColumns(startDateOfWeek);
+  }
+
+  if(TableType === "TeamTimeSheet"){
+    weekDates = getWeekDates(currentWeek);  
+    groupedData = selectedData.reduce((acc: any, log: any) => {
+      const logDate = new Date(log.Created);
+  
+      if (logDate >= weekDates[0] && logDate <= weekDates[6]) {
+        const key = `${log.ProjectName}-${log.JobName}`;
+  
+        if (!acc[key]) {
+          acc[key] = {
+            ProjectName: log.ProjectName,
+            JobName: log.JobName,
+            Status: log.Status,
+            BillableStatus: log.BillableStatus,
+            LoggedHoursByDay: {},
+            TimelogsId: log.TimelogsId,
+          };
+        }
+  
+        const logDateString = logDate.toLocaleDateString("en-US");
+        acc[key].LoggedHoursByDay[logDateString] = (acc[key].LoggedHoursByDay[logDateString] || 0) + log.LoggedHours;
+      }
+  
+      return acc;   
+    }, {});
+  }else{
+    groupedData = selectedData.reduce((acc: any, log: any) => {
+      const logDate = new Date(log.Created);
+  
+      if (logDate >= weekColumns[0] && logDate <= weekColumns[6]) {
+        const key = `${log.ProjectName}-${log.JobName}`;
+  
+        if (!acc[key]) {
+          acc[key] = {
+            ProjectName: log.ProjectName,
+            JobName: log.JobName,
+            Status: log.Status,
+            BillableStatus: log.BillableStatus,
+            LoggedHoursByDay: {},
+            TimelogsId: log.TimelogsId,
+          };
+        }
+  
+        const logDateString = logDate.toLocaleDateString("en-US");
+        acc[key].LoggedHoursByDay[logDateString] = (acc[key].LoggedHoursByDay[logDateString] || 0) + log.LoggedHours;
+      }
+      return acc;   
+    }, {});
+  }
+
+  const groupedDataArray: TimeLogsData[] = Object.values(groupedData);
+  const formatDate = (date?: Date): string => {
+    if (date) {
+      return date.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "numeric", }) .replace(",", "");
+    }
+    return "N/A";
+  };
+
+  const convertMinutesToHoursAndMinutes = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours} H ${mins} M`;
   };
 
   const handlePreviousWeek = () => {
@@ -113,47 +135,6 @@ const TimeSheetForm = ({
       return nextWeek;
     });
   };
-
-  const weekDates = getWeekDates(currentWeek);
-  const formatDate = (date?: Date): string => {
-    if (date) {
-      return date
-        .toLocaleDateString("en-US", {
-          weekday: "short",
-          day: "2-digit",
-          month: "numeric",
-        })
-        .replace(",", "");
-    }
-    return "N/A";
-  };
-
-  const groupedData = selectedData.reduce((acc: any, log: any) => {
-    const logDate = new Date(log.Created);
-
-    if (logDate >= weekDates[0] && logDate <= weekDates[6]) {
-      const key = `${log.ProjectName}-${log.JobName}`;
-
-      if (!acc[key]) {
-        acc[key] = {
-          ProjectName: log.ProjectName,
-          JobName: log.JobName,
-          Status: log.Status,
-          BillableStatus: log.BillableStatus,
-          LoggedHoursByDay: {},
-          TimelogsId: log.TimelogsId,
-        };
-      }
-
-      const logDateString = logDate.toLocaleDateString("en-US");
-      acc[key].LoggedHoursByDay[logDateString] =
-        (acc[key].LoggedHoursByDay[logDateString] || 0) + log.LoggedHours;
-    }
-
-    return acc;
-  }, {});
-
-  const groupedDataArray: TimeLogsData[] = Object.values(groupedData);
 
   const handleRequestSort = (property: string) => {
     const isAsc = orderBy === property && order === "asc";
@@ -197,7 +178,6 @@ const TimeSheetForm = ({
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
 
@@ -212,19 +192,8 @@ const TimeSheetForm = ({
         }
       }
     }
-    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
-      ...timeLog,
-      Status: "Approved",
-    }));
-    await updateRecords(
-      spHttpClient,
-      absoluteURL,
-      "TimeLogforApproval",
-      0,
-      updatedTimeLogsData,
-      0,
-      setUpdateStatus
-    );
+    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({ ...timeLog, Status: "Approved",}));
+    await updateRecords(spHttpClient, absoluteURL, "TimeLogforApproval", 0, updatedTimeLogsData, 0, setUpdateStatus, allTimeLogsData);
     handleTabChange("TeamTimeSheet");
     onClose();
     setSelected([]);
@@ -241,19 +210,8 @@ const TimeSheetForm = ({
         }
       }
     }
-    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({
-      ...timeLog,
-      Status: "Rejected",
-    }));
-    await updateRecords(
-      spHttpClient,
-      absoluteURL,
-      "TimeLogforRejection",
-      0,
-      updatedTimeLogsData,
-      0,
-      setUpdateStatus
-    );
+    updatedTimeLogsData = updatedTimeLogsData.map((timeLog) => ({ ...timeLog,Status: "Rejected", }));
+    await updateRecords( spHttpClient, absoluteURL, "TimeLogforRejection", 0, updatedTimeLogsData,  0, setUpdateStatus , allTimeLogsData );
     handleTabChange("TeamTimeSheet");
     onClose();
     setSelected([]);
@@ -275,48 +233,34 @@ const TimeSheetForm = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Pending":
-        return "#9D9D9D";
+        return "#0077B6";
       case "Not Submitted":
         return "#007bff";
       case "Rejected":
-        return "#FFB6C1";
+        return "#F72585";
       case "Approved":
-        return "#65B741";
+        return "#41856A";
       default:
-        return "#9D9D9D";
+        return "#5C6B73";
     }
   };
 
-  const handleProjectFilterChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: any
-  ) => {
+  const handleProjectFilterChange = ( event: React.FormEvent<HTMLDivElement>, option?: any ) => {
     setProjectFilter(option?.key);
   };
 
-  const handleStatusFilterChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: any
-  ) => {
+  const handleStatusFilterChange = (  event: React.FormEvent<HTMLDivElement>,  option?: any ) => {
     setStatusFilter(option?.key);
   };
 
-  const handleTaskTypeFilterChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: any
-  ) => {
+  const handleTaskTypeFilterChange = (event: React.FormEvent<HTMLDivElement>, option?: any ) => {
     setTaskTypeFilter(option?.key);
   };
 
   const filteredData = sortedData.filter((log: any) => {
-    const matchesProject = projectFilter
-      ? log.ProjectName === projectFilter
-      : true;
+    const matchesProject = projectFilter ? log.ProjectName === projectFilter: true;
     const matchesStatus = statusFilter ? log.Status === statusFilter : true;
-    const matchesTaskType = taskTypeFilter
-      ? log.BillableStatus === taskTypeFilter
-      : true;
-
+    const matchesTaskType = taskTypeFilter ? log.BillableStatus === taskTypeFilter : true;
     return matchesProject && matchesStatus && matchesTaskType;
   });
 
@@ -330,378 +274,163 @@ const TimeSheetForm = ({
     <Dialog open={open} onClose={onClose} fullScreen>
       <DialogTitle sx={{ backgroundColor: "#0077B6", color: "white" }}>
         Time Sheet Details - {selectedData[0].Author.Title}
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => "#fff",
-          }}
-        >
+        <IconButton aria-label="close" onClick={onClose} sx={{ position: "absolute", right: 8, top: 8, color: (theme) => "#fff" }}>
           <CloseIcon />
         </IconButton>
       </DialogTitle>
       <DialogContent>
         <div>
-          <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
+          <Box className={formStyle.FilterBox} >
             <Grid container spacing={1} alignItems="center">
-              {/* <Grid item>
+              <Grid item>
                 <Label style={{ fontWeight: "600" }}>Projects</Label>
                 <Dropdown
                   placeholder="Select project"
                   selectedKey={projectFilter}
                   onChange={handleProjectFilterChange}
-                  options={TaskTypeOptions.map((status) => ({
-                    key: status,
-                    text: status,
+                  options={projectsData.sort((a:any, b:any) => a.ProjectName.localeCompare(b.ProjectName)).map((project:any) => ({
+                    key: project.ProjectId,
+                    text: project.ProjectName,
                   }))}
                   styles={{
-                    root: {
-                      width: 230,
-                      height: 60,
-                      marginBottom: 5,
-                      borderWidth: 2,
-                    },
-                    title: {
-                      textAlign: "left",
-                      lineHeight: "25px",
-                    },
-                    dropdownItemsWrapper: {
-                      maxHeight: 200,
-                    },
-                    dropdownItem: {
-                      height: 35,
-                      borderRadius: 5,
-                      width: 230,
-                      backgroundColor: "#ffffff",
-                    },
+                    root: { width: 230, height: 60, marginBottom: 5, borderWidth: 2},
+                    title: { textAlign: "left", lineHeight: "25px"},
+                    dropdownItemsWrapper: { maxHeight: 200 },
+                    dropdownItem: { height: 35, borderRadius: 5, width: 230, backgroundColor: "#ffffff", },
                   }}
                 />
-              </Grid> */}
+              </Grid>
 
               <Grid item>
                 <Label style={{ fontWeight: "600" }}>Status</Label>
-                <Dropdown
-                  placeholder="Select status"
-                  selectedKey={statusFilter}
-                  onChange={handleStatusFilterChange}
-                  options={statusOptions.map((status) => ({
-                    key: status,
-                    text: status,
-                  }))}
+                <Dropdown placeholder="Select status" selectedKey={statusFilter}  onChange={handleStatusFilterChange} options={statusOptions.map((status) => ({  key: status,  text: status, }))}
                   styles={{
-                    root: {
-                      width: 230,
-                      height: 60,
-                      marginBottom: 5,
-                      borderWidth: 2,
-                    },
-                    title: {
-                      textAlign: "left",
-                      lineHeight: "25px",
-                    },
-                    dropdownItemsWrapper: {
-                      maxHeight: 200,
-                    },
-                    dropdownItem: {
-                      height: 35,
-                      borderRadius: 5,
-                      width: 230,
-                      backgroundColor: "#ffffff",
-                    },
+                    root: { width: 230, height: 60, marginBottom: 5, borderWidth: 2 },
+                    title: { textAlign: "left", lineHeight: "25px" },
+                    dropdownItemsWrapper: { maxHeight: 200 },
+                    dropdownItem: { height: 35, borderRadius: 5, width: 230, backgroundColor: "#ffffff" },
                   }}
                 />
               </Grid>
 
               <Grid item>
                 <Label style={{ fontWeight: "600" }}>Task Type</Label>
-                <Dropdown
-                  placeholder="Select Task Type"
-                  selectedKey={taskTypeFilter}
-                  onChange={handleTaskTypeFilterChange}
-                  options={TaskTypeOptions.map((status) => ({
-                    key: status,
-                    text: status,
-                  }))}
+                <Dropdown  placeholder="Select Task Type" selectedKey={taskTypeFilter} onChange={handleTaskTypeFilterChange}  options={TaskTypeOptions.map((status) => ({  key: status,  text: status,  }))}
                   styles={{
-                    root: {
-                      width: 230,
-                      height: 60,
-                      marginBottom: 5,
-                      borderWidth: 2,
-                    },
-                    title: {
-                      textAlign: "left",
-                      lineHeight: "25px",
-                    },
-                    dropdownItemsWrapper: {
-                      maxHeight: 200,
-                    },
-                    dropdownItem: {
-                      height: 35,
-                      borderRadius: 5,
-                      width: 230,
-                      backgroundColor: "#ffffff",
-                    },
+                    root: { width: 230, height: 60, marginBottom: 5, borderWidth: 2},
+                    title: { textAlign: "left", lineHeight: "25px" },
+                    dropdownItemsWrapper: { maxHeight: 200 },
+                    dropdownItem: { height: 35, borderRadius: 5, width: 230, backgroundColor: "#ffffff" },
                   }}
                 />
               </Grid>
 
               <Grid item>
-                <IconButton
-                  aria-label="Reset"
-                  onClick={resetFilters}
-                  style={{
-                    height: 31,
-                    width: 31,
-                    marginLeft: 5,
-                    border: "1px solid rgba(0, 0, 0, 0.4)",
-                    borderRadius:"0px",
-                    backgroundColor: "#ffffff",
-                    marginBottom: 10,
-                    marginTop: 8,
-                  }}
-                >
-                  <img
-                    src={require("../../assets/return.png")}
-                    alt="return"
-                    style={{ width: "22px", height: "22px", cursor: "pointer" }}
-                  />
+                <IconButton  aria-label="Reset" onClick={resetFilters} style={{  height: 31,  width: 31, marginLeft: 5,  border: "1px solid rgba(0, 0, 0, 0.4)", borderRadius:"0px", backgroundColor: "#ffffff",  marginBottom: 10,  marginTop: 5, }}  >
+                  <img  src={require("../../assets/return.png")} alt="return" className={formStyle.ResetIcon} />
                 </IconButton>
               </Grid>
 
-              <Grid item>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "right",
-                    alignItems: "center",
-                    mb: 2,
-                    fontFamily:
-                      "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    fontWeight: "600",
-                  }}
-                >
-                  <IconButton onClick={handlePreviousWeek}>
-                    <ChevronLeft />
-                  </IconButton>
-                  <img
-                    src={require("../../assets/calendars.png")}
-                    alt="Calendar"
-                    style={{
-                      width: "21px",
-                      height: "21px",
-                      marginLeft: "5px",
-                    }}
-                  />
-                  <IconButton onClick={handleNextWeek}>
-                    <ChevronRight />
-                  </IconButton>
-                  <span>
-                    {formatDate(weekDates[0])} - {formatDate(weekDates[6])}
-                  </span>
-                </Box>
-              </Grid>
+              {TableType === "TeamTimeSheet" && (
+                 <Grid item>
+                 <Box className={formStyle.CalenderBox} >
+                   <IconButton onClick={handlePreviousWeek}>  <ChevronLeft /></IconButton>
+                   <img src={require("../../assets/calendars.png")} alt="Calendar" className={formStyle.calendarsIcon}  />
+                   <IconButton onClick={handleNextWeek}> <ChevronRight /> </IconButton>
+                   <span>  {formatDate(weekDates[0])} - {formatDate(weekDates[6])} </span>
+                 </Box>
+               </Grid>
+              )}
+             
             </Grid>
           </Box>
         </div>
 
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <TableContainer>
-            <Table
-              size="small"
-              aria-label="collapsible table"
-              sx={{
-                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              }}
-            >
+            <Table  size="small" aria-label="collapsible table" className={styles.fontFamily} >
               <TableHead>
-                <TableRow
-                  sx={{
-                    backgroundColor: "#023E8A",
-                    fontWeight: "600",
-                    fontFamily:
-                      "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                  }}
-                >
+                <TableRow className={formStyle.TableRow}  >
                   {TableType === "TeamTimeSheet" && (
                     <TableCell padding="checkbox">
-                      <Checkbox
-                        color="primary"
-                        indeterminate={
-                          selected.length > 0 &&
-                          selected.length < sortedData.length
-                        }
-                        checked={
-                          sortedData.length > 0 &&
-                          selected.length === sortedData.length
-                        }
-                        onChange={handleSelectAllClick}
-                      />
+                      <Checkbox color="primary" indeterminate={  selected.length > 0 &&  selected.length < sortedData.length} checked={ sortedData.length > 0 &&selected.length === sortedData.length }  onChange={handleSelectAllClick} />
                     </TableCell>
                   )}
 
-                  <TableCell
-                    sx={{
-                      width: "14%",
-                      fontWeight: "600",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      color: "#fff",
-                    }}
-                    align="left"
-                    sortDirection={orderBy === "ProjectName" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "ProjectName"}
-                      sx={{ color: "#fff" }}
-                      direction={orderBy === "ProjectName" ? order : "asc"}
-                      onClick={() => handleRequestSort("ProjectName")}
-                    >
+                  <TableCell sx={{  width: "14%", }} className={formStyle.FormCell} align="left"sortDirection={orderBy === "ProjectName" ? order : false} >
+                    <TableSortLabel active={orderBy === "ProjectName"} sx={{color: "#fff" }} direction={orderBy === "ProjectName" ? order : "asc"} onClick={() => handleRequestSort("ProjectName")} >
                       Project
                     </TableSortLabel>
                   </TableCell>
 
-                  <TableCell
-                    align="left"
-                    sx={{
-                      width: "14%",
-                      fontWeight: "600",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      color: "#fff",
-                    }}
-                    sortDirection={orderBy === "JobName" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "JobName"}
-                      direction={orderBy === "JobName" ? order : "asc"}
-                      onClick={() => handleRequestSort("JobName")}
-                    >
+                  <TableCell className={formStyle.FormCell} align="left" sx={{ width: "14%"}} sortDirection={orderBy === "JobName" ? order : false}  >
+                    <TableSortLabel active={orderBy === "JobName"} direction={orderBy === "JobName" ? order : "asc"} onClick={() => handleRequestSort("JobName")} sx={{ color: "#fff",  }} >
                       Task
                     </TableSortLabel>
                   </TableCell>
 
-                  <TableCell
-                    align="left"
-                    sx={{
-                      width: "8%",
-                      fontWeight: "600",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      color: "#fff",
-                    }}
-                    sortDirection={orderBy === "Status" ? order : false}
-                  >
-                    <TableSortLabel
-                      active={orderBy === "Status"}
-                      direction={orderBy === "Status" ? order : "asc"}
-                      onClick={() => handleRequestSort("Status")}
-                    >
+                  <TableCell className={formStyle.FormCell} align="left" sx={{ width: "8%", }} sortDirection={orderBy === "Status" ? order : false} >
+                    <TableSortLabel active={orderBy === "Status"}  direction={orderBy === "Status" ? order : "asc"} onClick={() => handleRequestSort("Status")} sx={{ color: "#fff" }} >
                       Status
                     </TableSortLabel>
                   </TableCell>
 
-                  <TableCell
-                    align="left"
-                    sx={{
-                      width: "8%",
-                      fontWeight: "600",
-                      color: "#fff",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
+                  <TableCell className={formStyle.FormCell} align="left" sx={{ width: "8%" }} >
                     Task Type
                   </TableCell>
-                  {weekDates.map((date) => (
-                    <TableCell
-                      key={date.toDateString()}
-                      align="center"
-                      sx={{
-                        width: "8%",
-                        fontWeight: "600",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        color: "#fff",
-                      }}
-                    >
-                      {formatDate(date)}
-                    </TableCell>
-                  ))}
+               
+                  {
+                    TableType === "TeamTimeSheet"
+                      ? weekDates.map((date) => (
+                          <TableCell className={formStyle.FormCell} key={date.toDateString()} align="center" sx={{ width: "8%" }}>
+                            {formatDate(date)}
+                          </TableCell>
+                        ))
+                      : TableType === "MyTimeSheet" && weekColumns.map((column) => (
+                         <TableCell className={formStyle.FormCell}  align="center" sx={{ width: "8%" }}>
+                            {formatDate(column)}
+                              </TableCell>
+                        ))
+                  }
+
+
                 </TableRow>
               </TableHead>
+             
               <TableBody>
                 {filteredData.length > 0 ? (
                   filteredData.map((log: any, index: number) => {
                     const isApproved = log.Status === "Approved";
                     const isItemSelected = isSelected(log.TimelogsId);
                     const labelId = `enhanced-table-checkbox-${index}`;
-                    const borderColorforTaskType = getTaskTypeColor(
-                      log.BillableStatus
-                    );
+                    const borderColorforTaskType = getTaskTypeColor( log.BillableStatus );
                     const borderColorStatus = getStatusColor(log.Status);
-                    const disabledStyle = {
-                      opacity: 0.7,
-                      pointerEvents: "none",
-                    };
-
+                    const disabledStyle = { opacity: 0.7, pointerEvents: "none", };
                     const isJobName = log.JobName.length > 20;
                     const isProjectName = log.ProjectName.length > 20;
 
                     return (
                       <TableRow
-                        sx={{ ...(isApproved && disabledStyle) }}
+                        // sx={{ ...(isApproved && disabledStyle) }}
                         key={log.TimelogsId}
                         hover={TableType === "TeamTimeSheet"}
-                        onClick={
-                          TableType === "TeamTimeSheet"
-                            ? () => handleClick(log.TimelogsId)
-                            : undefined
-                        }
-                        role={
-                          TableType === "TeamTimeSheet" ? "checkbox" : undefined
-                        }
-                        aria-checked={
-                          TableType === "TeamTimeSheet"
-                            ? isItemSelected
-                            : undefined
-                        }
-                        tabIndex={
-                          TableType === "TeamTimeSheet" ? -1 : undefined
-                        }
-                        selected={
-                          TableType === "TeamTimeSheet"
-                            ? isItemSelected
-                            : undefined
-                        }
+                        onClick={TableType === "TeamTimeSheet" ? () => handleClick(log.TimelogsId) : undefined }
+                        role={ TableType === "TeamTimeSheet" ? "checkbox" : undefined }
+                        aria-checked={ TableType === "TeamTimeSheet" ? isItemSelected : undefined }
+                        tabIndex={ TableType === "TeamTimeSheet" ? -1 : undefined }
+                        selected={ TableType === "TeamTimeSheet" ? isItemSelected : undefined }
                       >
-                        {TableType === "TeamTimeSheet" && (
+                        {TableType === "TeamTimeSheet" && !isApproved &&(
                           <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isItemSelected}
-                              inputProps={{
-                                "aria-labelledby": labelId,
-                              }}
-                            />
+                            <Checkbox color="primary" checked={isItemSelected} inputProps={{  "aria-labelledby": labelId, }} />
                           </TableCell>
                         )}
-
-                        <TableCell
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
+                        
+                        {TableType === "TeamTimeSheet" && isApproved && (
+                          <TableCell/>
+                        )}
+                        
+                        <TableCell className={styles.fontFamily}>
                           {isProjectName ? (
                             <Tooltip title={log.ProjectName}>
                               <span>{log.ProjectName.substring(0, 20)}...</span>
@@ -711,12 +440,7 @@ const TimeSheetForm = ({
                           )}
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
+                        <TableCell className={styles.fontFamily}>
                           {isJobName ? (
                             <Tooltip title={log.JobName}>
                               <span>{log.JobName.substring(0, 20)}...</span>
@@ -726,162 +450,65 @@ const TimeSheetForm = ({
                           )}
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              borderRadius: "20px",
-                              border: `2px solid ${borderColorStatus}`,
-                              height: "22px",
-                              width: "95px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontFamily:
-                                "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                            }}
-                          >
+                        <TableCell className={styles.fontFamily}>
+                          <Box sx={{border: `2px solid ${borderColorStatus}`}} className={formStyle.statusBox}>
                             {log.Status}
                           </Box>
                         </TableCell>
 
-                        <TableCell
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              borderRadius: "20px",
-                              border: `2px solid ${borderColorforTaskType}`,
-                              height: "22px",
-                              width: "95px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontFamily:
-                                "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                            }}
-                          >
+                        <TableCell className={styles.fontFamily}>
+                          <Box sx={{ border: `2px solid ${borderColorforTaskType}` }} className={formStyle.statusBox}>
                             {log.BillableStatus}
                           </Box>
                         </TableCell>
+                        {TableType === "TeamTimeSheet" && (
+                            weekDates.map((date) => {
+                              const loggedHours = log.LoggedHoursByDay[date.toLocaleDateString("en-US")] || 0;
+                              return (
+                                <TableCell key={date.toDateString()} align="center" className={styles.fontFamily}>
+                                  {loggedHours > 0 ? convertMinutesToHoursAndMinutes(loggedHours) : "-"}
+                                </TableCell>
+                              );
+                            })
+                        )}
 
-                        {weekDates.map((date) => {
-                          const loggedHours =
-                            log.LoggedHoursByDay[
-                              date.toLocaleDateString("en-US")
-                            ] || 0;
-
-                          return (
-                            <TableCell
-                              key={date.toDateString()}
-                              align="center"
-                              sx={{
-                                fontFamily:
-                                  "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                              }}
-                            >
-                              {loggedHours > 0
-                                ? convertMinutesToHoursAndMinutes(loggedHours)
-                                : ""}
-                            </TableCell>
-                          );
-                        })}
+                        {TableType === "MyTimeSheet" && (
+                           weekColumns.map((date) => {
+                            const loggedHours = log.LoggedHoursByDay[date.toLocaleDateString("en-US")] || 0;
+                            return (
+                              <TableCell key={date.toDateString()} align="center" className={styles.fontFamily}>
+                                {loggedHours > 0 ? convertMinutesToHoursAndMinutes(loggedHours) : "-"}
+                              </TableCell>
+                            );
+                          })
+                        )}
                       </TableRow>
                     );
                   })
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={9}>
-                      <Box
-                        sx={{
-                          textAlign: "center",
-                          fontWeight: "600",
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
+                    <TableCell colSpan={12}>
+                      <Box className={formStyle.formNoDataText}>
                         No data found
                       </Box>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
+            
             </Table>
-          </TableContainer>
+          </TableContainer>  
         </Box>
       </DialogContent>
+
       {TableType === "TeamTimeSheet" && (
-        <DialogActions
-          sx={{
-            justifyContent: "flex-start",
-            padding: "8px 24px",
-          }}
-        >
-          <Button
-            onClick={handleApproved}
-            sx={{
-              backgroundColor: "#65b741",
-              color: "#fff",
-              height: "35px",
-              borderRadius: "5px",
-              marginBottom: "5px",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#65b741",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              },
-              width: "79px",
-            }}
-          >
-            Approve
-          </Button>
-
-          <Button
-            onClick={handleReject}
-            sx={{
-              backgroundColor: "#ff8a8a",
-              color: "#fff",
-              height: "35px",
-              borderRadius: "5px",
-              marginBottom: "5px",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              textTransform: "none",
-              "&:hover": {
-                backgroundColor: "#ff8a8a",
-                boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              },
-              width: "79px",
-            }}
-          >
-            Reject
-          </Button>
-
-          <Button
-            onClick={onClose}
-            sx={{
-              color: "rgb(50, 49, 48)",
-              backgroundColor: "white",
-              height: "35px",
-              border: "1px solid grey",
-              borderRadius: "5px",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-              marginBottom: "5px",
-              textTransform: "none",
-              width: "79px",
-            }}
-          >
-            Cancel
-          </Button>
+        <DialogActions className={formStyle.dialogBox} >
+          <Button onClick={handleApproved}  className={formStyle.ApprovedButton} >   Approve</Button>
+          <Button onClick={handleReject} className={formStyle.RejectButton} > Reject</Button>
+          <Button onClick={onClose}className={formStyle.CancelButton} > Cancel </Button>
         </DialogActions>
       )}
+
     </Dialog>
   );
 };

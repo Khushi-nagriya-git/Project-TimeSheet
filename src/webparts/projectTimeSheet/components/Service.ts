@@ -16,11 +16,11 @@ export const getAllSiteUsers = async (spHttpClient: SPHttpClient, absoluteURL: s
           const responseJSON = await response.json();
           return responseJSON;
       } else {
-          console.log("No data found");
+         // console.log("No data found");
           return null;
       }
   } catch (error) {
-      console.log("Error:", error);
+     // console.log("Error:", error);
       return null;
   }
   };
@@ -37,10 +37,10 @@ export const getAllSiteUsers = async (spHttpClient: SPHttpClient, absoluteURL: s
             return data.value;
           }
         } else {
-            console.log("Please enter the correct name of the list in the property pane.");
+           // console.log("Please enter the correct name of the list in the property pane.");
         }
     } catch (error) {
-        console.log("Error fetching data:", error);
+       // console.log("Error fetching data:", error);
     }
   };
   

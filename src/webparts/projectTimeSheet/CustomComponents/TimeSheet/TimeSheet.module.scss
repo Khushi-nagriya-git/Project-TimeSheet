@@ -1,0 +1,143 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.FilterBox {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.ResetIcon {
+  width: 22px !important;
+  height: 22px !important;
+  cursor: pointer !important;
+}
+
+.CalenderBox {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  font-weight: 600 !important;
+  margin-bottom: 5px !important;
+}
+
+.calendarsIcon {
+  width: 21px !important;
+  height: 21px !important;
+  margin-left: 5px !important;
+}
+
+.TableRow {
+  background-color: #023e8a !important;
+  font-weight: 600 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.CancelButton {
+  color: rgb(50, 49, 48) !important;
+  background-color: white !important;
+  height: 35px !important;
+  border: 1px solid grey !important;
+  border-radius: 5px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 5px !important;
+  text-transform: none !important;
+  width: 79px !important;
+}
+
+.RejectButton {
+  background-color: #0077b6 !important;
+  color: #fff !important;
+  height: 35px !important;
+  border-radius: 5px !important;
+  margin-bottom: 5px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  text-transform: none !important;
+  width: 79px !important;
+
+  &:hover {
+    background-color: #0077b6;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.ApprovedButton {
+  background-color: #023e8a !important;
+  color: #fff !important;
+  height: 35px !important;
+  border-radius: 5px !important;
+  margin-bottom: 5px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  text-transform: none !important;
+  width: 79px !important;
+
+  &:hover {
+    background-color: #023e8a;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.FormCell {
+  font-weight: 600 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  color: #ffffff !important;
+}
+
+.statusBox {
+  border-radius: 20px !important;
+  height: 22px !important;
+  width: 95px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.formNoDataText {
+  text-align: center !important;
+  font-weight: 600 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.dialogBox {
+  justify-content: flex-start !important;
+  padding: 8px 24px !important;
+}
+
+.timeSheetTableCell {
+  font-weight: 600 !important;
+  background-color: #023e8a !important;
+  color: white !important;
+  height: 20px !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.timeSheetTableStatusCell {
+  border-radius: 20px !important;
+  border-color: red !important;
+  height: 30px !important;
+  width: 100px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.AvatarBox {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+}
+
+.Alert {
+  position: fixed !important;
+  top: 50px !important;
+  right: 20px !important;
+  z-index: 9999 !important;
+}
+
+.fontFamily {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}

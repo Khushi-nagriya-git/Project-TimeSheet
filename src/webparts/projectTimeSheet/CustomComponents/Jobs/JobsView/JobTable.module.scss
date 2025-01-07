@@ -1,0 +1,94 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.refreshButton {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.SearchBoxGrid {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.NoDataText {
+  text-align: center;
+  font-weight: 600;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.tableMainDiv {
+  height: 100%;
+  overflow: auto;
+}
+
+.tableHeader {
+  height: 40px;
+  background-color: #023e8a;
+}
+
+.tableCell {
+  padding: 4px 16px;
+  font-weight: 600 !important;
+  position: sticky;
+  top: 0;
+  background-color: #023e8a;
+  color: white;
+  z-index: 1;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.time {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: black;
+}
+
+.Avatar{
+  margin-right: 8px;
+  height: 25px !important;
+  width: 25px !important;
+}
+
+
+.AvatarBox{
+  display: flex;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.RowCell{
+  width: 20%;
+  font-weight: 600 !important;
+  background-color: #0077B6;
+  color: white !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.TableRow {
+  background-color: #f3f2f1;
+  font-weight: 600 !important;
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.DeleteIcon{
+  width: 23px;
+  height: 23px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.EditIcon {
+  width: 21px;
+  height: 21px;
+  cursor: pointer;
+  align-items: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif,
+}
+
+.Icons{
+  display: flex;;
+  align-items: flex-start;
+  justify-items: left;
+}

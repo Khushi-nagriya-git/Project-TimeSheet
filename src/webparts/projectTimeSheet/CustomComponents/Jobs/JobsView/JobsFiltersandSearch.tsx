@@ -1,13 +1,8 @@
-import {
-  Dropdown,
-  IDropdownOption,
-  Label,
-  SearchBox,
-  IconButton,
-} from "@fluentui/react";
+import { Dropdown, IDropdownOption, Label,SearchBox, IconButton,} from "@fluentui/react";
 import { Grid } from "@mui/material";
 import * as React from "react";
 import { useState, useEffect } from "react";
+import filterStyles from "../JobsView/JobTable.module.scss";
 
 interface JobsHeaderProps {
   onJobFilterChange: (selectedValues: string[]) => void;
@@ -25,20 +20,7 @@ interface JobsHeaderProps {
   isUserProjectManager: any;
 }
 
-const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
-  projectsData,
-  jobsData,
-  onJobFilterChange,
-  onJobStatusChange,
-  setSearchQuery,
-  isUserProjectTeam,
-  isUserProjectManager,
-  isUserReportingManager,
-  isUserAdmin,
-  searchQuery,
-  setFilteredJobs,
-  onJobsAssigneesChange,
-}) => {
+const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({ projectsData, jobsData, onJobFilterChange, onJobStatusChange,setSearchQuery,isUserProjectTeam, isUserProjectManager, isUserReportingManager,  isUserAdmin, searchQuery, setFilteredJobs, onJobsAssigneesChange,}) => {
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
@@ -47,9 +29,7 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
 
   useEffect(() => {
     const filteredJobs = jobsData.filter((job: any) => job.AssignedTo);
-    const parsedAssignees = filteredJobs.map((job: any) =>
-      JSON.parse(job.AssignedTo)
-    );
+    const parsedAssignees = filteredJobs.map((job: any) =>  JSON.parse(job.AssignedTo) );
     const flattenedAssignees = parsedAssignees.flat();
     // Remove duplicates based on the 'id' field
     const uniqueAssignees = flattenedAssignees.filter(
@@ -65,40 +45,25 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
     }
   }, [jobsData]);
 
-  const handleJobsChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ): void => {
+  const handleJobsChange = ( event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption ): void => {
     if (option) {
-      const selectedValues = option.selected
-        ? [...selectedProjects, option.key as string]
-        : selectedProjects.filter((key) => key !== (option.key as string));
+      const selectedValues = option.selected ? [...selectedProjects, option.key as string] : selectedProjects.filter((key) => key !== (option.key as string));
       setSelectedProjects(selectedValues);
       onJobFilterChange(selectedValues);
     }
   };
 
-  const handleStatusChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ): void => {
+  const handleStatusChange = (  event: React.FormEvent<HTMLDivElement>,  option?: IDropdownOption ): void => {
     if (option) {
-      const selectedValues = option.selected
-        ? [...selectedStatus, option.key as string]
-        : selectedStatus.filter((key) => key !== (option.key as string));
+      const selectedValues = option.selected ? [...selectedStatus, option.key as string] : selectedStatus.filter((key) => key !== (option.key as string));
       setSelectedStatus(selectedValues);
       onJobStatusChange(selectedValues);
     }
   };
 
-  const handleAssigneesChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ): void => {
+  const handleAssigneesChange = (  event: React.FormEvent<HTMLDivElement>,  option?: IDropdownOption ): void => {
     if (option) {
-      const selectedValues = option.selected
-        ? [...selectedAssignees, option.key as string]
-        : selectedAssignees.filter((key) => key !== (option.key as string));
+      const selectedValues = option.selected  ? [...selectedAssignees, option.key as string]  : selectedAssignees.filter((key) => key !== (option.key as string));
       setSelectedAssignees(selectedValues);
       onJobsAssigneesChange(selectedValues);
     }
@@ -115,23 +80,16 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
   return (
     <div>
       <Grid container spacing={1} alignItems="center">
+
         <Grid item>
           <Label style={{ fontWeight: "600" }}>Projects</Label>
+
           <Dropdown
             placeholder="All"
             selectedKeys={selectedProjects}
             onChange={handleJobsChange}
             multiSelect
-            options={projectsData
-              .sort((a: any, b: any) =>
-                a.ProjectName.localeCompare(b.ProjectName)
-              ) // Sort alphabetically by ProjectName
-              .map((project: any) => ({
-                key: project.ProjectName,
-                text: project.ProjectName,
-                selected: selectedProjects.indexOf(project.ProjectName) > -1,
-                checkbox: true,
-              }))}
+            options={projectsData .sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)) .map((project: any) => ({ key: project.ProjectName, text: project.ProjectName, selected: selectedProjects.indexOf(project.ProjectName) > -1, checkbox: true, }))}
             styles={{
               root: {
                 width: 200,
@@ -235,23 +193,12 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
           </Grid>
         )}
 
-        <Grid
-          item
-          sx={{
-            marginLeft: "auto",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Grid item className={filterStyles.SearchBoxGrid} style={{ marginLeft: "auto" }}>
           <SearchBox
             style={{ height: "30px" }}
             placeholder="Search by jobs and status"
             value={searchQuery}
-            onChange={(e) =>
-              setSearchQuery(
-                (e as React.ChangeEvent<HTMLInputElement>).target.value
-              )
-            }
+            onChange={(e) =>  setSearchQuery( (e as React.ChangeEvent<HTMLInputElement>).target.value )  }
             onClear={() => setSearchQuery("")}
             styles={{
               root: {
@@ -270,28 +217,12 @@ const JobsFiltersandSearch: React.FC<JobsHeaderProps> = ({
             }}
           />
 
-          <IconButton
-            aria-label="Reset"
-            onClick={resetFilters}
-            styles={{
-              root: {
-                height: 31,
-                width: 31,
-                marginLeft: 10,
-                border: "1px solid rgba(0, 0, 0, 0.4)",
-                backgroundColor: "#ffffff",
-                marginBottom: 10,
-                marginTop: 8,
-              },
-            }}
-          >
-            <img
-              src={require("../../../assets/return.png")}
-              alt="Tasks"
-              style={{ width: "22px", height: "22px", cursor: "pointer" }}
-            />
+          <IconButton aria-label="Reset"  onClick={resetFilters}  styles={{ root: {height: 31,  width: 31,  marginLeft: 10, border: "1px solid rgba(0, 0, 0, 0.4)", backgroundColor: "#ffffff",marginBottom: 10, marginTop: 8,  }, }}>
+            <img  src={require("../../../assets/return.png")} alt="Tasks"className={filterStyles.refreshButton} />
           </IconButton>
+
         </Grid>
+        
       </Grid>
     </div>
   );

@@ -1,0 +1,109 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.SubmitButton {
+  background-color: #6fbb4d !important;
+  color: white !important;
+  width: 90px !important;
+  text-align: center !important;
+  height: 30px !important;
+  font-size: 16px !important;
+  text-transform: none !important;
+}
+
+.AddBox {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.timerButton {
+  color: white !important;
+  width: 90px !important;
+  text-align: center !important;
+  height: 30px !important;
+  font-size: 16px !important;
+  margin-bottom: 30px !important;
+}
+
+.EditBox {
+  background-color: #f3f2f1 !important;
+  padding: 5px !important;
+  margin-bottom: 10px !important;
+  width: -webkit-fill-available !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  position: fixed !important;
+  z-index: 999 !important;
+}
+
+.EditButtons {
+  padding: 5px !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  z-index: 999 !important;
+  gap: 10px !important;
+}
+
+.submitButton {
+  background-color: #1565c0 !important;
+  color: #fff !important;
+  height: 35px !important;
+  border-radius: 5px !important;
+  margin-bottom: 5px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.CancelButton {
+  color: rgb(50, 49, 48) !important;
+  background-color: white !important;
+  height: 35px !important;
+  border: 1px solid grey !important;
+  border-radius: 5px !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 5px !important;
+}
+
+.TableCells {
+  height: 10px !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+  background-color: #fff !important;
+}
+
+.StatusCells {
+  border-radius: 20px !important;
+  height: 22px !important;
+  width: 100px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.PauseButton {
+  cursor: pointer !important;
+  height: 21px !important;
+  width: 21px !important;
+}
+
+.NoDataAvaliable {
+  text-align: center !important;
+  font-weight: 600 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.TimeLogTableCell {
+  padding: 4px 16px !important;
+  font-weight: 600 !important;
+  position: sticky !important;
+  top: 0 !important;
+  background-color: #023e8a !important;
+  color: white !important;
+  z-index: 1 !important;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
+}

@@ -9,6 +9,7 @@ import * as React from "react";
 import Row from "./JobTableRows";
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box/Box";
+import tableStyle from "../JobsView/JobTable.module.scss"
 
 const JobsTable = (props: {
   projectsData: any;
@@ -146,7 +147,7 @@ const JobsTable = (props: {
           };
           JobStatus: {
             toLowerCase: () => {
-              (): any;
+               (): any;
               new (): any;
               includes: { (arg0: any): any; new (): any };
             };
@@ -199,20 +200,11 @@ const JobsTable = (props: {
       endDate: job.EndDate ? formatDate(job.EndDate) : "",
       description: job.Description,
       billableStatus: job.BillableStatus,
-      jobStatus:
-        job.JobStatus === "In Progress"
-          ? "InProgress"
-          : job.JobStatus === "On Hold"
-          ? "OnHold"
-          : job.JobStatus === "Not Started"
-          ? "NotStarted"
-          : job.JobStatus === "Completed"
-          ? "Completed"
-          : "",
+      jobStatus: job.JobStatus === "In Progress" ? "InProgress" : job.JobStatus === "On Hold" ? "OnHold" : job.JobStatus === "Not Started" ? "NotStarted": job.JobStatus === "Completed" ? "Completed" : "",
       JobAssigness: jobAssignees,
-      attachment: job.Attachment,
-      Author:job.Author.EMail
-
+      attachment: job.AttachmentFiles,
+      Author:job.Author.EMail,
+      
     });
     props.setAddFormOpen(true);
     props.setDrawerOpen(true);
@@ -237,207 +229,58 @@ const JobsTable = (props: {
     }
   };
 
-  function createData(
-    jobId: number,
-    jobName: string,
-    projectId: number,
-    projectName: string,
-    startDate: Date,
-    endDate: Date,
-    estimatedHours: number,
-    loggedHours: number,
-    status: string,
-    assignedTo: any,
-    Author: { EMail: string }
-  ) {
-    return {
-      jobId,
-      jobName,
-      projectId,
-      projectName,
-      startDate,
-      endDate,
-      estimatedHours,
-      loggedHours,
-      status,
-      Author,
-      history: JSON.parse(assignedTo),
-    };
+  function createData( jobId: number,jobName: string,  projectId: number,  projectName: string, startDate: Date, endDate: Date,  estimatedHours: number, loggedHours: number,status: string, assignedTo: any,Author: { EMail: string } ) {
+    return { jobId, jobName, projectId,  projectName,  startDate, endDate, estimatedHours, loggedHours,  status, Author,  history: JSON.parse(assignedTo), };
   }
 
   return (
     <div style={{ overflowY: "auto",  height: "calc(100vh - 300px)", marginTop: "-15px" }}>
       <Grid item xs={12}>
-        <div style={{ height: "100%", overflow: "auto" }}>
+        <div className={tableStyle.tableMainDiv}>
           <TableContainer>
-            <Table
-              size="small"
-              aria-label="collapsible table"
-              sx={{
-                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              }}
-            >
+            <Table size="small"aria-label="collapsible table" sx={{fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} >
               <TableHead>
-                <TableRow sx={{ height: "40px",  backgroundColor: "#023E8A" }}>
+
+                <TableRow className={tableStyle.tableHeader}>
                   <TableCell />
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "20%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "20%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="left">
                     Task Name
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "20%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "20%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="left">
                     Project
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "14%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "14%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="left">
                     Start Date
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "14%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "14%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="left" >
                     End Date
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "14%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "14%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="left">
                     Estimated Hrs
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "14%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell} sx={{ width: "14%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }}align="left" >
                     Logged Hrs
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "5%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      // color:"#323130"
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell}sx={{ width: "5%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }}align="left" >
                     Status
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "5%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      // color:"#323130"
-                    }}
-                    align="center"
-                  >
+                  <TableCell className={tableStyle.tableCell}sx={{ width: "5%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }} align="center" >
                     Assignee(s)
                   </TableCell>
 
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "5%",
-                      position: "sticky",color:"white",
-                      top: 0,
-                      backgroundColor: "#023E8A",
-                      zIndex: 1,
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      // color:"#323130"
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={tableStyle.tableCell}sx={{ width: "5%", color:"#ffffff" , fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }}align="left">
                     Actions
                   </TableCell>
                 </TableRow>
+
               </TableHead>
               <TableBody>
                 {props.filteredJobs.length > 0 ? (
@@ -457,30 +300,13 @@ const JobsTable = (props: {
                     );
 
                     return (
-                      <Row
-                        key={rowData.jobId}
-                        row={rowData}
-                        projectProps={props.jobsProps}
-                        handleDeleteIconClick={handleDeleteIconClick}
-                        handleEditIconClick={handleEditIconClick}
-                        // topNavigationMode={props.topNavigationMode}
-                        loggedInUserDetails={props.loggedInUserDetails}
-                      />
+                      <Row key={rowData.jobId} row={rowData} projectProps={props.jobsProps} handleDeleteIconClick={handleDeleteIconClick} handleEditIconClick={handleEditIconClick} loggedInUserDetails={props.loggedInUserDetails}  />
                     );
                   })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={9}>
-                      <Box
-                        sx={{
-                          textAlign: "center",
-                          fontWeight: "600",
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
-                        No data found
-                      </Box>
+                      <Box className={tableStyle.NoDataText}>No data found</Box>
                     </TableCell>
                   </TableRow>
                 )}

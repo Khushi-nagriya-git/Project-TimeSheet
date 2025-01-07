@@ -2,15 +2,7 @@ import { filter } from "lodash";
 import { SPHttpClient } from "../../../..";
 import { TimeLogsData } from "./ITimeLogsStats";
 
-export const getTimeLogsListData = async (
-  absoluteURL: string,
-  spHttpClient: SPHttpClient,
-  setTimeLogsData: React.Dispatch<React.SetStateAction<any>>,
-  loggedInUserDetails: { Email: string } | null,
-  type: string,
-  isUserAdmin: boolean,
-  isUserReportingManager: boolean
-) => {
+export const getTimeLogsListData = async ( absoluteURL: string, spHttpClient: SPHttpClient, setTimeLogsData: React.Dispatch<React.SetStateAction<any>>, loggedInUserDetails: { Email: string } | null, type: string, isUserAdmin: boolean, isUserReportingManager: boolean) => {
   let filterQuery = "";
   if (loggedInUserDetails) {
     switch (type) {
@@ -30,9 +22,9 @@ export const getTimeLogsListData = async (
         filterQuery = `(Author/EMail eq '${loggedInUserDetails.Email}') and (Status eq 'Pending' or Status eq 'Approved' or Status eq 'Rejected')`;
         break;
 
-        case "dashBoard":
-        filterQuery = ''
-        break;  
+      case "dashBoard":
+        filterQuery = "";
+        break;
 
       default:
         break;
@@ -41,7 +33,7 @@ export const getTimeLogsListData = async (
 
   try {
     const response = await spHttpClient.get(
-      `${absoluteURL}/_api/web/lists/GetByTitle('TimeLogs')/items?$select=TimelogsId,Author/EMail,Author/Title,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc${
+      `${absoluteURL}/_api/web/lists/GetByTitle('TimeLogs')/items?$select=TimelogsId,ID,Author/EMail,Author/Title,JobName,JobId,ProjectName,ProjectId,BillableStatus,Description,Status,LoggedHours,EstimatedHours,Modified,Created&$orderby=Created desc${
         filterQuery ? `&$filter=${filterQuery}` : ""
       }&$expand=Author`,
       SPHttpClient.configurations.v1
@@ -54,14 +46,12 @@ export const getTimeLogsListData = async (
         return data.value;
       }
     } else {
-      console.error(
-        "Please enter the correct name of the list in the property pane."
-      );
+      //console.error( "Please enter the correct name of the list in the property pane.");
     }
   } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-};
+    //console.error("Error fetching data:", error);  
+  }  
+};    
 
 export const getLastItemId = async (
   absoluteURL: string,
@@ -79,7 +69,7 @@ export const getLastItemId = async (
     }
   );
   if (!response.ok) {
-    console.error("Error fetching the last item");
+    //console.error("Error fetching the last item");
     return 0;
   }
   const data = await response.json();
@@ -136,7 +126,7 @@ export const addTimeLogs = async (
     }
   );
   if (!response.ok) {
-    console.error("Error adding Project records");
+    //console.error("Error adding Project records");
     return;
   } else {
     // getTimeLogsListData(absoluteURL, spHttpClient, setTimeLogsData );
@@ -150,7 +140,8 @@ export async function updateRecords(
   LockedMinutes: number,
   updateddata: any, // This can be an array when updating multiple rows
   editTimeLogId: number,
-  setUpdateStatus: React.Dispatch<React.SetStateAction<any>>
+  setUpdateStatus: React.Dispatch<React.SetStateAction<any>>,
+  allTimeLogsData: any
 ) {
   let timerTimeLogId;
 
@@ -195,13 +186,13 @@ export async function updateRecords(
               setUpdateStatus(true);
             }
             if (!updateResponse.ok) {
-              console.log("Error updating item:", updateResponse.statusText);
+              //console.log("Error updating item:", updateResponse.statusText);
             }
           } else {
-            console.log("No item found with the specified TimelogsId.");
+            //console.log("No item found with the specified TimelogsId.");
           }
         } else {
-          console.log("Error fetching item:", response.statusText);
+          //console.log("Error fetching item:", response.statusText);
         }
       });
 
@@ -209,47 +200,67 @@ export async function updateRecords(
     } else if (updateType === "TimeLogforApproval") {
       const updatePromises = updateddata.map(async (timeLog: any) => {
         // Fetch the existing item data for each time log
-        const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
-          SPHttpClient.configurations.v1
-        );
-
+        const response = await spHttpClient.get(`${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=(TimelogsId eq ${timeLog.TimelogsId}) and (Status eq 'Pending' or Status eq 'Rejected')`, SPHttpClient.configurations.v1 );
+        
         if (response.ok) {
+          let timeLogsToUpdates = [];
           const data = await response.json();
-          if (data.value && data.value.length > 0) {
-            const itemToUpdate = data.value[0];
-            const itemId = itemToUpdate.ID;
+          if (data.value && data.value.length > 0 && (data.value[0].Status === "Pending" || data.value[0].Status === "Rejected")) {
+            for(let i =0 ; i<allTimeLogsData.length ; i++){
+              if(allTimeLogsData[i].JobId === data.value[0].JobId && (data.value[0].TimelogsId === allTimeLogsData[i].TimelogsId) && (allTimeLogsData[i].Status === "Pending" || allTimeLogsData[i].Status === "Rejected")){
+                timeLogsToUpdates.push(allTimeLogsData[i]);
+              }
+            }
             const listItemData = {
               Status: timeLog.Status,
             };
+
+          // Create an array to hold all the promises for the API requests
+          const updatePromises = timeLogsToUpdates.map(async (log) => {
+            const itemId = log.ID;
             const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
-            const updateResponse = await spHttpClient.post(
-              updateEndpoint,
-              SPHttpClient.configurations.v1,
-              {
-                headers: {
-                  Accept: "application/json;odata=nometadata",
-                  "Content-type": "application/json;odata=nometadata",
-                  "odata-version": "",
-                  "IF-MATCH": "*",
-                  "X-HTTP-Method": "MERGE",
-                },
-                body: JSON.stringify(listItemData),
+
+            try {
+              const updateResponse = await spHttpClient.post(
+                updateEndpoint,
+                SPHttpClient.configurations.v1,
+                {
+                  headers: {
+                    Accept: "application/json;odata=nometadata",
+                    "Content-type": "application/json;odata=nometadata",
+                    "odata-version": "",
+                    "IF-MATCH": "*",
+                    "X-HTTP-Method": "MERGE",
+                  },
+                  body: JSON.stringify(listItemData),
+                }
+              );
+
+              if (updateResponse.ok) {
+               // console.log(`TimeLog with ID ${itemId} updated successfully.`);
+                return true; // Indicates a successful update
+              } else {
+               // console.log(`Error updating item with ID ${itemId}:`, updateResponse.statusText);
+                return false; 
               }
-            );
-            if (updateResponse.ok) {
-              // alert("TimeSheet Approved");
-              
+            } catch (error) {
+             // console.log(`Error updating item with ID ${itemId}:`, error);
+              return false; // Handles any unexpected errors
+            }
+          });
+
+            const results = await Promise.all(updatePromises);
+            if (results.every((result) => result === true)) {
               setUpdateStatus(true);
+            } else {
+             // console.log("Some updates failed.");
             }
-            if (!updateResponse.ok) {
-              console.log("Error updating item:", updateResponse.statusText);
-            }
+
           } else {
-            console.log("No item found with the specified TimelogsId.");
+            //console.log("No item found with the specified TimelogsId.");
           }
         } else {
-          console.log("Error fetching item:", response.statusText);
+          //console.log("Error fetching item:", response.statusText);
         }
       });
 
@@ -258,46 +269,67 @@ export async function updateRecords(
     if (updateType === "TimeLogforRejection") {
       const updatePromises = updateddata.map(async (timeLog: any) => {
         // Fetch the existing item data for each time log
-        const response = await spHttpClient.get(
-          `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=TimelogsId eq ${timeLog.TimelogsId}`,
-          SPHttpClient.configurations.v1
-        );
+        const response = await spHttpClient.get( `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items?$filter=(TimelogsId eq ${timeLog.TimelogsId}) and (Status eq 'Pending')`, SPHttpClient.configurations.v1 );
 
         if (response.ok) {
+          let timeLogsToUpdates = [];
           const data = await response.json();
-          if (data.value && data.value.length > 0) {
-            const itemToUpdate = data.value[0];
-            const itemId = itemToUpdate.ID;
+          if (data.value && data.value.length > 0 && (data.value[0].Status === "Pending")) {
+            for(let i =0 ; i<allTimeLogsData.length ; i++){
+              if((allTimeLogsData[i].JobId === data.value[0].JobId )&& (data.value[0].TimelogsId === allTimeLogsData[i].TimelogsId) && (allTimeLogsData[i].Status === "Pending")){
+                timeLogsToUpdates.push(allTimeLogsData[i]);
+              }
+            }
             const listItemData = {
               Status: timeLog.Status,
             };
+
+          // Create an array to hold all the promises for the API requests
+          const updatePromises = timeLogsToUpdates.map(async (log) => {
+            const itemId = log.ID;
             const updateEndpoint = `${absoluteURL}/_api/web/lists/getbytitle('TimeLogs')/items(${itemId})`;
-            const updateResponse = await spHttpClient.post(
-              updateEndpoint,
-              SPHttpClient.configurations.v1,
-              {
-                headers: {
-                  Accept: "application/json;odata=nometadata",
-                  "Content-type": "application/json;odata=nometadata",
-                  "odata-version": "",
-                  "IF-MATCH": "*",
-                  "X-HTTP-Method": "MERGE",
-                },
-                body: JSON.stringify(listItemData),
+
+            try {
+              const updateResponse = await spHttpClient.post(
+                updateEndpoint,
+                SPHttpClient.configurations.v1,
+                {
+                  headers: {
+                    Accept: "application/json;odata=nometadata",
+                    "Content-type": "application/json;odata=nometadata",
+                    "odata-version": "",
+                    "IF-MATCH": "*",
+                    "X-HTTP-Method": "MERGE",
+                  },
+                  body: JSON.stringify(listItemData),
+                }
+              );
+
+              if (updateResponse.ok) {
+                //console.log(`TimeLog with ID ${itemId} updated successfully.`);
+                return true; // Indicates a successful update
+              } else {
+                //console.log(`Error updating item with ID ${itemId}:`, updateResponse.statusText);
+                return false; 
               }
-            );
-            if (updateResponse.ok) {
-              // alert("TimeSheet Reject");
+            } catch (error) {
+              //console.log(`Error updating item with ID ${itemId}:`, error);
+              return false; // Handles any unexpected errors
+            }
+          });
+
+            const results = await Promise.all(updatePromises);
+            if (results.every((result) => result === true)) {
               setUpdateStatus(true);
+            } else {
+              //console.log("Some updates failed.");
             }
-            if (!updateResponse.ok) {
-              console.log("Error updating item:", updateResponse.statusText);
-            }
+
           } else {
-            console.log("No item found with the specified TimelogsId.");
+           // console.log("No item found with the specified TimelogsId.");
           }
         } else {
-          console.log("Error fetching item:", response.statusText);
+          //console.log("Error fetching item:", response.statusText);
         }
       });
 
@@ -346,17 +378,17 @@ export async function updateRecords(
           );
 
           if (!updateResponse.ok) {
-            console.log("Error updating item:", updateResponse.statusText);
+           // console.log("Error updating item:", updateResponse.statusText);
           }
         } else {
-          console.log("No item found with the specified TimelogsId.");
+         // console.log("No item found with the specified TimelogsId.");
         }
       } else {
-        console.log("Error fetching item:", response.statusText);
+       // console.log("Error fetching item:", response.statusText);
       }
     }
   } catch (error) {
-    console.log("Error fetching item:", error);
+   // console.log("Error fetching item:", error);
   }
 }
 
@@ -378,9 +410,7 @@ export const deleteTimelog = async (
       const items = data.value;
 
       if (items.length === 0) {
-        console.error(
-          "Item does not exist. It may have been deleted by another user."
-        );
+        //console.error("Item does not exist. It may have been deleted by another user." );
         return;
       }
       const internalId = items[0].ID;
@@ -397,15 +427,12 @@ export const deleteTimelog = async (
       );
       if (deleteResponse.ok) {
       } else {
-        console.error(
-          "Failed to delete project. Status:",
-          deleteResponse.status
-        );
+       // console.error("Failed to delete project. Status:", deleteResponse.status );
       }
     } else {
-      console.error("Failed to fetch item. Status:", getResponse.status);
+      //console.error("Failed to fetch item. Status:", getResponse.status);
     }
   } catch (error) {
-    console.error("Error deleting project:", error);
+    //console.error("Error deleting project:", error);
   }
 };

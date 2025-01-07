@@ -15,10 +15,10 @@ const getId =async ( absoluteURL:any ,  spHttpClient:any ) => {
         return data.value[0].ID;
       }
     } else {
-        console.log("Please enter the correct name of the list in the property pane.");
+        //console.log("Please enter the correct name of the list in the property pane.");
     }
 } catch (error) {
-    console.log("Error fetching data:", error);
+   // console.log("Error fetching data:", error);
 }
 }
 
@@ -47,14 +47,14 @@ export const updateData = async (formData: any, applicationTitle: string, absolu
       if (formData.Attachment) {
           const imageUploadResponse = await handleUploadAttachment(itemId,formData.Attachment, absoluteURL, spHttpClient);
           if (imageUploadResponse) {
-              console.log("Image uploaded successfully.");
+              //console.log("Image uploaded successfully.");
           } else {
-              console.error("Failed to upload image.");
+             // console.error("Failed to upload image.");
           }
       }
       return true;
   } else {
-      console.error("Failed to update item:", updateResponse.statusText);
+     // console.error("Failed to update item:", updateResponse.statusText);
       return false;
   }
 };
@@ -121,14 +121,13 @@ const deleteAllAttachments = async (absoluteURL: string, itemId: number, spHttpC
               throw new Error(`Failed to delete attachment ${attachment.FileName}: ${response.statusText}`);
           }
       } catch (error) {
-          console.error(error); // Log individual attachment deletion errors
+         // console.error(error); // Log individual attachment deletion errors
           return false; // Return false on the first failure
       }
   }
   //console.log("All attachments deleted.");
   return true;
 };
-
 
 export const addData = async (formData:any , applicationTitle:string , absoluteURL:any ,  spHttpClient:any  ) => {
 
@@ -152,7 +151,7 @@ export const addData = async (formData:any , applicationTitle:string , absoluteU
     }
   );
   if (!response.ok) {
-    console.error("Error adding Department records");
+   // console.error("Error adding Department records");
     return;
   }else{
     return true;

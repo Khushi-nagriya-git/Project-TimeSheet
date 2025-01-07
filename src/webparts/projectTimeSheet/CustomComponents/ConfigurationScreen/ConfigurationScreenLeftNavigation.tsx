@@ -14,16 +14,7 @@ const ConfigurationScreenLeftNavigation = (props: {
 
   return (
     <React.Fragment>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          width: "100%",
-          color: "white",
-          height: "100%",
-          backgroundColor: "#03045E",
-        }}
-      >
+      <Box sx={{  display: "flex",  flexDirection: "column",  width: "100%", color: "white", height: "100%", backgroundColor: "#03045E",}} >
         <Box
           sx={{
             padding: "10px",

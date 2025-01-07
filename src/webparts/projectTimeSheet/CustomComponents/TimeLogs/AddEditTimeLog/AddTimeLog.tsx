@@ -2,61 +2,14 @@ import { Dropdown, IDropdownOption, Label, TextField } from "@fluentui/react";
 import { Box, Button, Grid } from "@mui/material";
 import * as React from "react";
 import { useState, useEffect } from "react";
-import {
-  JobsData,
-  jobsInitialState,
-  projectsInitialState,
-  ProjectsData,
-  getProjectListData,
-  getJobListData,
-} from "../../../../..";
-
-const AddTimeLog = (props: {
-  absoluteURL: any;
-  spHttpClient: any;
-  onProjectChange: any;
-  onJobChange: any;
-  elapsedTime: any;
-  onBillableStatusChange: any;
-  isRunning: any;
-  selectedProject: any;
-  statusError: any;
-  selectedJob: any;
-  projectError: any;
-  startTime: any;
-  jobError: any;
-  handleStartStop: any;
-  addTimeLog: any;
-  selectedBillableStatus : any;
-  isUserProjectManager:any;
-  loggedInUserDetails:any;
-  isUserProjectTeam:any;
-  isUserReportingManager:any;
-  isUserAdmin:any;
-  setSelectedProjectName:React.Dispatch<React.SetStateAction<any>>;
-  selectedProjectName:any;
-  setSelectedJobName: React.Dispatch<React.SetStateAction<any>>;
-  setStartTime: React.Dispatch<React.SetStateAction<any>>;
-  setSelectedJob: React.Dispatch<React.SetStateAction<any>>;
-  setStatusError: React.Dispatch<React.SetStateAction<any>>;
-  setAddTimeLog: React.Dispatch<React.SetStateAction<any>>;
-  setSelectedProject: React.Dispatch<React.SetStateAction<any>>;
-  setTimerAlert: React.Dispatch<React.SetStateAction<any>>;
-  setIsRunning: React.Dispatch<React.SetStateAction<any>>;
-  setElapsedTime: React.Dispatch<React.SetStateAction<any>>;
-  setSelectedBillableStatus: React.Dispatch<React.SetStateAction<any>>;
-}) => {
+import { JobsData, jobsInitialState, projectsInitialState, ProjectsData, getProjectListData, getJobListData,} from "../../../../..";
+import Styles from "../TimeLog.module.scss"
+const AddTimeLog = (props: { absoluteURL: any; spHttpClient: any; onProjectChange: any; onJobChange: any; elapsedTime: any;onBillableStatusChange: any; isRunning: any; selectedProject: any; statusError: any; selectedJob: any;projectError: any;startTime: any; jobError: any; handleStartStop: any; addTimeLog: any; selectedBillableStatus : any; isUserProjectManager:any;loggedInUserDetails:any;isUserProjectTeam:any; isUserReportingManager:any; isUserAdmin:any; setSelectedProjectName:React.Dispatch<React.SetStateAction<any>>; selectedProjectName:any; setSelectedJobName: React.Dispatch<React.SetStateAction<any>>;setStartTime: React.Dispatch<React.SetStateAction<any>>; setSelectedJob: React.Dispatch<React.SetStateAction<any>>; setStatusError: React.Dispatch<React.SetStateAction<any>>; setAddTimeLog: React.Dispatch<React.SetStateAction<any>>; setSelectedProject: React.Dispatch<React.SetStateAction<any>>; setTimerAlert: React.Dispatch<React.SetStateAction<any>>; setIsRunning: React.Dispatch<React.SetStateAction<any>>; setElapsedTime: React.Dispatch<React.SetStateAction<any>>; setSelectedBillableStatus: React.Dispatch<React.SetStateAction<any>>;}) => {
   
   const statusOptions = ["Billable", "Non Billable"];
-  const [projectsData, setProjectsData] = useState<ProjectsData[]>(
-    projectsInitialState.projectsData
-  );
-  const [jobsData, setJobsData] = useState<JobsData[]>(
-    jobsInitialState.jobsData
-  );
-  const [filterJobs, setFilteredJobs] = useState<JobsData[]>(
-    jobsInitialState.jobsData
-  );
+  const [projectsData, setProjectsData] = useState<ProjectsData[]>( projectsInitialState.projectsData );
+  const [jobsData, setJobsData] = useState<JobsData[]>( jobsInitialState.jobsData );
+  const [filterJobs, setFilteredJobs] = useState<JobsData[]>( jobsInitialState.jobsData );
   const [TaskType , setTaskType] = useState('');
 
   useEffect(() => {
@@ -127,14 +80,7 @@ const AddTimeLog = (props: {
 
   useEffect(() => {
   const fetchData = async () => {
-    await getJobListData(
-      props.absoluteURL,
-      props.spHttpClient,
-      setJobsData,
-      props.loggedInUserDetails,
-      projectsData,
-      props.isUserAdmin
-    );
+    await getJobListData( props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails,projectsData,props.isUserAdmin );
   };
 
   fetchData();
@@ -142,30 +88,18 @@ const AddTimeLog = (props: {
 
 useEffect(() => {
   if (jobsData.length > 0) {
-    const filtered = jobsData.filter((job) => {
-     // console.log('Filtering Job:', job); 
+    const filtered = jobsData.filter((job) => { 
       const isProjectMatch = job.ProjectId === props.selectedProject;
-      const isAssigneeMatch = job.AssignedToPeoplePicker &&
-          job.AssignedToPeoplePicker.some(
-              (assignee) => assignee.EMail === props.loggedInUserDetails.Email
-          );
-
+      const isAssigneeMatch = job.AssignedToPeoplePicker && job.AssignedToPeoplePicker.some((assignee) => assignee.EMail === props.loggedInUserDetails.Email );
       return isProjectMatch && isAssigneeMatch;
     });
-
-  //  console.log('Filtered Jobs:', filtered); 
     setFilteredJobs(filtered);
   } else {
     setFilteredJobs([]);
   }
 }, [jobsData, props.selectedProject, props.loggedInUserDetails]);
 
-
-
-  const handleProjectChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+  const handleProjectChange = ( event: React.FormEvent<HTMLDivElement>,option?: IDropdownOption ) => {
     if (option) {
       const selectedValue = option.key as string;
       props.setSelectedProject(selectedValue);
@@ -178,12 +112,8 @@ useEffect(() => {
       });
     }
   };
-
-  
-  const handleJobChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+ 
+  const handleJobChange = ( event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption ) => {
     if (option) {
       const selectedValue = option.key as string;
       props.setSelectedJob(selectedValue);
@@ -206,10 +136,7 @@ useEffect(() => {
     }
   };
 
-  const handleBillableStatusChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ) => {
+  const handleBillableStatusChange = ( event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption) => {
     if (option) {
       const selectedValue = option.key as string;
       props.setSelectedBillableStatus(selectedValue);
@@ -221,10 +148,7 @@ useEffect(() => {
     }
   };
 
-  const handleChange = (
-    ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
-    newValue?: string
-  ) => {
+  const handleChange = ( ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string ) => {
     const { name, value } = ev.currentTarget;
     props.setAddTimeLog({
       ...props.addTimeLog,
@@ -243,149 +167,67 @@ useEffect(() => {
 
   return (
     <div>
-      <Box
-        display="flex"
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-      >
+      <Box className={Styles.AddBox}>
         <Grid container spacing={1} alignItems="center">
+
           <Grid item>
             <Label style={{ fontWeight: "600" }}>Projects</Label>
-            <Dropdown
-              placeholder="Select Project"
-              selectedKey={props.selectedProject}
-              onChange={handleProjectChange}
-              disabled={props.isRunning}
-              errorMessage={props.projectError}
+            <Dropdown placeholder="Select Project" selectedKey={props.selectedProject} onChange={handleProjectChange} disabled={props.isRunning} errorMessage={props.projectError}
               options={projectsData.sort((a, b) => a.ProjectName.localeCompare(b.ProjectName)).map((project) => ({
                 key: project.ProjectId,
                 text: project.ProjectName,
               }))}
               styles={{
-                root: {
-                  width: 200,
-                  height: 60,
-                  marginBottom: 5,
-                  borderWidth: 2,
-                },
-                title: {
-                  textAlign: "left",
-                  lineHeight: "25px",
-                },
-                dropdownItemsWrapper: {
-                  maxHeight: 200,
-                },
-                dropdownItem: {
-                  height: 35,
-                  borderRadius: 5,
-                  width: 200,
-                  backgroundColor: "#ffffff",
-                },
+                root: { width: 200, height: 60, marginBottom: 5, borderWidth: 2, },
+                title: { textAlign: "left", lineHeight: "25px", },
+                dropdownItemsWrapper: { maxHeight: 200,},
+                dropdownItem: { height: 35, borderRadius: 5, width: 200,  backgroundColor: "#ffffff",},
               }}
             />
           </Grid>
 
           <Grid item>
             <Label style={{ fontWeight: "600" }}>Tasks</Label>
-            <Dropdown
-              placeholder="Select Task"
-              selectedKey={props.selectedJob}
-              onChange={handleJobChange}
-              disabled={props.isRunning}
-              errorMessage={props.jobError}
+            <Dropdown placeholder="Select Task" selectedKey={props.selectedJob} onChange={handleJobChange} disabled={props.isRunning} errorMessage={props.jobError}
               options={filterJobs.sort((a, b) => a.JobName.localeCompare(b.JobName)).map((job) => ({
                 key: job.JobId,
                 text: job.JobName,
               }))}
               styles={{
-                root: {
-                  width: 200,
-                  height: 60,
-                  marginBottom: 5,
-                  borderWidth: 2,
-                },
-                title: {
-                  textAlign: "left",
-                  lineHeight: "25px",
-                },
-                dropdownItemsWrapper: {
-                  maxHeight: 200,
-                },
-                dropdownItem: {
-                  height: 35,
-                  borderRadius: 5,
-                  width: 200,
-                  backgroundColor: "#ffffff",
-                },
+                root: { width: 200, height: 60, marginBottom: 5, borderWidth: 2, },
+                title: { textAlign: "left", lineHeight: "25px", },
+                dropdownItemsWrapper: { maxHeight: 200, },
+                dropdownItem: { height: 35, borderRadius: 5, width: 200, backgroundColor: "#ffffff", },
               }}
             />
           </Grid>
 
           <Grid item>
             <Label style={{ fontWeight: "600" }}>Task Type</Label>
-            <Dropdown
-              placeholder="Select Task Type"
-              selectedKey={props.selectedBillableStatus??TaskType}
-              onChange={handleBillableStatusChange}
-              disabled={true}
-              errorMessage={props.statusError}
-              options={statusOptions.map((status) => ({
+            <Dropdown placeholder="Select Task Type" selectedKey={props.selectedBillableStatus??TaskType} onChange={handleBillableStatusChange} disabled={true} errorMessage={props.statusError}
+               options={statusOptions.map((status) => ({
                 key: status,
                 text: status,
               }))}
               styles={{
-                root: {
-                  width: 200,
-                  height: 60,
-                  marginBottom: 5,
-                  borderWidth: 2,
-                },
-                title: {
-                  textAlign: "left",
-                  lineHeight: "25px",
-                },
-                dropdownItemsWrapper: {
-                  maxHeight: 200,
-                },
-                dropdownItem: {
-                  height: 35,
-                  borderRadius: 5,
-                  width: 200,
-                  backgroundColor: "#ffffff",
-                },
+                root: { width: 200, height: 60, marginBottom: 5, borderWidth: 2, },
+                title: { textAlign: "left", lineHeight: "25px", },
+                dropdownItemsWrapper: { maxHeight: 200,},
+                dropdownItem: { height: 35, borderRadius: 5, width: 200, backgroundColor: "#ffffff", },
               }}
             />
           </Grid>
 
           <Grid item sx={{ marginBottom: "33px" }}>
             <Label style={{ fontWeight: "600" }}>Description</Label>
-            <TextField
-              name="Description"
-              placeholder="What are you working on ?"
-              style={{ width: "350px" }}
-              onChange={handleChange}
-              value={props.addTimeLog.Description}
-              disabled={props.isRunning}
-            />
+            <TextField name="Description" placeholder="What are you working on ?" style={{ width: "570px" }} onChange={handleChange} value={props.addTimeLog.Description}disabled={props.isRunning} />
           </Grid>
+
         </Grid>
+
         <Box>
-          <Label style={{ fontWeight: "600" }}>
-            {props.isRunning ? "Stop Timer" : "Start Timer"}
-          </Label>
-          <Button
-            onClick={props.handleStartStop}
-            style={{
-              backgroundColor: props.isRunning ? "#D00000" : "#023E8A",
-              color: "white",
-              width: "90px",
-              textAlign: "center",
-              height: "30px",
-              fontSize: "16px",
-              marginBottom: "30px",
-            }}
-          >
+          <Label style={{ fontWeight: "600" }}> {props.isRunning ? "Stop Timer" : "Start Timer"} </Label>
+          <Button className={Styles.timerButton} onClick={props.handleStartStop} style={{ backgroundColor: props.isRunning ? "#D00000" : "#023E8A", }} >
             {props.isRunning ? formatTime(props.elapsedTime) : "00:00:00"}
           </Button>
         </Box>

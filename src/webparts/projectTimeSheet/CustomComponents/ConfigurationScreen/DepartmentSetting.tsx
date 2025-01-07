@@ -37,7 +37,7 @@ const DepartmentSetting = (props: {
           "DepartmentScreen"
         );
       } catch (error) {
-        console.error("Error fetching data:", error);
+       // console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ const DepartmentSetting = (props: {
       }
     );
     if (!response.ok) {
-      console.error("Error adding Department records");
+      //console.error("Error adding Department records");
       return;
     } else {
       await getDepartments(
@@ -128,16 +128,16 @@ const DepartmentSetting = (props: {
               "DepartmentScreen"
             );
           } else {
-            console.log("Error updating item:", updateResponse.statusText);
+           // console.log("Error updating item:", updateResponse.statusText);
           }
         } else {
-          console.log("No item found with the specified EmployeeID.");
+        //  console.log("No item found with the specified EmployeeID.");
         }
       } else {
-        console.log("Error fetching item:", response.statusText);
+      //  console.log("Error fetching item:", response.statusText);
       }
     } catch (error) {
-      console.log("Error fetching item:", error);
+     // console.log("Error fetching item:", error);
     }
   };
 

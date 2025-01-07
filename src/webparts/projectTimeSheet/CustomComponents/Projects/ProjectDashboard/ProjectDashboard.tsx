@@ -83,7 +83,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
           false
         );
       } catch (error) {
-        console.error("Error fetching data:", error);
+       // console.error("Error fetching data:", error);
       } finally {
         // setLoading(false);
       }
@@ -121,7 +121,7 @@ const ProjectDashboard = (props: IProjectDashboardProps) => {
       projectTeam.push(project.ProjectManagerPeoplePicker);
       projectTeam.push(project.ReportingManagerPeoplePicker);
     } catch (error) {
-      console.error("Error parsing project team JSON:", error);
+     // console.error("Error parsing project team JSON:", error);
     }
   }
 

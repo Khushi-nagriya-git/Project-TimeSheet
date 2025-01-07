@@ -4,17 +4,11 @@ import { styled } from "@mui/system";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import { IJobsProps } from "./IJobsProps";
-import TopNavigation from "../Navigation/TopNavigation";
 import JobsFiltersandSearch from "./JobsView/JobsFiltersandSearch";
 import { JobsData } from "./IJobsStats";
 import { ProjectsData, projectsInitialState } from "../Projects/IProjectStats";
 import { getProjectListData } from "../Projects/Services";
-import {
-  addJobs,
-  deleteJobs,
-  getJobListData,
-  updateJobRecords,
-} from "./Services";
+import { addJobs,  deleteJobs,  getJobListData,  updateJobRecords,} from "./Services";
 import JobsTable from "./JobsView/JobsTable";
 import JobForm from "./Forms/JobForm";
 import { JobFormData, initialState } from "./Forms/IJobFormStats";
@@ -72,27 +66,19 @@ const Content = styled("div")({
 });
 
 const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
-  const [topNavigationState, setTopNavigationState] =
-    useState<string>("myData");
-  const [topNavigationMode, setTopNavigationMode] = useState<string>("Jobs");
+  const [topNavigationState, setTopNavigationState] = useState<string>("myData");
   const [myDataActiveLink, setMyDataActiveLink] = useState<string>("Jobs");
   const [jobsData, setJobsData] = useState<JobsData[]>([]);
-  const [projectsData, setProjectsData] = useState<ProjectsData[]>(
-    projectsInitialState.projectsData
-  );
+  const [projectsData, setProjectsData] = useState<ProjectsData[]>( projectsInitialState.projectsData );
   const [addFormOpen, setAddFormOpen] = useState<boolean>(false);
   const [selectedProjectName, setSelectedProjectName] = useState<string[]>([]);
   const [selectedStatusName, setSelectedStatusName] = useState<string[]>([]);
-  const [selectedAssigneesName, setSelectedAssigneesName] = useState<string[]>(
-    []
-  );
+  const [selectedAssigneesName, setSelectedAssigneesName] = useState<string[]>(  [] );
   const [peoplePickerDefaultTeam, setPeoplePickerDefaultTeam] = useState("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [editJobId, setEditJobId] = useState<number>(0);
-  const [currentData, setCurrentData] = useState<JobFormData>(
-    initialState.jobFormData
-  );
+  const [currentData, setCurrentData] = useState<JobFormData>( initialState.jobFormData );
   const [timeLogsData, setTimeLogsData] = useState<TimeLogsData[]>([]);
   const [deleteAlert, setDeleteAlert] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,33 +90,17 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   const [editSuccessFullyAlert, setEditSuccessFullyAlert] = useState(false);
   const [filteredJobs, setFilteredJobs] = useState<JobsData[]>([]);
   const [loading, setLoading] = useState(true);
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpenNavigation(open);
-  };
+  const toggleDrawer = (open: boolean) => () => { setDrawerOpenNavigation(open); };
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerOpenNavigation, setDrawerOpenNavigation] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getProjectListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setProjectsData,
-          props.loggedInUserDetails,
-          props.isUserAdmin
-        );
-        await getTimeLogsListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setTimeLogsData,
-          props.loggedInUserDetails,
-          "TimeLogs",
-          props.isUserAdmin,
-          props.isUserReportingManager
-        );
+        await getProjectListData( props.absoluteURL, props.spHttpClient,setProjectsData, props.loggedInUserDetails, props.isUserAdmin);
+        await getTimeLogsListData( props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails, "TimeLogs", props.isUserAdmin, props.isUserReportingManager );
       } catch (error) {
-        console.error("Error fetching data:", error);
+        //console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -142,16 +112,9 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
     if (projectsData.length > 0) {
       const fetchJobData = async () => {
         try {
-          await getJobListData(
-            props.absoluteURL,
-            props.spHttpClient,
-            setJobsData,
-            props.loggedInUserDetails,
-            projectsData,
-            props.isUserAdmin
-          );
+          await getJobListData( props.absoluteURL, props.spHttpClient, setJobsData,  props.loggedInUserDetails, projectsData, props.isUserAdmin );
         } catch (error) {
-          console.log("Error fetching job data:", error);
+         // console.log("Error fetching job data:", error);
         }
       };
       fetchJobData();
@@ -160,11 +123,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
 
   useEffect(() => {
     let timer: any;
-    if (
-      deleteSuccessfullyAlert ||
-      addSuccessFullyAlert ||
-      editSuccessFullyAlert
-    ) {
+    if (deleteSuccessfullyAlert ||addSuccessFullyAlert || editSuccessFullyAlert) {
       timer = setTimeout(() => {
         setDeleteSuccessfullyAlert(false);
         setAddSuccessFullyAlert(false);
@@ -200,50 +159,15 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
     if (mode === "add") {
       await addJobs(data, props.absoluteURL, props.spHttpClient);
       setAddFormOpen(false);
-      await getJobListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setJobsData,
-        props.loggedInUserDetails,
-        projectsData,
-        props.isUserAdmin
-      );
+      await getJobListData( props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails,  projectsData,  props.isUserAdmin);
       setAlert(true);
       setAddSuccessFullyAlert(true);
-      await getProjectListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setProjectsData,
-        props.loggedInUserDetails,
-        props.isUserAdmin
-      );
+      await getProjectListData( props.absoluteURL, props.spHttpClient, setProjectsData, props.loggedInUserDetails, props.isUserAdmin );
     } else if (mode === "edit") {
-      await updateJobRecords(
-        props.spHttpClient,
-        props.absoluteURL,
-        editJobId,
-        data,
-        "formEdit",
-        setJobsData,
-        setCurrentData,
-        props.loggedInUserDetails
-      );
+      await updateJobRecords( props.spHttpClient,  props.absoluteURL, editJobId,  data, "formEdit", setJobsData, setCurrentData, props.loggedInUserDetails );
       setAddFormOpen(false);
-      await getJobListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setJobsData,
-        props.loggedInUserDetails,
-        projectsData,
-        props.isUserAdmin
-      );
-      await getProjectListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setProjectsData,
-        props.loggedInUserDetails,
-        props.isUserAdmin
-      );
+      await getJobListData( props.absoluteURL,props.spHttpClient, setJobsData,  props.loggedInUserDetails, projectsData, props.isUserAdmin );
+      await getProjectListData( props.absoluteURL,  props.spHttpClient, setProjectsData, props.loggedInUserDetails, props.isUserAdmin );
       setAlert(true);
       setEditSuccessFullyAlert(true);
       setCurrentData(initialState.jobFormData);
@@ -252,20 +176,8 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   };
 
   const handleDelete = async () => {
-    await deleteJobs(
-      props.absoluteURL,
-      props.spHttpClient,
-      deletedJobId,
-      setJobsData
-    );
-    await getJobListData(
-      props.absoluteURL,
-      props.spHttpClient,
-      setJobsData,
-      props.loggedInUserDetails,
-      projectsData,
-      props.isUserAdmin
-    );
+    await deleteJobs(props.absoluteURL,props.spHttpClient, deletedJobId, setJobsData );
+    await getJobListData( props.absoluteURL, props.spHttpClient, setJobsData,  props.loggedInUserDetails, projectsData, props.isUserAdmin );
     setIsOpen(false);
     setAlert(true);
     setDeleteSuccessfullyAlert(true);
@@ -274,10 +186,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
   return (
     <div>
       <FullHeightGrid container>
-        <FullHeightGrid
-          item
-          style={{ display: "flex", height: "100%", width: "100%" }}
-        >
+        <FullHeightGrid item style={{ display: "flex", height: "100%", width: "100%" }} >
           <MainContainer>
             {topNavigationState === "myData" && (
               <Content>
@@ -389,11 +298,7 @@ const Jobs: React.FC<IJobsProps> = (props: IJobsProps) => {
 
             {topNavigationState === "team" && (
               <Content>
-                <MyTeam
-                  absoluteURL={props.absoluteURL}
-                  spHttpClient={props.spHttpClient}
-                  projectProps={props}
-                  loggedInUserDetails={props.loggedInUserDetails}
+                <MyTeam  absoluteURL={props.absoluteURL}  spHttpClient={props.spHttpClient}  projectProps={props}  loggedInUserDetails={props.loggedInUserDetails}
                   isUserReportingManager={props.isUserReportingManager}
                   isUserAdmin={props.isUserAdmin}
                   isUserProjectTeam={props.isUserProjectTeam}

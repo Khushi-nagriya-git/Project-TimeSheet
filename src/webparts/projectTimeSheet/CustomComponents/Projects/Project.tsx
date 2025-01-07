@@ -57,7 +57,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
           props.isUserAdmin
         );
       } catch (error) {
-        console.error("Error fetching data:", error);
+       // console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -370,9 +370,7 @@ const Project: React.FC<IProjectProps> = (props: IProjectProps) => {
           open={addFormOpen}
           setAddFormOpen={setAddFormOpen}
           peoplePickerDefaultManager={peoplePickerDefaultManager}
-          peoplePickerDefaultReportingManager={
-            peoplePickerDefaultReportingManager
-          }
+          peoplePickerDefaultReportingManager={ peoplePickerDefaultReportingManager }
           peoplePickerDefaultTeam={peoplePickerDefaultTeam}
           departmentNames={departmentNames}
         />

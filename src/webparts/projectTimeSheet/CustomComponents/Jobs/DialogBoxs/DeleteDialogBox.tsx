@@ -1,13 +1,4 @@
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  React,
-  IconButton,
-} from "../../../../../index";
+import { Dialog, DialogActions, DialogContent,DialogContentText, DialogTitle, Button, React, IconButton,} from "../../../../../index";
 import CloseIcon from "@mui/icons-material/Close";
 import dialogBox from "./DialogBox.module.scss";
 
@@ -18,25 +9,15 @@ interface DeleteDialogBoxProps {
   isTimeLogAvailable: boolean;
 }
 
-const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
-  open,
-  handleClose,
-  handleDeleteAction,
-  isTimeLogAvailable,
-}) => {
+const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({ open, handleClose, handleDeleteAction, isTimeLogAvailable,}) => {
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
+    <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title"aria-describedby="alert-dialog-description" >
+
       <DialogTitle id="alert-dialog-title"className={dialogBox.dialogTitle}>
         {isTimeLogAvailable ? "Task Deletion Not Allowed" : "Delete Task"}
-        <IconButton className={dialogBox.buttonIcon} aria-label="close"onClick={handleClose} >
-          <CloseIcon/>
-        </IconButton>
+        <IconButton className={dialogBox.buttonIcon} aria-label="close"onClick={handleClose} >  <CloseIcon/></IconButton>
       </DialogTitle>
+
       <DialogContent>
         <DialogContentText id="alert-dialog-description" className={dialogBox.dialogContentText}>
           {isTimeLogAvailable
@@ -44,9 +25,9 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
             : "Are you sure you want to delete this task?"}
         </DialogContentText>
       </DialogContent>
+
       <DialogActions>
-        <Button
-          onClick={handleClose}
+        <Button onClick={handleClose}
           sx={{
             color: isTimeLogAvailable ? "white" : "rgb(50, 49, 48)",
             backgroundColor: isTimeLogAvailable ? "#1565c0" : "white",
@@ -59,9 +40,7 @@ const DeleteDialogBox: React.FC<DeleteDialogBoxProps> = ({
           {isTimeLogAvailable ? "Ok" : "Cancel"}
         </Button>
         {!isTimeLogAvailable && (
-          <Button
-            onClick={handleDeleteAction}
-            autoFocus
+          <Button onClick={handleDeleteAction}  autoFocus
             sx={{
               backgroundColor: "#FF6666",
               color: "white",

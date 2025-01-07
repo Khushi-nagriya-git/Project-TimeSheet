@@ -1,23 +1,12 @@
-import {
-  React,
-  Box,
-  TableCell,
-  TableBody,
-  Table,
-  TableContainer,
-  TableRow,
-  TableHead,
-  useEffect,
-  Grid,
-} from "../../../../../index";
+import { React, Box,TableCell,TableBody, Table, TableContainer, TableRow, TableHead,useEffect, Grid,} from "../../../../../index";
 import { getTimeLogsListData } from "../Services";
 import TimeLogRows from "./TimeLogRows";
+import Styles from "../TimeLog.module.scss";
 
 const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUserDetails:any; isUserAdmin:any; timelogProps:any ;filteredTimeLogsData:any;isUserReportingManager:any;currentUserDetails:any ; isRunning:any ; elapsedTime:any ; setTimeLogsData:React.Dispatch<React.SetStateAction<any>> ; timeLogsData:any ; jobResumeTimer:any;handleStartStop:any ; setDeletedTimelogId:React.Dispatch<React.SetStateAction<any>> ; setIsOpen:React.Dispatch<React.SetStateAction<any>>;setIsRunning: React.Dispatch<React.SetStateAction<any>>; setEditTimeLogId: React.Dispatch<React.SetStateAction<any>> ; setInitialFormData:React.Dispatch<React.SetStateAction<any>>; setEditFormOpen:React.Dispatch<React.SetStateAction<any>>}) => {
 
   useEffect(() => {
-    getTimeLogsListData(props.absoluteURL, props.spHttpClient, props.setTimeLogsData,props.loggedInUserDetails,"TimeLogs",props.isUserAdmin,props.isUserReportingManager
-    );
+    getTimeLogsListData(props.absoluteURL, props.spHttpClient, props.setTimeLogsData,props.loggedInUserDetails,"TimeLogs",props.isUserAdmin,props.isUserReportingManager );
     props.setTimeLogsData(props.filteredTimeLogsData);
   }, []);
 
@@ -34,7 +23,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
     );
   
     if (!timelog) {
-      console.error(`Timelog with ID ${timelogId} not found.`);
+    //  console.error(`Timelog with ID ${timelogId} not found.`);
       return;
     }
   
@@ -53,19 +42,7 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
     props.setEditFormOpen(true);
   };
   
-  function createData(
-    TimeLogsId: number,
-    ProjectId: number,
-    ProjectName: string,
-    JobId: number,
-    JobName: string,
-    BillableStatus: string,
-    Description: string,
-    LoggedTime: string,
-    EstimatedHours: number,
-    Created:'',
-    Status:string  
-  ) {
+  function createData( TimeLogsId: number, ProjectId: number, ProjectName: string, JobId: number, JobName: string, BillableStatus: string, Description: string, LoggedTime: string,EstimatedHours: number, Created:'', Status:string   ) {
     return {
       TimeLogsId,
       ProjectId,
@@ -87,154 +64,44 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
       <Grid item xs={12}>
         <div style={{ height: "100%", overflow: "auto" }}>
           <TableContainer>
-            <Table
-              size="small"
-              aria-label="collapsible table"
-              sx={{
-                fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-              }}
-            >
+            <Table size="small" aria-label="collapsible table" sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", }}>
               <TableHead>
            
                 <TableRow sx={{ height: "40px", background: "#f3f2f1" }}>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "18%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "18%", }} align="left">
                     Project Name
                   </TableCell>
                     
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "18%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "18%", }} align="left">
                     Task Name
                   </TableCell>
                  
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "20%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      //color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "20%", }} align="left"> 
                     Description
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "10%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "10%", }} align="left">
+                  
                     Status
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "10%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "10%", }} align="left">
                     Task Type
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "10%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "10%", }} align="left">
                     Logged Time
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "3%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+
+                  <TableCell className={Styles.TimeLogTableCell} sx={{ width: "3%", }} align="left" >
                   </TableCell>
-                  <TableCell
-                    sx={{
-                      padding: "4px 16px",
-                      fontWeight: "600",
-                      width: "10%",
-                      position: "sticky",
-                      top: 0,
-                      backgroundColor: "#023E8A",color:"white",
-                      zIndex: 1,
-                      // color:"#323130",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                    align="left"
-                  >
+
+                  <TableCell sx={{  width: "10%", }} className={Styles.TimeLogTableCell} align="left" >
                     Actions
                   </TableCell>
                 </TableRow>
+
               </TableHead>
+              
               <TableBody>
                 {props.filteredTimeLogsData.length > 0 ? (
                  props.filteredTimeLogsData.map((row: any) => {
@@ -253,31 +120,13 @@ const TimeLogTable = (props: { absoluteURL: any; spHttpClient: any; loggedInUser
                     );
 
                     return (
-                      <TimeLogRows
-                        key={rowData.TimeLogsId}
-                        row={rowData}
-                        handleDeleteIconClick={handleDeleteIconClick}
-                        handleEditIconClick={handleEditIconClick}
-                        timelogProps={props.timelogProps}
-                        elapsedTime={props.elapsedTime}
-                        isRunning={props.isRunning}
-                        handleStartStop={props.handleStartStop} 
-                        jobResumeTimer={props.jobResumeTimer}
-                        setIsRunning={props.setIsRunning}
-                        />
+                      <TimeLogRows key={rowData.TimeLogsId} row={rowData} handleDeleteIconClick={handleDeleteIconClick} handleEditIconClick={handleEditIconClick} timelogProps={props.timelogProps} elapsedTime={props.elapsedTime} isRunning={props.isRunning} handleStartStop={props.handleStartStop}  jobResumeTimer={props.jobResumeTimer} setIsRunning={props.setIsRunning} />
                     );
                   })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={9}>
-                      <Box
-                        sx={{
-                          textAlign: "center",
-                          fontWeight: "600",
-                          fontFamily:
-                            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                        }}
-                      >
+                      <Box className={Styles.NoDataAvaliable} >
                         No data found
                       </Box>
                     </TableCell>

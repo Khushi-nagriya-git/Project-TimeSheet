@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { ITimeSheetProps } from "./ITimeSheetProps";
 import { styled } from "styled-components";
 import { Box, Button, CircularProgress, Grid } from "@mui/material";
-import TopNavigation from "../Navigation/TopNavigation";
 import TimeSheetTable from "./TimeSheetTable/TimeSheetTable";
 import { TimeLogsData } from "../TimeLogs/ITimeLogsStats";
 import { getTimeLogsListData } from "../TimeLogs/Services";
@@ -60,46 +59,30 @@ const Content = styled("div")({
 
 const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
   const [topNavigationState, setTopNavigationState] = useState("myData");
-  const [myDataActiveLink, setMyDataActiveLink] =
-    useState<string>("MyTimeSheet");
+  const [myDataActiveLink, setMyDataActiveLink] = useState<string>("MyTimeSheet");
   const [timeLogsData, setTimeLogsData] = useState<TimeLogsData[]>([]);
   const [myTimeSheetData, setMyTimeSheetData] = useState<TimeLogsData[]>([]);
-  const [projectsData, setProjectsData] = useState<ProjectsData[]>(
-    projectsInitialState.projectsData
-  );
-  const [teamTimeSheetData, setTeamTimeSheetData] = useState<TimeLogsData[]>(
-    []
-  );
+  const [projectsData, setProjectsData] = useState<ProjectsData[]>( projectsInitialState.projectsData );
+  const [teamTimeSheetData, setTeamTimeSheetData] = useState<TimeLogsData[]>( []);
   const [updateStatus, setUpdateStatus] = useState(false);
   const [loading, setLoading] = useState(true);
-  const toggleDrawer = (open: boolean) => () => {
-    setDrawerOpen(open);
-  };
+  const toggleDrawer = (open: boolean) => () => { setDrawerOpen(open); };
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  const [showTeamTimeSheetTab , setShowTeamTimeSheet] = useState(false);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await getProjectListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setProjectsData,
-          props.loggedInUserDetails,
-          props.isUserAdmin
-        );
-        const data = await getTimeLogsListData(
-          props.absoluteURL,
-          props.spHttpClient,
-          setTimeLogsData,
-          props.loggedInUserDetails,
-          "TimeSheet",
-          props.isUserAdmin,
-          props.isUserReportingManager
-        );
+        const projectData = await getProjectListData( props.absoluteURL,  props.spHttpClient, setProjectsData, props.loggedInUserDetails,props.isUserAdmin );
+        const data = await getTimeLogsListData( props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails, "TimeSheet", props.isUserAdmin, props.isUserReportingManager );
         setTeamTimeSheetData(data);
-        await handleTabChange("MyTimeSheet");
+        await handleTabChange("MyTimeSheet"); 
+        const hasMatchingProject = projectData.some((project:any) => project.ReportingManagerPeoplePicker.EMail === props.loggedInUserDetails.Email );
+        if (hasMatchingProject) {
+          setShowTeamTimeSheet(true);   
+        }
       } catch (error) {
-        console.log("Error fetching data:", error);
+       // console.log("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
@@ -111,22 +94,10 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
     setTeamTimeSheetData(teamTimeSheetData);
   }, [teamTimeSheetData, myDataActiveLink]);
 
-  const filterDataForReportingManager = (
-    projectsData: any[],
-    setTeamTimeSheetData: (data: any) => void,
-    data: TimeLogsData[]
-  ) => {
+  const filterDataForReportingManager = ( projectsData: any[], setTeamTimeSheetData: (data: any) => void, data: TimeLogsData[] ) => {
     if (props.isUserReportingManager) {
-      const projectIds = projectsData
-        .filter(
-          (project) =>
-            project.ReportingManagerPeoplePicker.EMail ===
-            props.loggedInUserDetails.Email
-        )
-        .map((project) => project.ProjectId);
-      const filteredTimeLogs = data.filter((timesheet) =>
-        projectIds.includes(timesheet.ProjectId)
-      );
+      const projectIds = projectsData.filter((project) => project.ReportingManagerPeoplePicker.EMail === props.loggedInUserDetails.Email ) .map((project) => project.ProjectId);
+      const filteredTimeLogs = data.filter((timesheet) => projectIds.includes(timesheet.ProjectId));
       setTeamTimeSheetData(filteredTimeLogs);
     }
   };
@@ -134,125 +105,64 @@ const TimeSheet: React.FC<ITimeSheetProps> = (props) => {
   const handleTabChange = async (tab: string = "TeamTimeSheet") => {
     setMyDataActiveLink(tab);
     if (tab === "TeamTimeSheet") {
-      const data = await getTimeLogsListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setTimeLogsData,
-        props.loggedInUserDetails,
-        "TimeSheet",
-        props.isUserAdmin,
-        props.isUserReportingManager
-      );
-      await filterDataForReportingManager(
-        projectsData,
-        setTeamTimeSheetData,
-        data
-      );
+      setLoading(true);
+      try{
+        const data = await getTimeLogsListData( props.absoluteURL, props.spHttpClient, setTimeLogsData, props.loggedInUserDetails, "TimeSheet", props.isUserAdmin, props.isUserReportingManager );
+        await filterDataForReportingManager( projectsData, setTeamTimeSheetData, data);
+      }catch(error){
+       // console.error("Error fetching data:", error);
+      }finally{
+        setLoading(false);
+      }
     }
     if (tab === "MyTimeSheet") {
       let isUserAdmin = false;
       let isUserReportingManager = false;
-      await getTimeLogsListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setMyTimeSheetData,
-        props.loggedInUserDetails,
-        "MyTimeSheet",
-        isUserReportingManager,
-        isUserAdmin
-      );
+      await getTimeLogsListData( props.absoluteURL, props.spHttpClient, setMyTimeSheetData, props.loggedInUserDetails, "MyTimeSheet", isUserReportingManager, isUserAdmin );
     }
   };
 
   return (
     <FullHeightGrid container>
-      <FullHeightGrid
-        item
-        style={{ display: "flex", height: "100%", width: "100%" }}
-      >
+      <FullHeightGrid item style={{ display: "flex", height: "100%", width: "100%" }} >
         <MainContainer>
-    
           {topNavigationState === "myData" && (
             <Content>
               <NavigationLinks>
+
               <Box display="flex" alignItems="center" marginRight="10px">
-                    <IconButton
-                      edge="start"
-                      color="inherit"
-                      aria-label="menu"
-                      onClick={toggleDrawer(true)}
-                      sx={{ margin: 0 }}
-                    >
+                    <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)} sx={{ margin: 0 }} >
                       <MenuIcon />
                     </IconButton>
-                    <DrawerContainer
-                      anchor="left"
-                      open={drawerOpen}
-                      onClose={toggleDrawer(false)}
-                    >
+                    <DrawerContainer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)} >
                       <SideNavigation  />
                     </DrawerContainer>
-                  </Box>
-                <NavLink
-                  className={myDataActiveLink === "MyTimeSheet" ? "active" : ""}
-                  onClick={() => handleTabChange("MyTimeSheet")}
-                >
+              </Box>
+
+                <NavLink className={myDataActiveLink === "MyTimeSheet" ? "active" : ""}  onClick={() => handleTabChange("MyTimeSheet")}>
                   My TimeSheet
-                </NavLink>
-                {props.isUserReportingManager && (
-                  <NavLink
-                    className={
-                      myDataActiveLink === "TeamTimeSheet" ? "active" : ""
-                    }
-                    onClick={() => handleTabChange("TeamTimeSheet")}
-                  >
+                </NavLink>    
+
+                {(props.isUserReportingManager || showTeamTimeSheetTab ) && (
+                  <NavLink className={ myDataActiveLink === "TeamTimeSheet" ? "active" : "" } onClick={() => handleTabChange("TeamTimeSheet")} >
                     Team TimeSheet
-                  </NavLink>
+                  </NavLink>       
                 )}
+
               </NavigationLinks>
+
               {loading && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
+                <Box sx={{ display: "flex", justifyContent: "center",alignItems: "center", height: "100%",  }} >
                   <CircularProgress />
-                </Box>
-              )}
+                </Box>      
+              )}   
 
               {myDataActiveLink === "MyTimeSheet" && !loading && (
-                <TimeSheetTable
-                  absoluteURL={props.absoluteURL}
-                  spHttpClient={props.spHttpClient}
-                  loggedInUserDetails={props.loggedInUserDetails}
-                  timeLogsData={myTimeSheetData}
-                  myDataActiveLink={myDataActiveLink}
-                  TableType="MyTimeSheet"
-                  setUpdateStatus={setUpdateStatus}
-                  updateStatus={updateStatus}
-                  TimeSheetProps={props}
-                  handleTabChange={handleTabChange}
-                />
+                <TimeSheetTable absoluteURL={props.absoluteURL} spHttpClient={props.spHttpClient} allTimeLogsData = {timeLogsData} loggedInUserDetails={props.loggedInUserDetails}  timeLogsData={myTimeSheetData} myDataActiveLink={myDataActiveLink} TableType="MyTimeSheet" setUpdateStatus={setUpdateStatus} updateStatus={updateStatus} TimeSheetProps={props} handleTabChange={handleTabChange} projectsData={projectsData}/>
               )}
 
               {myDataActiveLink === "TeamTimeSheet" && !loading && (
-                <>
-                  <TimeSheetTable
-                    absoluteURL={props.absoluteURL}
-                    spHttpClient={props.spHttpClient}
-                    loggedInUserDetails={props.loggedInUserDetails}
-                    timeLogsData={teamTimeSheetData}
-                    myDataActiveLink={myDataActiveLink}
-                    TableType="TeamTimeSheet"
-                    setUpdateStatus={setUpdateStatus}
-                    updateStatus={updateStatus}
-                    TimeSheetProps={props}
-                    handleTabChange={handleTabChange}
-                  ></TimeSheetTable>
-                </>
+                <TimeSheetTable absoluteURL={props.absoluteURL} spHttpClient={props.spHttpClient} allTimeLogsData = {timeLogsData} loggedInUserDetails={props.loggedInUserDetails} timeLogsData={teamTimeSheetData} myDataActiveLink={myDataActiveLink} TableType="TeamTimeSheet" setUpdateStatus={setUpdateStatus} updateStatus={updateStatus} TimeSheetProps={props} handleTabChange={handleTabChange} projectsData={projectsData}></TimeSheetTable>
               )}
             </Content>
           )}

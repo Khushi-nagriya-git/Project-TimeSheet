@@ -21,11 +21,11 @@ export const getLoggedInUserData = async (spHttpClient: SPHttpClient, absoluteUR
         const responseJSON = await response.json();
         return responseJSON;
     } else {
-        console.log("No data found");
+        //console.log("No data found");
         return null;
     }
 } catch (error) {
-    console.log("Error:", error);
+   // console.log("Error:", error);
     return null;
 }
 };
@@ -43,10 +43,10 @@ export const getDepartments = async ( absoluteURL: string,spHttpClient: SPHttpCl
           setDepartmentNames(data.value);
         }
       } else {
-          console.log("Please enter the correct name of the list in the property pane.");
+         // console.log("Please enter the correct name of the list in the property pane.");
       }
   } catch (error) {
-      console.log("Error fetching data:", error);
+     // console.log("Error fetching data:", error);
   }
 };
 
@@ -69,10 +69,10 @@ export const getProjectListData = async (  absoluteURL: string,spHttpClient: SPH
           return data.value;
         }
       } else {
-          console.log("Please enter the correct name of the list in the property pane.");
+         // console.log("Please enter the correct name of the list in the property pane.");
       }
   } catch (error) {
-      console.log("Error fetching data:", error);
+    //  console.log("Error fetching data:", error);
   }
 };
 
@@ -85,7 +85,7 @@ export const getLastItemId = async (absoluteURL: string, spHttpClient: SPHttpCli
     },
   });
   if (!response.ok) {
-    console.error("Error fetching the last item");
+   // console.error("Error fetching the last item");
     return 0;
   }
   const data = await response.json();
@@ -134,7 +134,7 @@ export const addProjects = async ( data: CustomFormData, absoluteURL: string, sp
     body: JSON.stringify(listItemData),
   });
   if (!response.ok) {
-    console.error("Error adding Project records");
+   // console.error("Error adding Project records");
     return false ;
   }
 
@@ -144,7 +144,7 @@ export const addProjects = async ( data: CustomFormData, absoluteURL: string, sp
     for(let i=0;i<data.attachment.length;i++){
       const attachmentResponse = await handleUploadAttachment(itemId, data.attachment[i], absoluteURL, spHttpClient);
       if (!attachmentResponse.ok) {
-        console.error("Error uploading attachment");
+       // console.error("Error uploading attachment");
         return;
       }
     }
@@ -176,7 +176,7 @@ const getAttachments = async (absoluteURL: string, itemId: number, spHttpClient:
       const data = await response.json();
       return data.value; 
   } catch (error) {
-      console.error('Error fetching attachments:', error); // Log error for debugging
+     // console.error('Error fetching attachments:', error); // Log error for debugging
       return []; // Return empty array in case of error
   }
 };
@@ -185,7 +185,7 @@ const deleteAllAttachments = async (absoluteURL: string, itemId: number, spHttpC
   try {
     const attachments = await getAttachments(absoluteURL, itemId, spHttpClient);
     if (attachments.length === 0) {
-      console.warn(`No attachments found for item ID: ${itemId}`);
+     // console.warn(`No attachments found for item ID: ${itemId}`);
       return true; 
     }
 
@@ -205,16 +205,16 @@ const deleteAllAttachments = async (absoluteURL: string, itemId: number, spHttpC
           throw new Error(`Failed to delete attachment ${attachments[i].FileName}: ${response.statusText}`);
         }
 
-        console.log(`Successfully deleted attachment: ${attachments[i].FileName}`); // Log successful deletion
+       // console.log(`Successfully deleted attachment: ${attachments[i].FileName}`); // Log successful deletion
       } catch (error) {
-        console.error(`Error deleting attachment ${attachments[i].FileName}:`, error); // Log error for debugging
+       // console.error(`Error deleting attachment ${attachments[i].FileName}:`, error); // Log error for debugging
         return false; // Return false if any attachment fails to delete
       }
     }
 
     return true; // Return true if all attachments are deleted successfully
   } catch (error) {
-    console.error(`Error fetching or deleting attachments for item ${itemId}:`, error);
+   // console.error(`Error fetching or deleting attachments for item ${itemId}:`, error);
     return false;
   }
 };
@@ -285,23 +285,23 @@ export async function updateUserRecords( spHttpClient: SPHttpClient, absoluteURL
                   for(let i=0;i<updateformData.attachment.length;i++){
                     const attachmentResponse = await handleUploadAttachment(itemId, updateformData.attachment[i], absoluteURL, spHttpClient);
                     if (!attachmentResponse.ok) {
-                      console.error("Error uploading attachment");
+                     // console.error("Error uploading attachment");
                       return;
                     }
                   }
                 }
                 setCurrentData(initialState.formData);
               } else {
-                  console.log("Error updating item:", updateResponse.statusText);
+                //  console.log("Error updating item:", updateResponse.statusText);
               }
           } else {
-              console.log("No item found with the specified EmployeeID.");
+            //  console.log("No item found with the specified EmployeeID.");
           }
       } else {
-          console.log("Error fetching item:", response.statusText);
+        //  console.log("Error fetching item:", response.statusText);
       }
   } catch (error) {
-      console.log("Error fetching item:", error);
+     // console.log("Error fetching item:", error);
   }
 }
 
@@ -316,7 +316,7 @@ export const deleteProject = async ( absoluteURL: string, spHttpClient: SPHttpCl
       const data = await getResponse.json();
       const items = data.value;
       if (items.length === 0) {
-        console.error("Item does not exist. It may have been deleted by another user.");
+      //  console.error("Item does not exist. It may have been deleted by another user.");
         return;
       }
       const internalId = items[0].ID;
@@ -334,12 +334,12 @@ export const deleteProject = async ( absoluteURL: string, spHttpClient: SPHttpCl
       if (deleteResponse.ok) {
         // Refresh project data after deletion
       } else {
-        console.error("Failed to delete project. Status:", deleteResponse.status);
+       // console.error("Failed to delete project. Status:", deleteResponse.status);
       }
     } else {
-      console.error("Failed to fetch item. Status:", getResponse.status);
+    //  console.error("Failed to fetch item. Status:", getResponse.status);
     }
   } catch (error) {
-    console.error("Error deleting project:", error);
+   // console.error("Error deleting project:", error);
   }
 };

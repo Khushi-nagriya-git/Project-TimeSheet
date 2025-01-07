@@ -1,6 +1,7 @@
 import IconButton from "@mui/material/IconButton";
 import { React, useState, Box, Table, TableBody, IProjectProps, TableCell, TableHead, TableRow, Typography, Avatar, Collapse, KeyboardArrowDownIcon, KeyboardArrowUpIcon,} from "../../../../../index";
 import { Tooltip } from "@mui/material";
+import RowStyles from "./EmployeeView.module.scss";
 import { useNavigate } from 'react-router-dom';
 
 const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDeleteIconClick: any; handleEditIconClick: any; topNavigationMode: any; isUserReportingManager: any; isUserProjectManager: any; isUserAdmin: any; isUserProjectTeam: any; loggedInUserDetails: any;}) => {
@@ -26,7 +27,7 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
     return `${hours} Hrs ${mins} Mins`;
   };
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const isLongName = row.projectName.length > 30;
 
   const dashboardOpen = (projectId: number) => {
@@ -35,39 +36,19 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
 
   return (
     <React.Fragment>
-      <TableRow
-        sx={{
-          "& > *": { borderBottom: "unset" },
-          height: "50px",
-          cursor: "pointer",
-          backgroundColor: "#fff"
-        }}
-      >
+      <TableRow className={RowStyles.TableRowHeader} sx={{ "& > *": { borderBottom: "unset" }}} >
+       
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
+          <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)} >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell
-          component="th"
-          scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" , }}
-          onClick={() => dashboardOpen(row.projectId)}
-        >
+
+        <TableCell component="th" scope="row" className={RowStyles.fontFamily} onClick={() => dashboardOpen(row.projectId)} >
           {row.projectId}
         </TableCell>
-        <TableCell
-          align="left"
-          sx={{
-            height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          }}
-          onClick={() => dashboardOpen(row.projectId)}
-        >
+
+        <TableCell align="left" className={RowStyles.ParentTableCell} onClick={() => dashboardOpen(row.projectId)} >
           {isLongName ? (
             <Tooltip title={row.projectName}>
               <span>{row.projectName.substring(0, 30)}...</span>
@@ -76,220 +57,79 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
             row.projectName
           )}
         </TableCell>
-        <TableCell
-          align="left"
-          sx={{
-            height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-          }}
-          onClick={() => dashboardOpen(row.projectId)}
-        >
-          <Box display="flex" alignItems="left" justifyContent="left">
-            <Avatar alt={row.projectManager} src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${row.projectManagerEmail}&Size=S`} style={{ marginRight: 8, height: "30px", width: "30px" }} />
+
+        <TableCell align="left" className={RowStyles.ParentTableCell}  onClick={() => dashboardOpen(row.projectId)} >
+          <Box className={RowStyles.AvatarBox}>
+            <Avatar alt={row.projectManager} src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${row.projectManagerEmail}&Size=S`} className={RowStyles.Avatar} />
             <Box sx={{ mt: 0.5 }}>{row.projectManager}</Box>
           </Box>
         </TableCell>
-        <TableCell
-          align="left"
-          sx={{ height: "10px" }}
-          onClick={() => dashboardOpen(row.projectId)}
-        >
-          <Box
-            sx={{
-              borderRadius: "20px",
-              border: `2px solid ${borderColor}`,
-              height: "22px",
-              width: "100px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-          >
+
+        <TableCell align="left" sx={{ height: "10px" }} onClick={() => dashboardOpen(row.projectId)} >
+          <Box className={RowStyles.StatusBox} sx={{ border: `2px solid ${borderColor}`}}>
             {row.status}
           </Box>
         </TableCell>
 
         <TableCell align="left" sx={{ height: "10px" }}>
           <IconButton aria-label="Detail Logs" size="small">
-            <img
-              src={require("../../../assets/job.png")}
-              alt="Tasks"
-              style={{ width: "26px", height: "26px", cursor: "pointer" }}
-              onClick={() => setOpen(!open)}
-            />
+            <img src={require("../../../assets/job.png")} alt="Tasks" className={RowStyles.taskIcon} onClick={() => setOpen(!open)} />
           </IconButton>
         </TableCell>
 
-            <TableCell align="left" sx={{ height: "10px" }}>
-            {props.topNavigationMode === "Employee" &&
-          (props.isUserAdmin ||
-            props.loggedInUserDetails.Email ===
-              row.ReportingManagerPeoplePicker?.EMail) && (
-              <Box display="flex" alignItems="left" justifyContent="left">
-                <IconButton
-                  aria-label="edit"
-                  size="small"
-                  onClick={() => handleEditIconClick(row.projectId , "Edit")}
-                >
-                  <img
-                    src={require("../../../assets/pencil.png")}
-                    alt="Edit"
-                    style={{
-                      width: "21px",
-                      height: "21px",
-                      cursor: "pointer",
-                      alignItems: "left",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="delete"
-                  size="small"
-                  onClick={() => handleDeleteIconClick(row.projectId)}
-                >
-                  <img
-                    src={require("../../../assets/delete.png")}
-                    alt="Delete"
-                    style={{
-                      width: "23px",
-                      height: "23px",
-                      cursor: "pointer",
-                      marginLeft: "5px",
-                    }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="View"
-                  size="small"
-                  onClick={() => handleEditIconClick(row.projectId ,"View")}
-                >
-                  <img
-                    src={require("../../../assets/show.png")}
-                    alt="View"
-                    style={{
-                      width: "23px",
-                      height: "23px",
-                      cursor: "pointer",
-                      marginLeft: "5px",
-                    }}
-                  />
-                </IconButton>
-              </Box>
-              
+        <TableCell align="left" sx={{ height: "10px" }}>
+              <Box className={RowStyles.IconBox}>
+              {props.topNavigationMode === "Employee" && (props.isUserAdmin || props.loggedInUserDetails.Email === row.ReportingManagerPeoplePicker?.EMail) && (
+                <><IconButton aria-label="edit" size="small" onClick={() => handleEditIconClick(row.projectId, "Edit")}>
+                <img src={require("../../../assets/pencil.png")} alt="Edit" className={RowStyles.editIcon} />
+                </IconButton><IconButton aria-label="delete" size="small" onClick={() => handleDeleteIconClick(row.projectId)}>
+                  <img src={require("../../../assets/delete.png")} alt="Delete" className={RowStyles.deleteIcon} />
+                </IconButton></>
               )}
-            </TableCell>
-        
+             <IconButton aria-label="View" size="small" onClick={() => handleEditIconClick(row.projectId ,"View")} >
+              <img src={require("../../../assets/show.png")} alt="View" className={RowStyles.deleteIcon} />
+            </IconButton>
+              </Box> 
+           
+        </TableCell>
       </TableRow>
 
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography
-                variant="h6"
-                gutterBottom
-                component="div"
-                
-                sx={{
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",color:"#03045E" , fontSize:"18px", fontWeight:"600"
-                }}
-              >
+
+              <Typography variant="h6" gutterBottom component="div"  className={RowStyles.ChildTableHeader} >
                 Project Tasks
               </Typography>
+
               <Table size="small" aria-label="purchases">
                 <TableHead>
-                  <TableRow
-                    sx={{
-                      backgroundColor: "#0077B6",
-                      fontWeight: "600",
-                      color:"#fff",
-                      fontFamily:
-                        "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                    }}
-                  >
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "15%",
-                        backgroundColor: "#0077B6",
-                        fontWeight: "600",
-                        color:"#fff",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+                  <TableRow className={RowStyles.ChildTableRow}>
+                    <TableCell  align="left"  className={RowStyles.ChildTableCell} sx={{ width: "15%"}}>
                       Assigned By
                     </TableCell>
 
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "15%",
-                        fontWeight: "600",
-                        color:"#fff",
-                        backgroundColor: "#0077B6",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+                    <TableCell align="left"  className={RowStyles.ChildTableCell} sx={{ width: "15%"}}>
                       Assigned To
                     </TableCell>
 
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "37%",
-                        fontWeight: "600",
-                        backgroundColor: "#0077B6",
-                        color:"#fff",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+                    <TableCell align="left"  className={RowStyles.ChildTableCell} sx={{ width: "37%"}}>
                       Task Name
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "13%",
-                        fontWeight: "600",
-                        backgroundColor: "#0077B6",
-                        color:"#fff",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+                   
+                    <TableCell align="left"  className={RowStyles.ChildTableCell} sx={{ width: "13%"}}>
                       Estimated Hour
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "10%",
-                        backgroundColor: "#0077B6",
-                        fontWeight: "600",
-                        color:"#fff",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+                    
+                    <TableCell align="left"  className={RowStyles.ChildTableCell} sx={{ width: "10%"}}>
                       Logged Hours
                     </TableCell>
-                    <TableCell
-                      align="left"
-                      sx={{
-                        width: "10%",
-                        backgroundColor: "#0077B6",
-                        fontWeight: "600",
-                        color:"#fff",
-                        fontFamily:
-                          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                      }}
-                    >
+
+                    <TableCell align="left"  className={RowStyles.ChildTableCell} sx={{ width: "10%"}} >
                       Status
                     </TableCell>
+
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -298,75 +138,25 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
 
                     return (
                       <TableRow key={historyRow.JobName}>
-                        <TableCell
-                          align="left"
-                          sx={{
-                            height: "10px",
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
-                          <Box
-                            display="flex"
-                            alignItems="left"
-                            justifyContent="left"
-                          >
-                            <Avatar
-                              alt={historyRow.Author.Title}
-                              src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${historyRow.Author.EMail}&Size=S`}
-                              style={{
-                                marginRight: 8,
-                                height: "25px",
-                                width: "25px",
-                              }}
-                            />
-
-                            <Box sx={{ mt: 0.5 }}>
-                              {historyRow.Author.Title}
-                            </Box>
+                        <TableCell align="left" className={RowStyles.ParentTableCell}>
+                          <Box className={RowStyles.IconBox}>
+                            <Avatar alt={historyRow.Author.Title} src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${historyRow.Author.EMail}&Size=S`}className={RowStyles.ChildTableAvatar} />
+                            <Box sx={{ mt: 0.5 }}> {historyRow.Author.Title}</Box>
                           </Box>
                         </TableCell>
 
-                        <TableCell
-                          align="left"
-                          sx={{
-                            height: "10px",
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
+                        <TableCell align="left" className={RowStyles.ParentTableCell} >
                           {JSON.parse(historyRow.AssignedTo).map(
                             (assignee: any) => (
-                              <Box
-                                display="flex"
-                                alignItems="left"
-                                justifyContent="left"
-                                key={assignee.EMail}
-                              >
-                                <Avatar
-                                  alt={assignee.name}
-                                  src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${assignee.email}&Size=S`}
-                                  sx={{
-                                    marginRight: 1,
-                                    height: 25,
-                                    width: 25,
-                                  }}
-                                />
+                              <Box className={RowStyles.AvatarBox} key={assignee.EMail} >
+                                <Avatar alt={assignee.name} src={`${projectProps.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?accountname=${assignee.email}&Size=S`}className={RowStyles.ChildTableAvatar}/>
                                 <Box sx={{ mt: 0.5 }}>{assignee.name}</Box>
                               </Box>
                             )
                           )}
                         </TableCell>
 
-                        <TableCell
-                          align="left"
-                          component="th"
-                          scope="row"
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
+                        <TableCell align="left" className={RowStyles.fontFamily} component="th"scope="row" >
                           {isLongName ? (
                             <Tooltip title={historyRow.JobName}>
                               <span>
@@ -378,39 +168,15 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
                           )}
                         </TableCell>
 
-                        <TableCell
-                          align="left"
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
-                          {convertMinutesToHoursAndMinutes(
-                            historyRow.EstimatedHours
-                              ? historyRow.EstimatedHours
-                              : 0
-                          )}
+                        <TableCell align="left" className={RowStyles.fontFamily}>
+                          {convertMinutesToHoursAndMinutes( historyRow.EstimatedHours ? historyRow.EstimatedHours : 0 )}
                         </TableCell>
 
-                        <TableCell
-                          align="left"
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
-                          {convertMinutesToHoursAndMinutes(
-                            historyRow.loggedHours ? historyRow.loggedHours : 0
-                          )}
+                        <TableCell align="left" className={RowStyles.fontFamily} >
+                          {convertMinutesToHoursAndMinutes( historyRow.loggedHours ? historyRow.loggedHours : 0 )}
                         </TableCell>
 
-                        <TableCell
-                          align="left"
-                          sx={{
-                            fontFamily:
-                              "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                          }}
-                        >
+                        <TableCell align="left" className={RowStyles.fontFamily}>
                           {historyRow.JobStatus}
                         </TableCell>
                       </TableRow>
@@ -422,7 +188,6 @@ const Row = (props: { row: ReturnType<any>;projectProps: IProjectProps; handleDe
           </Collapse>
         </TableCell>
       </TableRow>
-
     </React.Fragment>
   );
 };

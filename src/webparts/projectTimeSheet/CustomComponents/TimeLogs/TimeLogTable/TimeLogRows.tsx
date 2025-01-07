@@ -1,36 +1,10 @@
 import IconButton from "@mui/material/IconButton";
-import {
-  React,
-  useState,
-  Box,
-  Table,
-  convertToMinutes,
-  TableBody,
-  IProjectProps,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
-  Avatar,
-  Collapse,
-  KeyboardArrowDownIcon,
-  KeyboardArrowUpIcon,
-} from "../../../../../index";
+import { React, Box, TableCell, TableRow,} from "../../../../../index";
 import Tooltip from "@mui/material/Tooltip";
+import Styles from "../TimeLog.module.scss";
 
-const TimeLogRows = (props: {
-  row: ReturnType<any>;
-  handleDeleteIconClick: any;
-  handleEditIconClick: any;
-  timelogProps: any;
-  isRunning: any;
-  elapsedTime: any;
-  handleStartStop: any;
-  jobResumeTimer: any;
-  setIsRunning: React.Dispatch<React.SetStateAction<any>>;
-}) => {
+const TimeLogRows = (props: { row: ReturnType<any>; handleDeleteIconClick: any;  handleEditIconClick: any; timelogProps: any; isRunning: any; elapsedTime: any; handleStartStop: any; jobResumeTimer: any; setIsRunning: React.Dispatch<React.SetStateAction<any>>;}) => {
   const { row, handleDeleteIconClick, handleEditIconClick } = props;
-  const [open, setOpen] = useState(false);
   let timerTimeLogId = parseInt(localStorage.getItem("TimeLogId") || "0", 10);
   const isPending = row.Status === "Pending";
 
@@ -79,18 +53,10 @@ const TimeLogRows = (props: {
   };
 
   const today = new Date();
-
   const year = today.getFullYear();
-  const month =
-    (today.getMonth() + 1).toString().length === 1
-      ? "0" + (today.getMonth() + 1).toString()
-      : (today.getMonth() + 1).toString();
-  const day =
-    today.getDate().toString().length === 1
-      ? "0" + today.getDate().toString()
-      : today.getDate().toString();
+  const month = (today.getMonth() + 1).toString().length === 1 ? "0" + (today.getMonth() + 1).toString() : (today.getMonth() + 1).toString();
+  const day = today.getDate().toString().length === 1 ? "0" + today.getDate().toString() : today.getDate().toString();
   const formattedDate = `${year}-${month}-${day}`;
-
   let showButton = row.Created.split("T")[0] === formattedDate;
 
   const handleClickStart = (id: number) => {
@@ -117,22 +83,13 @@ const TimeLogRows = (props: {
 
   const isLongName = row.ProjectName?.length > 20;
   const isJobName = row.JobName?.length > 25;
-const isDescriptionLong = row.Description?.length > 25;
+  const isDescriptionLong = row.Description?.length > 25;
 
   return (
     <React.Fragment>
-      <TableRow
-        sx={{
-          "& > *": { borderBottom: "unset" },
-          height: "50px",
-          ...(isPending && disabledStyle),
-        }}
-      >
-        <TableCell
-          component="th"
-          scope="row"
-          sx={{ fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", backgroundColor:"#fff" }}
-        >
+      <TableRow sx={{ "& > *": { borderBottom: "unset" }, height: "50px", ...(isPending && disabledStyle), }} >
+        
+        <TableCell component="th" scope="row" className={Styles.TableCells} >
           {isLongName ? (
             <Tooltip title={row.ProjectName}>
               <span>{row.ProjectName.substring(0, 20)}...</span>
@@ -141,13 +98,8 @@ const isDescriptionLong = row.Description?.length > 25;
             row.ProjectName
           )}
         </TableCell>
-        <TableCell
-          align="left"
-          sx={{
-            height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
-          }}
-        >
+
+        <TableCell align="left" className={Styles.TableCells} >
           {isJobName ? (
             <Tooltip title={row.JobName}>
               <span>{row.JobName.substring(0, 25)}...</span>
@@ -157,13 +109,7 @@ const isDescriptionLong = row.Description?.length > 25;
           )}
         </TableCell>
 
-        <TableCell
-          align="left"
-          sx={{
-            height: "10px",
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
-          }}
-        >
+        <TableCell align="left" className={Styles.TableCells}>
           {isDescriptionLong ? (
             <Tooltip title={row.Description}>
               <span>{row.Description.substring(0, 25)}...</span>
@@ -173,126 +119,47 @@ const isDescriptionLong = row.Description?.length > 25;
           )}
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
-          <Box
-            sx={{
-              borderRadius: "20px",
-              border: `2px solid ${borderColorStatus}`,
-              height: "22px",
-              width: "100px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-          >
+        <TableCell align="left" className={Styles.TableCells}>
+          <Box className={Styles.StatusCells} sx={{ border: `2px solid ${borderColorStatus}`}}>
             {row.Status}
           </Box>
         </TableCell>
 
-        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
-          <Box
-            sx={{
-              borderRadius: "20px",
-              border: `2px solid ${borderColorforTaskType}`,
-              height: "22px",
-              width: "100px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            }}
-          >
+        <TableCell align="left" className={Styles.TableCells}>
+          <Box className={Styles.StatusCells}  sx={{ border: `2px solid ${borderColorforTaskType}`}}>
             {row.BillableStatus}
           </Box>
         </TableCell>
 
-        <TableCell
-          align="left"
-          sx={{
-            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",backgroundColor:"#fff"
-          }}
-        >
-          {props.isRunning && timerTimeLogId === row.TimeLogsId
-            ? formatTime(props.elapsedTime)
-            : convertMinutesToHoursAndMinutes(row.LoggedTime)}
+        <TableCell  align="left" className={Styles.TableCells}>
+          {props.isRunning && timerTimeLogId === row.TimeLogsId ? formatTime(props.elapsedTime) : convertMinutesToHoursAndMinutes(row.LoggedTime)}
         </TableCell>
-        <TableCell align="left" sx={{ height: "10px" ,backgroundColor:"#fff"}}>
+
+        <TableCell align="left" className={Styles.TableCells}>
           {showButton &&
             (props.isRunning && timerTimeLogId === row.TimeLogsId ? (
-              <IconButton
-                aria-label="edit"
-                size="small"
-                onClick={handleClickPause}
-                disabled={isPending}
-              >
-                <img
-                  src={require("../../../assets/pause.png")}
-                  alt="Pause Button"
-                  style={{ cursor: "pointer", height: "21px", width: "21px" }}
-                />
+              <IconButton aria-label="edit" size="small" onClick={handleClickPause} disabled={isPending}>
+                <img src={require("../../../assets/pause.png")} alt="Pause Button"  className={Styles.PauseButton}/>
               </IconButton>
             ) : (
-              <IconButton
-                aria-label="play"
-                size="small"
-                onClick={() =>
-                  handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)
-                }
-                disabled={isPending}
-              >
-                <img
-                  src={require("../../../assets/play.png")}
-                  alt="Play Button"
-                  onClick={() =>
-                    handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0)
-                  }
-                  style={{ cursor: "pointer", height: "21px", width: "21px" }}
-                />
+              <IconButton aria-label="play" size="small" onClick={() => handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0) } disabled={isPending} >
+                <img  className={Styles.PauseButton} src={require("../../../assets/play.png")} alt="Play Button" onClick={() => handleClickStart(row.TimeLogsId ? row.TimeLogsId : 0) } />
               </IconButton>
             ))}
         </TableCell>
 
         <TableCell align="left" sx={{ height: "10px" , backgroundColor:"#fff" }}>
           <Box display="flex" alignItems="left" justifyContent="left">
-            <IconButton
-              aria-label="edit"
-              size="small"
-              onClick={() => handleEditIconClick(row.TimeLogsId)}
-              disabled={isPending || props.isRunning}
-            >
-              <img
-                src={require("../../../assets/pencil.png")}
-                alt="Edit"
-                style={{
-                  width: "21px",
-                  height: "21px",
-                  cursor: "pointer",
-                  alignItems: "left",
-                  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-                }}
-              />
+            <IconButton aria-label="edit" size="small" onClick={() => handleEditIconClick(row.TimeLogsId)} disabled={isPending || props.isRunning} >
+              <img src={require("../../../assets/pencil.png")} alt="Edit" className={Styles.PauseButton} />
             </IconButton>
-            <IconButton
-              aria-label="delete"
-              size="small"
-              onClick={() => handleDeleteIconClick(row.TimeLogsId)}
-              disabled={isPending || props.isRunning}
-            >
-              <img
-                src={require("../../../assets/delete.png")}
-                alt="Delete"
-                style={{
-                  width: "23px",
-                  height: "23px",
-                  cursor: "pointer",
-                  marginLeft: "5px",
-                }}
-              />
+           
+            <IconButton aria-label="delete" size="small"onClick={() => handleDeleteIconClick(row.TimeLogsId)} disabled={isPending || props.isRunning} >
+              <img src={require("../../../assets/delete.png")} alt="Delete"  className={Styles.PauseButton} style={{ marginLeft: "5px", }}/>
             </IconButton>
           </Box>
         </TableCell>
+        
       </TableRow>
     </React.Fragment>
   );

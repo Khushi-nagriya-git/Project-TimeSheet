@@ -1,118 +1,62 @@
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  React,
-  Dropdown,
-  Box,
-  IProjectProps,
-  Avatar,
-  IDropdownOption,
-  Label,
-  SearchBox,
-  Grid,
-  useState,
-  useEffect,
-  projectsInitialState,
-  getProjectListData,
-  getJobListData,
-  jobsInitialState,
-  JobsData,
-} from "../../../../../index";
+import { React, Dropdown, Box, IProjectProps, Avatar, IDropdownOption, Label, SearchBox, Grid, useState, useEffect, projectsInitialState, getProjectListData, getJobListData, jobsInitialState, JobsData,} from "../../../../../index";
 
-const MyTeam = (props: {
-  spHttpClient: any;
-  absoluteURL: any;
-  projectProps: IProjectProps;
-  isUserAdmin: any;
-  isUserProjectManager: any;
-  isUserProjectTeam: any;
-  isUserReportingManager: any;
-  loggedInUserDetails: any;
-}) => {
-  const [projectsData, setProjectsData] = useState<any[]>(
-    projectsInitialState.projectsData
-  );
+const MyTeam = (props: { spHttpClient: any; absoluteURL: any;projectProps: IProjectProps;isUserAdmin: any;isUserProjectManager: any;isUserProjectTeam: any; isUserReportingManager: any; loggedInUserDetails: any;}) => {
+  const [projectsData, setProjectsData] = useState<any[]>( projectsInitialState.projectsData );
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [selectedProjectName, setSelectedProjectName] = useState<string>("");
-  const [jobsData, setJobsData] = useState<JobsData[]>(
-    jobsInitialState.jobsData
-  );
+  const [jobsData, setJobsData] = useState<JobsData[]>( jobsInitialState.jobsData );
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [filteredProjects, setFilteredProjects] = useState<any[]>(
-    projectsInitialState.projectsData
-  );
+  const [filteredProjects, setFilteredProjects] = useState<any[]>( projectsInitialState.projectsData);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchData = async () => {
-    try{
-      getProjectListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        (data) => {
-          setProjectsData(data);
-  
-          if (data.length > 0) {
-            const firstProjectName = data[0].ProjectName;
-            setSelectedProject(firstProjectName);
-            setSelectedProjectName(firstProjectName);
-          }
-        },
-        props.loggedInUserDetails,
-        props.isUserAdmin
-      );
-      getJobListData(
-        props.absoluteURL,
-        props.spHttpClient,
-        setJobsData,
-        props.loggedInUserDetails,
-        projectsData,
-        props.isUserAdmin
-      );
-    }catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
+      try {
+        getProjectListData(
+          props.absoluteURL,
+          props.spHttpClient,
+          (data) => {
+            setProjectsData(data);
+            if (data.length > 0) {
+              const firstProjectName = data[0].ProjectName;
+              setSelectedProject(firstProjectName);
+              setSelectedProjectName(firstProjectName);
+            }
+          },
+          props.loggedInUserDetails,
+          props.isUserAdmin
+        );
+        getJobListData(props.absoluteURL, props.spHttpClient, setJobsData, props.loggedInUserDetails, projectsData, props.isUserAdmin );
+      } catch (error) {
+       // console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
 
   useEffect(() => {
     let filteredProjects = projectsData;
+    let finalData: any[] = [];
+    let team: any[] = [];
+
     if (selectedProjectName) {
-      filteredProjects = filteredProjects.filter(
-        (project: { ProjectName: string }) =>
-          project.ProjectName === selectedProjectName
-      );
+      filteredProjects = filteredProjects.filter( (project: { ProjectName: string }) => project.ProjectName === selectedProjectName );
     }
 
-    let finalData: any[] = [];
-
     filteredProjects.forEach((project) => {
-      finalData.push({
-        ReportingManager: [project.ReportingManager],
-      });
-
-      finalData.push({
-        ProjectManager: [project.ProjectManager],
-      });
-
-      let team: any[] = [];
-
+      finalData.push({ ReportingManager: [project.ReportingManager] });
+      finalData.push({ ProjectManager: [project.ProjectManager] });
       try {
         team = project?.ProjectTeam ? JSON.parse(project.ProjectTeam) : [];
       } catch (error) {
         // console.error("Error parsing ProjectTeam JSON:", error);
-        // Handle error, if necessary
       }
 
       if (Array.isArray(team)) {
-        team.forEach((projectTeam) => {
-          finalData.push({
-            ProjectTeam: [projectTeam],
-          });
-        });
+        team.forEach((projectTeam) => { finalData.push({ ProjectTeam: [projectTeam] }); });
       }
     });
 
@@ -152,10 +96,7 @@ const MyTeam = (props: {
     setSelectedProjectName(projectName);
   };
 
-  const handleProjectChange = (
-    event: React.FormEvent<HTMLDivElement>,
-    option?: IDropdownOption
-  ): void => {
+  const handleProjectChange = ( event: React.FormEvent<HTMLDivElement>, option?: IDropdownOption ): void => {
     if (option) {
       const selectedValue = option.key as string;
       setSelectedProject(selectedValue);
@@ -165,79 +106,91 @@ const MyTeam = (props: {
 
   return (
     <React.Fragment>
+      {!loading && (
+        <>
+          <Grid container spacing={1} alignItems="center">
+            <Grid item>
+              <Label style={{ fontWeight: "600" }}>Project Name</Label>
+              <Dropdown
+                placeholder="All"
+                selectedKey={selectedProject}
+                onChange={handleProjectChange}
+                options={projectsData
+                  .sort((a: any, b: any) =>
+                    a.ProjectName.localeCompare(b.ProjectName)
+                  )
+                  .map((project: any) => ({
+                    key: project.ProjectName,
+                    text: project.ProjectName,
+                    selected: selectedProject === project.ProjectName,
+                    checkbox: true,
+                  }))}
+                styles={{
+                  root: {
+                    width: 245,
+                    height: 60,
+                    marginBottom: 5,
+                    borderWidth: 2,
+                  },
+                  title: { textAlign: "left", lineHeight: "25px" },
+                  dropdownItemsWrapper: { maxHeight: 200 },
+                  dropdownItem: {
+                    height: 35,
+                    borderRadius: 5,
+                    width: 200,
+                    backgroundColor: "#ffffff",
+                  },
+                }}
+              />
+            </Grid>
 
-{!loading && (
-      <><Grid container spacing={1} alignItems="center">
-          <Grid item>
-            <Label style={{ fontWeight: "600" }}>Project Name</Label>
-            <Dropdown
-              placeholder="All"
-              selectedKey={selectedProject}
-              onChange={handleProjectChange}
-              options={projectsData .sort((a: any, b: any) => a.ProjectName.localeCompare(b.ProjectName)).map((project: any) => ({
-                key: project.ProjectName,
-                text: project.ProjectName,
-                selected: selectedProject === project.ProjectName,
-                checkbox: true,
-              }))}
-              styles={{
-                root: {
-                  width: 245,
-                  height: 60,
-                  marginBottom: 5,
-                  borderWidth: 2,
-                },
-                title: {
-                  textAlign: "left",
-                  lineHeight: "25px",
-                },
-                dropdownItemsWrapper: {
-                  maxHeight: 200,
-                },
-                dropdownItem: {
-                  height: 35,
-                  borderRadius: 5,
-                  width: 200,
-                  backgroundColor: "#ffffff",
-                },
-              }} />
+            <Grid
+              item
+              sx={{
+                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <SearchBox
+                style={{ height: "30px" }}
+                placeholder="Search by employee name"
+                value={searchQuery}
+                onChange={(e) =>
+                  setSearchQuery(
+                    (e as React.ChangeEvent<HTMLInputElement>).target.value
+                  )
+                }
+                onClear={() => setSearchQuery("")}
+                styles={{
+                  root: {
+                    width: 264,
+                    height: 32,
+                    margin: "13px 0 10px",
+                    backgroundColor: "#ffffff",
+                    padding: "0 5px",
+                    marginBottom: "15px",
+                  },
+                  field: {
+                    height: 32,
+                    backgroundColor: "#ffffff",
+                    padding: "0 6px",
+                  },
+                }}
+              />
+            </Grid>
           </Grid>
-
-          <Grid
-            item
+          <Box
             sx={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
+              height: "calc(100vh - 300px)",
+              overflowY: "scroll",
+              marginTop: "-23px",
             }}
           >
-            <SearchBox
-              style={{ height: "30px" }}
-              placeholder="Search by employee name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(
-                (e as React.ChangeEvent<HTMLInputElement>).target.value
-              )}
-              onClear={() => setSearchQuery("")}
-              styles={{
-                root: {
-                  width: 264,
-                  height: 32,
-                  margin: "13px 0 10px",
-                  backgroundColor: "#ffffff",
-                  padding: "0 5px",
-                  marginBottom: "15px",
-                },
-                field: {
-                  height: 32,
-                  backgroundColor: "#ffffff",
-                  padding: "0 6px",
-                },
-              }} />
-          </Grid>
-        </Grid><Box sx={{ height: "calc(100vh - 300px)" ,  overflowY: "scroll", marginTop: "-23px" }}>
             {filteredProjects.length === 0 ? (
-              <Box sx={{ textAlign: "center", padding: "20px", fontWeight: "600" }}>
+              <Box
+                sx={{ textAlign: "center", padding: "20px", fontWeight: "600" }}
+              >
                 No employee found
               </Box>
             ) : (
@@ -251,10 +204,10 @@ const MyTeam = (props: {
                   if (row.ReportingManager) {
                     let reportingManagerName = "-";
                     try {
-                      const parsedData = typeof row.ReportingManager === "string"
-                        ? JSON.parse(row.ReportingManager)
-                        : row.ReportingManager;
-
+                      const parsedData =
+                        typeof row.ReportingManager === "string"
+                          ? JSON.parse(row.ReportingManager)
+                          : row.ReportingManager;
                       if (parsedData && parsedData[0]) {
                         const match = parsedData[0].match(/text":"([^"]+)"/);
                         if (match) {
@@ -270,8 +223,10 @@ const MyTeam = (props: {
                     } catch (error) {
                       // console.error("Error parsing ReportingManager JSON:", error);
                     }
-                    if (reportingManagerName !== undefined &&
-                      reportingManagerName !== "") {
+                    if (
+                      reportingManagerName !== undefined &&
+                      reportingManagerName !== ""
+                    ) {
                       title = "Reporting Manager";
                       name = reportingManagerName;
                     }
@@ -279,10 +234,12 @@ const MyTeam = (props: {
                     let projectManagerName = "-";
                     try {
                       const parsedData = JSON.parse(row.ProjectManager);
-                      if (parsedData &&
+                      if (
+                        parsedData &&
                         parsedData[0] &&
                         parsedData[0].name !== undefined &&
-                        parsedData[0].name !== "") {
+                        parsedData[0].name !== ""
+                      ) {
                         projectManagerName = parsedData[0].name;
                         employeeEmail = parsedData[0].email;
                         cost = parsedData[0].cost;
@@ -290,18 +247,22 @@ const MyTeam = (props: {
                     } catch (error) {
                       //console.error("Error parsing ProjectManager JSON:", error);
                     }
-                    if (projectManagerName !== undefined &&
-                      projectManagerName !== "") {
+                    if (
+                      projectManagerName !== undefined &&
+                      projectManagerName !== ""
+                    ) {
                       title = "Project Manager";
                       name = projectManagerName;
                     }
                   } else if (row.ProjectTeam) {
                     let projectTeamName = "-";
                     try {
-                      if (row.ProjectTeam &&
+                      if (
+                        row.ProjectTeam &&
                         row.ProjectTeam[0] &&
                         row.ProjectTeam[0].name !== undefined &&
-                        row.ProjectTeam[0].name !== "") {
+                        row.ProjectTeam[0].name !== ""
+                      ) {
                         projectTeamName = row.ProjectTeam[0].name;
                         employeeEmail = row.ProjectTeam[0].email;
                         cost = row.ProjectTeam[0].cost;
@@ -309,7 +270,10 @@ const MyTeam = (props: {
                     } catch (error) {
                       //console.error("Error parsing ProjectTeam JSON:", error);
                     }
-                    if (projectTeamName !== undefined && projectTeamName !== "") {
+                    if (
+                      projectTeamName !== undefined &&
+                      projectTeamName !== ""
+                    ) {
                       title = "Project Team";
                       name = projectTeamName;
                     }
@@ -348,33 +312,21 @@ const MyTeam = (props: {
                                 width: "60px",
                                 borderRadius: "5px",
                                 marginRight: "10px",
-                              }} />
-                            <Box sx={{ display: "flex", flexDirection: "column" }}>
+                              }}
+                            />
+                            <Box
+                              sx={{ display: "flex", flexDirection: "column" }}
+                            >
                               <Box sx={{ fontWeight: "600" }}>{name}</Box>
                               <Box>{title}</Box>
                             </Box>
                           </Box>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              marginTop: "15px",
-                            }}
-                          >
-                            <Box sx={{ fontWeight: "600" }}>Rate per hour:</Box>
-                            <Box sx={{ marginLeft: "5px" }}>{cost}</Box>
-                          </Box>
-                          {/* <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                            }}
-                          >
-                            <Box sx={{ fontWeight: "600" }}>Weekly logged:</Box>
-                            <Box sx={{ marginLeft: "5px" }}>00:00 hrs</Box>
-                          </Box> */}
+                          {cost !=0 && (
+                            <Box sx={{ display: "flex",flexDirection: "row",alignItems: "center", marginTop: "15px", }}>
+                              <Box sx={{ fontWeight: "600" }}>Rate per hour:</Box>
+                              <Box sx={{ marginLeft: "5px" }}>${cost}</Box>
+                            </Box>
+                          )}
                         </Box>
                       </Grid>
                     );
@@ -384,24 +336,22 @@ const MyTeam = (props: {
                 })}
               </Grid>
             )}
-          </Box></>
-        )}
-     
+          </Box>
+        </>
+      )}
 
       {loading && (
-         <Box
-                     sx={{
-                       display: 'flex',
-                       justifyContent: 'center',
-                       alignItems: 'center',
-                       height: '100%',
-                     }}
-                   >
-                     <CircularProgress />
-                   </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <CircularProgress />
+        </Box>
       )}
-     
-
     </React.Fragment>
   );
 };

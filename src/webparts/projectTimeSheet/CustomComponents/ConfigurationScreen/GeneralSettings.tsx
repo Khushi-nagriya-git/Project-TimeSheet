@@ -15,32 +15,12 @@ interface FormData {
   Attachment: any;
 }
 
-const GeneralSettings = (props: {
-  context: WebPartContext;
-  absoluteURL: string;
-  title: string;
-  spHttpClient: any;
-  configurationListDataLength: number;
-  configurationListData: any;
-  setReload:React.Dispatch<React.SetStateAction<any>>;
-}) => {
-  const [formData, setFormData] = useState<FormData>({
-    Admin: [],
-    AdminGroup: [],
-    ReportingManager: [],
-    ReportingManagerGroups: [],
-    Title: props.title,
-    Attachment: "",
-  });
-
+const GeneralSettings = (props: {  context: WebPartContext;  absoluteURL: string;  title: string;  spHttpClient: any;  configurationListDataLength: number;  configurationListData: any;  setReload:React.Dispatch<React.SetStateAction<any>>;}) => {
+  const [formData, setFormData] = useState<FormData>({ Admin: [],  AdminGroup: [],  ReportingManager: [],  ReportingManagerGroups: [], Title: props.title, Attachment: "", });
   const [loading, setLoading] = useState(true);
-  const [applicationTitle, setApplicationTitle] = useState<string>(
-    props.configurationListData? props.configurationListData[0].Title
-      : ""
-  );
+  const [applicationTitle, setApplicationTitle] = useState<string>(props.configurationListData? props.configurationListData[0].Title : "" );
   const [adminUsers, setAdminUsers] = useState<string[]>([]);
-  const [reportingManagerUsers, setReportingManagerUsers] =
-    useState<string[]>();
+  const [reportingManagerUsers, setReportingManagerUsers] = useState<string[]>();
   const [attachmentError, setAttachmentError] = useState("");
   const [defaultAttachment, setDefaultAttachment] = useState();
   const [alert , setAlert] = useState(false);
@@ -54,21 +34,23 @@ const GeneralSettings = (props: {
           let data = JSON.parse(props.configurationListData[0].Permissions);
 
           for (let i = 0; i < data?.ReportingManagerGroups?.length; i++) {
-            reportingManagerData.push(
-              data.ReportingManagerGroups[i].split(",")[1]
-            );
+            reportingManagerData.push(  data.ReportingManagerGroups[i].split(",")[1]);
           }
+
           for (let i = 0; i < data?.ReportingManager?.length; i++) {
             reportingManagerData.push(data.ReportingManager[i]);
           }
+
           setReportingManagerUsers(reportingManagerData);
   
           for (let i = 0; i < data?.AdminGroup?.length; i++) {
             adminData.push(data.AdminGroup[i].split(",")[1]);
           }
+
           for (let i = 0; i < data?.Admin?.length; i++) {
             adminData.push(data.Admin[i]);
           }
+
           setAdminUsers(adminData);
           setFormData({
             ReportingManager: data.ReportingManager,
@@ -80,12 +62,13 @@ const GeneralSettings = (props: {
           });
   
         }
+
         setDefaultAttachment(
           props.configurationListData[0].AttachmentFiles[0].ServerRelativeUrl
         );
 
       } catch (error) {
-        console.error("Error fetching group users", error);
+       // console.error("Error fetching group users", error);
       } finally {
         setLoading(false);
       }
@@ -95,9 +78,7 @@ const GeneralSettings = (props: {
 
   useEffect(() => {
     let timer: any;
-    if (
-        alert
-    ) {
+    if ( alert ) {
       timer = setTimeout(() => {
         setAlert(false);
       }, 5000);
@@ -106,22 +87,14 @@ const GeneralSettings = (props: {
   }, [alert]);
 
 
-  const handleChange = (
-    ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>,
-    newValue?: string
-  ) => {
+  const handleChange = ( ev: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string ) => {
     const { name, value } = ev.currentTarget;
     setApplicationTitle(value);
   };
 
   const handleSubmitSave = async () => {
     if (props.configurationListDataLength === 1) {
-      let response = await updateData(
-        formData,
-        applicationTitle,
-        props.absoluteURL,
-        props.spHttpClient
-      );
+      let response = await updateData( formData, applicationTitle, props.absoluteURL, props.spHttpClient );
       if (response === true) {
         await getConfigurationListData(props.spHttpClient, props.absoluteURL);
         setAlert(true);
@@ -129,12 +102,7 @@ const GeneralSettings = (props: {
       }
     }
     if (props.configurationListDataLength === 0) {
-      let response = await addData(
-        formData,
-        applicationTitle,
-        props.absoluteURL,
-        props.spHttpClient
-      );
+      let response = await addData( formData, applicationTitle, props.absoluteURL, props.spHttpClient );
       if (response === true) {
         await getConfigurationListData(props.spHttpClient, props.absoluteURL);
         setAlert(true);
@@ -188,16 +156,8 @@ const GeneralSettings = (props: {
       const img = new Image();
       img.src = URL.createObjectURL(file);
       img.onload = () => {
-        if (
-          fileType !== "image" ||
-          img.width > 500 ||
-          img.height > 300 ||
-          img.width < 150 ||
-          img.height < 150
-        ) {
-          setAttachmentError(
-            "Please upload an image with a width between 150px and 500px, and a height between 200px and 300px ."
-          );
+        if ( fileType !== "image" || img.width > 500 || img.height > 300 || img.width < 150 || img.height < 150 ) {
+          setAttachmentError(  "Please upload an image with a width between 150px and 500px, and a height between 200px and 300px ."  );
         } else { 
           setAttachmentError("");
           setFormData({

@@ -1,6 +1,6 @@
 import Tooltip from "@mui/material/Tooltip";
 import { React, useState,  useEffect,  FormEvent,  Box,  Drawer,  CloseIcon,  PeoplePicker, PrincipalType, IFormProps, IconButton, CustomFormData, ProjectManager, initialState, TextField, Dropdown, Label, IDropdownOption, DefaultButton,  PrimaryButton,} from "../../../../../index";
-import DeleteIcon from '@mui/icons-material/Delete';
+import formStyles from "./Form.module.scss";
 
 const drawerStyle = {
   width: "700px",
@@ -75,11 +75,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     if (!showCostFields) {
       const updatedProjectManagers = formData.projectManager.map((manager) => ({
         ...manager,
-        cost:
-          props.mode === "edit" || props.mode === "View" &&
-          props.initialData.projectType === "Resource Based"
-            ? manager.cost
-            : 0,
+        cost:  props.mode === "edit" || props.mode === "View" && props.initialData.projectType === "Resource Based" ? manager.cost : 0,
       }));
       setFormData((prevState) => ({
         ...prevState,
@@ -90,11 +86,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     if (!showCostFieldsForProjectTeam) {
       const updatedProjectTeam = formData.projectTeam.map((teamMember) => ({
         ...teamMember,
-        cost:
-          props.mode === "edit" || props.mode === "View" &&
-          props.initialData.projectType === "Resource Based"
-            ? teamMember.cost
-            : 0,
+        cost: props.mode === "edit" || props.mode === "View" && props.initialData.projectType === "Resource Based" ? teamMember.cost : 0,
       }));
       setFormData((prevState) => ({
         ...prevState,
@@ -155,8 +147,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
     });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => { e.preventDefault();
     if (!formData.ReportingManager || formData.ReportingManagerPeoplePicker === '') {
       setReportingManagerRequiredMessageShow(true); 
       return; 
@@ -295,12 +286,7 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
   };
 
   return (
-    <Drawer
-      sx={{ position: "relative" }}
-      anchor="right"
-      open={props.open}
-      onClose={handleCancel}
-    >
+    <Drawer sx={{ position: "relative" }} anchor="right"  open={props.open}  onClose={handleCancel}  >
       <div
         style={{
           backgroundColor: "#023E8A",
@@ -315,18 +301,10 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
           
         }}
       >
-        <Label
-          style={{ fontSize: "20px", fontWeight: "600", marginLeft: "13px", color:"#fff"}}
-        >
+        <Label style={{ fontSize: "20px", fontWeight: "600", marginLeft: "13px", color:"#fff"}} >
           {props.mode === "edit" ? "Edit Project" : props.mode === "View" ? "View Project details" : "Add Project"}
         </Label>
-        <IconButton
-          aria-label="close"
-          onClick={handleCancel}
-          sx={{
-            color: "white",
-          }}
-        >
+        <IconButton aria-label="close" onClick={handleCancel} sx={{ color: "white", }} >
           <CloseIcon />
         </IconButton>
       </div>
@@ -335,288 +313,102 @@ const FormComponent: React.FC<IFormProps> = (props: any) => {
         sx={{ ...drawerStyle,  overflowY: "auto", marginTop: "60px",  marginBottom: "60px",  }} >
         <form onSubmit={handleSubmit}>
         
-          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
-            <TextField
-              label="Project Name"
-              name="projectName"
-              value={formData.projectName}
-              onChange={handleChange}
-              required
-              style={{ width: "320px" }}
-            />
-            <TextField
-              label="Client Name"
-              name="clientName"
-              value={formData.clientName}
-              onChange={handleChange}
-              style={{ width: "320px" }}
-              
-            />
-          </div>
-          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto",  }}>
-            <TextField
-              label="Project Cost($)"
-              type="number"
-              name="projectCost"
-              value={formData.projectCost?.toString()}
-              onChange={handleChange}
-              style={{ width: "320px" }}
-            />
-             <TextField
-              label="Project Hours"
-              type="number"
-              name="projectHours"
-              value={formData.projectHours?.toString()}
-              onChange={handleChange}
-              style={{ width: "320px" }}
-            />
-          
+          <div className={formStyles.fields} style={{ pointerEvents: props.mode === "View" ? "none" : "auto", }}>
+            <TextField label="Project Name" name="projectName" value={formData.projectName} onChange={handleChange} required className={formStyles.fieldsWidth} />
+            <TextField label="Client Name" name="clientName" value={formData.clientName} onChange={handleChange} className={formStyles.fieldsWidth}/>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
-          <Dropdown
-              label="Department"
-              selectedKey={selectedDepartment}
-              onChange={handleChangeDepartmentDropDown}
-              options={departments}
-              style={{ width: "320px" }}
-            />
-            <Dropdown
-              label="Project Type"
-              selectedKey={selectedOptionKey}
-              onChange={handleChangeDropDown}
-              options={options}
-              style={{ width: "320px" }}
-            />
-
-          
+          <div className={formStyles.fields} style={{pointerEvents: props.mode === "View" ? "none" : "auto",  }}>
+            <TextField label="Project Cost($)" type="number" name="projectCost" value={formData.projectCost?.toString()}  onChange={handleChange} className={formStyles.fieldsWidth} />
+            <TextField label="Project Hours"type="number"name="projectHours" value={formData.projectHours?.toString()} onChange={handleChange} className={formStyles.fieldsWidth} />
           </div>
-          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
-          <Dropdown
-              label="Project Status"
-              selectedKey={statusSelectedOptionKey}
-              options={projectStatus}
-              onChange={handleChangeStatusDropDown}
-              style={{ width: "322px" }}
-            />
-            <div style={{ width: "320px" }}>
-              <Label style={{ fontWeight: "600" }}>
-                Reporting Manager
-              </Label>
-              <PeoplePicker
-                context={props.context as any}
-                personSelectionLimit={1}
-                required={true}
-                disabled={false}
-                showtooltip={true}
-                ensureUser={true}
-                defaultSelectedUsers={
-                  props.mode === "edit" || props.mode === "View" 
-                    ? [props.peoplePickerDefaultReportingManager]
-                    : [""]
-                }
-                onChange={getPeoplePickerReportingManager}
-                resolveDelay={300}
-                principalTypes={[PrincipalType.User]}
-                groupName=""
-              />
-                {reportingManagerRequiredMessageShow && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                Reporting Manager is required.
-              </span>
-              )}
+
+          <div className={formStyles.fields} style={{ pointerEvents: props.mode === "View" ? "none" : "auto", }}>
+          <Dropdown label="Department" selectedKey={selectedDepartment} onChange={handleChangeDepartmentDropDown} options={departments} className={formStyles.fieldsWidth}/>
+          <Dropdown label="Project Type" selectedKey={selectedOptionKey} onChange={handleChangeDropDown} options={options} className={formStyles.fieldsWidth} />
+          </div>
+
+          <div className={formStyles.fields} style={{ pointerEvents: props.mode === "View" ? "none" : "auto" }}>
+          <Dropdown label="Project Status" selectedKey={statusSelectedOptionKey} options={projectStatus} onChange={handleChangeStatusDropDown}style={{ width: "322px" }} />
+           
+            <div className={formStyles.fieldsWidth}>
+              <Label className={formStyles.fontWeight}> Reporting Manager </Label>
+              <PeoplePicker context={props.context as any} personSelectionLimit={1} required={true} disabled={false} showtooltip={true} ensureUser={true} defaultSelectedUsers={  props.mode === "edit" || props.mode === "View"   ? [props.peoplePickerDefaultReportingManager] : [""] } onChange={getPeoplePickerReportingManager}resolveDelay={300} principalTypes={[PrincipalType.User]} groupName="" />
+                {reportingManagerRequiredMessageShow && ( <span style={{ color: "red", fontSize: "12px" }}> Reporting Manager is required. </span> )}
             </div>
+
           </div>
 
-          <div style={{ display: "flex", gap: "10px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}>
+          <div className={formStyles.fields} style={{pointerEvents: props.mode === "View" ? "none" : "auto", }}>
+          
           <div style={{ width: "321px" }}>
-              <Label style={{ fontWeight: "600" }}>
-                Project Manager
-              </Label>
-              <PeoplePicker
-                context={props.context as any}
-                personSelectionLimit={1}
-                required={true}
-                disabled={false}
-                showtooltip={true}
-                ensureUser={true}
-                defaultSelectedUsers={
-                  props.mode === "edit" || props.mode === "View" 
-                    ? [props.peoplePickerDefaultManager]
-                    : [""]
-                }
-                onChange={getPeoplePickerProjectManager}
-                resolveDelay={300}
-                principalTypes={[PrincipalType.User]}
-                groupName=""
-              />
-               {projectManagerRequiredMessageShow && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                Project Manager is required.
-              </span>
-              )}
-              {showCostFields &&
-                formData?.projectManager?.map((manager, index) => (
-                  <TextField
-                    key={index}
-                    label={`RPH for ${manager.name} ($)`}
-                    type="number"
-                    value={manager.cost.toString()}
-                    onChange={(e, newValue) =>
-                      handleCostChange(index, newValue || "")
-                    }
-                  />
-                ))}
-            </div>
+            <Label className={formStyles.fontWeight}> Project Manager </Label>
+            <PeoplePicker context={props.context as any} personSelectionLimit={1} required={true} disabled={false} showtooltip={true} ensureUser={true} defaultSelectedUsers={ props.mode === "edit" || props.mode === "View"  ? [props.peoplePickerDefaultManager]: [""] } onChange={getPeoplePickerProjectManager} resolveDelay={300} principalTypes={[PrincipalType.User]} groupName="" />
+              {projectManagerRequiredMessageShow && ( <span style={{ color: "red", fontSize: "12px" }}> Project Manager is required. </span> )}
+              {showCostFields && formData?.projectManager?.map((manager, index) => (
+                <TextField key={index} label={`RPH for ${manager.name} ($)`} type="number"  value={manager.cost.toString()} onChange={(e, newValue) => handleCostChange(index, newValue || "") } />
+              ))}
+          </div>
+
             <div>
               <div style={{ gap: "10px", width: "320px" }}>
-                <Label style={{ fontWeight: "600" }}>
-                  Project Team
-                </Label>
-
-                <PeoplePicker
-                  context={props.context as any}
-                  personSelectionLimit={100}
-                  required={true}
-                  disabled={false}
-                  showtooltip={true}
-                  ensureUser={true}
-                  defaultSelectedUsers={
-                    props.mode === "edit" || props.mode === "View"  ? props.peoplePickerDefaultTeam : ""
-                  }
-                  onChange={getPeoplePickerProjectTeam}
-                  resolveDelay={300}
-                  principalTypes={[PrincipalType.User]}
-                  groupName=""
-                />
+                <Label className={formStyles.fontWeight}> Project Team</Label>
+                <PeoplePicker context={props.context as any} personSelectionLimit={100} required={true} disabled={false} showtooltip={true} ensureUser={true} defaultSelectedUsers={ props.mode === "edit" || props.mode === "View"  ? props.peoplePickerDefaultTeam : "" } onChange={getPeoplePickerProjectTeam} resolveDelay={300} principalTypes={[PrincipalType.User]} groupName=""/>
               </div>
-              {projectTeamMessageShow && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                Project Team is required.
-              </span>
-              )}
-              {showCostFieldsForProjectTeam &&
-                formData.projectTeam.map((manager, index) => (
-                  <TextField
-                    key={index}
-                    label={`RPH for ${manager.name}($)`}
-                    type="number"
-                    value={manager.cost.toString()}
-                    onChange={(e, newValue) =>
-                      handleCostChangeForProjectTeam(index, newValue || "")
-                    }
-                    style={{ width: "320px" }}
-                  />
-                ))}
+
+              {projectTeamMessageShow && ( <span style={{ color: "red", fontSize: "12px" }}> Project Team is required.</span> )}
+              
+              {showCostFieldsForProjectTeam && formData.projectTeam.map((manager, index) => (
+                <TextField key={index} label={`RPH for ${manager.name}($)`} type="number" value={manager.cost.toString()} onChange={(e, newValue) => handleCostChangeForProjectTeam(index, newValue || "") } style={{ width: "320px" }} />
+              ))}
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" ,  }}>
-            <TextField
-              label="Description"
-              multiline
-              autoAdjustHeight={false}
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              style={{ width: "320px", height: "20px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}
-              styles={{
-                fieldGroup: {
-                  height: "100%",
-                  selectors: {
-                    ".ms-TextField-field": {
-                      height: "100%",
-                      paddingTop: "8px",
-                      paddingBottom: "8px",
-                    },
-                  },
-                },
-              }}
+          <div className={formStyles.fields}>
+            <TextField label="Description" multiline autoAdjustHeight={false} name="description" value={formData.description} onChange={handleChange} style={{ width: "320px", height: "20px" , pointerEvents: props.mode === "View" ? "none" : "auto", }}
+              styles={{fieldGroup: { height: "100%", selectors: { ".ms-TextField-field": { height: "100%", paddingTop: "8px", paddingBottom: "8px", }, },}, }}
             />
           <div>
-    <Label style={{ fontWeight: '600' }}>Attachment</Label>
-    <input
-      type="file"
-      name="attachment"
-      multiple
-      id="attachment"
-      onChange={handleChangeAttachment}
-      style={{ display: 'block', marginTop: '10px',pointerEvents: props.mode === "View" ? "none" : "auto", }}
-    />
-    <ul>
-      {attachments && attachments.length > 0 ? (
-        attachments.map((file: { ServerRelativeUrl?: string; FileName?: string; name?: string }, index: number) => {
-          const fileName = file.FileName || file.name || 'Unnamed file';
-          const truncatedFileName = fileName.length > 30
-            ? fileName.slice(0, 30) + '...'
-            : fileName;
 
-          return (
-            <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
-              <Tooltip title={file.FileName} arrow>
-                <a
-                  href={file.ServerRelativeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ cursor: 'pointer', marginRight: '10px' }}
-                >
-                  {truncatedFileName}
-                </a>
-              </Tooltip>
-              {props.mode !== "View" && (
-                <IconButton style={{ marginLeft: '5px' }} onClick={() => handleDeleteAttachment(index)} aria-label="delete" size="small">
-                  <CloseIcon fontSize="small" />
-                </IconButton>
+            <Label className={formStyles.fontWeight}>Attachment</Label>
+            {props.mode !== "View" && (
+            <input type="file" name="attachment" multiple id="attachment" onChange={handleChangeAttachment} style={{ display: 'block', marginTop: '10px',pointerEvents: props.mode === "View" ? "none" : "auto", }} />
+            )}
+             
+            <ul>
+              {attachments && attachments.length > 0 ? (
+                attachments.map((file: { ServerRelativeUrl?: string; FileName?: string; name?: string }, index: number) => {
+                
+                  const fileName = file.FileName || file.name || 'Unnamed file';
+                  const truncatedFileName = fileName.length > 30 ? fileName.slice(0, 30) + '...' : fileName;
+                
+                  return (
+                    <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                    
+                      <Tooltip title={file.FileName} arrow>
+                        <a href={file.ServerRelativeUrl} target="_blank" rel="noopener noreferrer" style={{ cursor: 'pointer', marginRight: '10px' }} >
+                          {truncatedFileName}
+                        </a>
+                      </Tooltip>
+                      
+                      {props.mode !== "View" && (
+                        <IconButton style={{ marginLeft: '5px' }} onClick={() => handleDeleteAttachment(index)} aria-label="delete" size="small">
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </li>
+                  );
+                })
+              ) : (
+                <li>No attachments available</li>
               )}
-            </li>
-          );
-        })
-      ) : (
-        <li>No attachments available</li>
-      )}
-    </ul>
-  </div>
+            </ul>
           </div>
-
+          </div>
           {props.mode !== "View" &&  (
-             <div
-             style={{
-               padding: "5px",
-               width: "100%",
-               display: "flex",
-               justifyContent: "flex-start",
-               alignItems: "center",
-               position: "fixed",
-               bottom: 0,
-               zIndex: 999,
-               gap: "10px",
-             }}
-           >
-             <PrimaryButton
-               type="submit"
-               text={props.mode === "edit" ? "Update" : "Submit"}
-               style={{
-                 backgroundColor: "#023E8A",
-                 color: "#fff",
-                 height: "35px",
-                 borderRadius: "5px",
-                 marginBottom: "5px",
-                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-               }}
-             />
-             <DefaultButton
-               onClick={handleCancel}
-               text="Cancel"
-               style={{
-                 color: "rgb(50, 49, 48)",
-                 backgroundColor: "white",
-                 height: "35px",
-                 border: "1px solid grey",
-                 borderRadius: "5px",
-                 boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-                 marginBottom: "5px",
-               }}
-             />
+             <div className={formStyles.buttonBox}>
+             <PrimaryButton type="submit" text={props.mode === "edit" ? "Update" : "Submit"} className={formStyles.submitButton}/>
+             <DefaultButton onClick={handleCancel} text="Cancel" className={formStyles.cancelButton}/>
            </div>
           )}
         </form>

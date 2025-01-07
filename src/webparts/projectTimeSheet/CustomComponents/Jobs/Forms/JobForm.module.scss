@@ -1,69 +1,157 @@
-@import '~@fluentui/react/dist/sass/References.scss';
+@import "~@fluentui/react/dist/sass/References.scss";
 
 .drawerStyle {
-    width: 700px;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: white;
-    border-radius: 8px;
-    margin: 60px 0;
-    overflow-y: auto;
+  width: 700px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: white;
+  border-radius: 8px;
+  margin: 60px 0;
+  overflow-y: auto;
 }
 
 .drawerDiv {
-    background-color: #F3F2F1;
-    padding: 5px;
-    margin-bottom: 10px;
-    width: -webkit-fill-available;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: fixed;
-    z-index: 999;
+  background-color: #f3f2f1;
+  padding: 5px;
+  margin-bottom: 10px;
+  width: -webkit-fill-available;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  z-index: 999;
 }
 
 .drawerTitle {
-    font-size: 20px;
-    font-weight: bold;
-    margin-left: 13px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 13px;
 }
 
 .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; // Ensure items are centered vertically
-    margin-bottom: 12px;
-    width: 100%; // Ensure the row takes full width
+  display: flex;
+  justify-content: space-between;
+  align-items: center; // Ensure items are centered vertically
+  margin-bottom: 12px;
+  width: 100%; // Ensure the row takes full width
 }
 
 .textField {
-    width: 320px;
-    margin-right: 10px;
+  width: 320px;
+  margin-right: 10px;
 }
 
 .dropdown {
-    width: 320px;
+  width: 320px;
 }
 
 .textFieldMultiline {
-    width: 320px;
-    height: 100px;
-    margin-right: 10px;
-    .ms-TextField-field {
-        height: 100%;
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
+  width: 320px;
+  height: 100px;
+  margin-right: 10px;
+  .ms-TextField-field {
+    height: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
 }
 
 .peoplePickerWrapper {
-    width: 320px;
+  width: 320px;
 }
 
 .label {
-    font-weight: 600;
-    margin-top: 0px;
+  font-weight: 600;
+  margin-top: 0px;
+}
+
+.Header {
+  background-color: #023e8a;
+  padding: 5px;
+  margin-bottom: 10px;
+  width: -webkit-fill-available;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  z-index: 999;
+}
+
+.HeaderLabel {
+  font-size: 20px;
+  font-weight: 600;
+  margin-left: 13px;
+  color: #ffffff;
+}
+
+.Box {
+  display: flex;
+  gap: 10px;
+}
+
+.ButtonBox {
+  padding: 5px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: fixed;
+  bottom: 0;
+  z-index: 999;
+  gap: 10px;
+}
+
+.AttachmentBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: auto;
+}
+
+.AttachmentLabel {
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.TaskAssigneesBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 320px;
+}
+
+.EstimateTimeBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.EstimateTimeInnerBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.defaultButton {
+  color: rgb(50, 49, 48);
+  background-color: white;
+  height: 35px;
+  border: 1px solid grey;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 5px;
+}
+
+.submitButton {
+  background-color: #023e8a;
+  color: #fff;
+  height: 35px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
